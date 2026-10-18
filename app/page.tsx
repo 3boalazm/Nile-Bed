@@ -111,7 +111,50 @@ export default function Home() {
     <section className="hero" id="home"><div className="hero-image"/><div className="hero-shade"/><div className="hero-inner"><div className="hero-copy"><div className="eyebrow"><span className="eyebrow-line"/>{t.eyebrow}</div><h1>{t.titleA}<br/>{t.titleB}<br/><em>{t.titleC}</em></h1><p className="hero-intro">{t.intro}</p><div className="hero-buttons"><a className="button button-copper" href="#products">{t.explore}<ArrowUpRight size={17}/></a><a className="button button-glass" href="#contact">{t.quote}<ArrowUpRight size={17}/></a></div><div className="hero-foot"><span className="tiny-mark">NB</span><span>{t.note}</span><span className="foot-rule"/></div></div><div className="hero-index"><span>01</span><i/>04</div></div><div className="hero-vertical">{ar?'نايل بد · خامات المراتب والسوست':'NILE BED · MATTRESS MATERIALS'}</div></section>
     <section className="intro section-pad"><div className="intro-stamp"><BrandLogo variant="auto"/><i/><small>ESTABLISHED<br/>IN EGYPT</small></div><div className="intro-content"><div className="section-label"><span>01</span>{t.introLabel}</div><h2>{t.introTitle}</h2><div className="intro-bottom"><p>{t.introBody}</p><div className="intro-proof"><span><Check size={15}/>{t.since}</span><small>{t.introFoot}</small></div></div></div></section>
     <section className="scope-band" aria-label={ar?'نطاق عملنا':'Our business scope'}><div className="scope-inner"><div className="scope-top"><div><div className="section-label"><span>02</span>{t.scopeKicker}</div><h2>{t.scopeTitle}</h2></div><p>{t.scopeText}</p></div><div className="scope-grid">{t.scopeCards.map(([n,title,body],i)=><article className={i===2?'scope-card scope-card-no':'scope-card'} key={title}><span>{n}</span><div><h3>{title}</h3><p>{body}</p></div>{i===2?<X size={18}/>:<Check size={18}/>}</article>)}</div></div></section>
-    <section className="products section-pad" id="products"><div className="section-head"><div><div className="section-label"><span>03</span>{t.productsKicker}</div><h2>{t.productsTitle}</h2></div><p>{t.productsDesc}</p></div><div className="product-grid">{t.productNames.map((name,i)=><article className={`product-card pc-${i}`} key={name}><div className="product-art"><span className="product-no">0{i+1} / NB</span>{i===0?<div className="custom-graphic"><Layers3 size={58} strokeWidth={0.7}/></div>:i===1?<div className="spring-graphic"><span/><span/><span/><span/><span/><span/><span/></div>:<div className="roll-graphic"><i/><i/><i/></div>}<span className="product-marker">{['MATERIALS & SUPPLIES','SPRING MANUFACTURING','FOAM & IMPORTS'][i]}</span></div><div className="product-info"><div><h3>{name}</h3><p>{t.productDesc[i]}</p></div><a href="#contact" aria-label={`${t.enquire}: ${name}`}><ArrowUpRight size={19}/></a></div><div className="product-foot"><span>{t.illustrative}</span><span>{t.details} <ArrowUpRight size={12}/></span></div></article>)}</div><div className="catalog-caveat"><CircleHelp size={17}/>{t.quoteHint}</div></section>
+    <section className="products section-pad" id="products"><div className="section-head"><div><div className="section-label"><span>03</span>{t.productsKicker}</div><h2>{t.productsTitle}</h2></div><p>{t.productsDesc}</p></div>
+      {/* Featured wire specs chips */}
+      <div className="wire-chips" aria-label={ar ? 'أنواع السلك المتاحة' : 'Available wire types'}>
+        {[
+          ar ? 'سلك 2.4 — 14.5/16.5 سم' : 'Wire 2.4 — 14.5/16.5 cm',
+          ar ? 'سلك 2.3 — 16.5 سم' : 'Wire 2.3 — 16.5 cm',
+          ar ? 'سلك 2.2 — 16.5 سم' : 'Wire 2.2 — 16.5 cm',
+          ar ? 'سلك 2.05 — 16/16.5 سم' : 'Wire 2.05 — 16/16.5 cm',
+          ar ? 'فريم حديد' : 'Border frame',
+          ar ? 'بوكيت 12–31 سم' : 'Pocket 12–31 cm',
+        ].map(c => <span key={c} className="wire-chip"><em>NB</em>{c}</span>)}
+      </div>
+      <div className="catalog-preview-grid">
+        {[
+          { img: '/catalog/springs/bonnell-1.jpg', count: ar ? '7 أنواع' : '7 types', tag: ar ? 'تصنيع نايل بد' : 'MADE BY NILE BED', title: ar ? 'السوست — بونيل' : 'Springs — Bonnell', desc: ar ? 'سلك 2.4 إلى 2.05 بأقطار 8.5–8.8 وارتفاع 14.5–16.5 سم. تصنيع حسب الطلب.' : 'Wire 2.4 to 2.05, Ø 8.5–8.8 cm, height 14.5–16.5 cm. Made to order.', link: '/catalog#springs' },
+          { img: '/catalog/pocket/pocket-1.jpg', count: ar ? '3 رولات' : '3 rolls', tag: 'POCKET', title: ar ? 'رول البوكيت' : 'Pocket Roll', desc: ar ? 'ارتفاعات 12–31 سم × عرض 80، ومقاسات 1.85×4.80 و 1.75×4.80.' : 'Heights 12–31 cm × 80 cm width, plus 1.85×4.80 & 1.75×4.80.', link: '/catalog#springs' },
+          { img: '/catalog/foam/memory-2cm.jpg', count: ar ? '8 أصناف' : '8 items', tag: ar ? 'وارد تركيا' : 'TURKEY IMPORT', title: ar ? 'ميموري ولاتكس' : 'Memory & Latex', desc: ar ? 'ميموري رول 2 و 4 سم تركي، ولاتكس 2.5–5 سم. رول وشيت.' : 'Turkish memory rolls 2 & 4 cm, latex 2.5–5 cm. Roll & sheet.', link: '/catalog#foam' },
+          { img: '/catalog/foam/latex-roll-2.webp', count: ar ? 'مقاسان' : '2 sizes', tag: 'LANX', title: ar ? 'لب مراتب لانكس' : 'Lanx Cores', desc: ar ? 'عرض 2 م، ارتفاع 18 سم، طول 160 و 180. خام مراتب — لا نبيع جاهز.' : 'Width 2 m, height 18 cm, length 160 & 180. Material only.', link: '/catalog#latex-mattress' },
+          { img: '/catalog/materials/felt-1.jpg', count: ar ? '9 أصناف' : '9 items', tag: ar ? 'خامات مساعدة' : 'AUXILIARY', title: ar ? 'لباد وفازلين ولوازم' : 'Felt, Non-woven & Supplies', desc: ar ? 'لباد قطن/مقطع/رول، فازلين 210/160/14، غراء، خيط، تيب، كلبس، دبل.' : 'Cotton/pre-cut/roll felt, non-woven 210/160/14, glue, thread, tape, clips.', link: '/catalog#materials' },
+          { img: '/catalog/tools/clip-gun-1.jpg', count: ar ? '3 عدد' : '3 tools', tag: 'TOOLS', title: ar ? 'المسدسات والعدد' : 'Tools & Guns', desc: ar ? 'مسدس كلبس، مسدس دبل، مسدس غراء — نيوماتيك وحراري.' : 'Clip gun, double-clip gun, glue gun — pneumatic & hot-melt.', link: '/catalog#tools' },
+        ].map(card => (
+          <article key={card.title} className="catalog-preview-card">
+            <div className="preview-media">
+              <img src={card.img} alt={card.title} loading="lazy" decoding="async" />
+              <span className="preview-tag">{card.tag}</span>
+              <span className="preview-count">{card.count}</span>
+            </div>
+            <div className="preview-body">
+              <h3>{card.title}</h3>
+              <p>{card.desc}</p>
+            </div>
+            <div className="preview-foot">
+              <span><i />{ar ? 'صور توضيحية' : 'Illustrative photos'}</span>
+              <a href="/catalog" aria-label={`${ar ? 'عرض' : 'View'} ${card.title}`}><ArrowUpRight size={14} /></a>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div className="catalog-preview-actions">
+        <a className="button button-copper" href="/catalog">{ar ? 'عرض الكتالوج الكامل' : 'View full catalog'} — {ar ? '36 صنف بالصور' : '36 items with photos'}<ArrowUpRight size={17} /></a>
+        <a className="button button-glass" href="#contact" style={{ borderColor: 'var(--line-2)', color: 'var(--t-1)', background: 'var(--card)' }}>{t.quote}<ArrowUpRight size={17} /></a>
+      </div>
+      <div className="catalog-preview-note"><CircleHelp size={14} />{t.quoteHint}</div>
+    </section>
     <section className="process" id="process"><div className="section-pad process-inner"><div className="process-head"><div className="section-label light"><span>04</span>{t.processTag}</div><h2>{t.processTitle}</h2><p>{t.processDesc}</p></div><div className="steps">{t.steps.map((step,i)=><article className="step" key={step[0]}><span className="step-number">{step[0]}</span><div className="step-icon">{i===0?<Layers3/>:i===1?<BadgeCheck/>:<Truck/>}</div><h3>{step[1]}</h3><p>{step[2]}</p><span className="step-line"/></article>)}</div><div className="process-bottom"><span>NB / PROCESS</span><span>{ar?'نستمع، نراجع، ثم نخطط.':'LISTEN. REVIEW. PLAN.'}</span></div></div></section>
     <section className="capabilities section-pad" id="capabilities"><div className="cap-intro"><div className="section-label"><span>05</span>{t.capabilityKicker}</div><h2>{t.capabilityTitle}</h2><p>{t.capabilityBody}</p><a className="text-link" href="#contact">{t.capabilityCta}<ArrowUpRight size={16}/></a></div><div className="cap-cards">{t.capabilityCards.map(([n,title,body])=><article key={n}><span>{n}</span><div><h3>{title}</h3><p>{body}</p></div><ArrowUpRight size={17}/></article>)}</div></section>
     <section className="about" id="about"><div className="about-art"><div className="about-gridlines"/><span className="about-vertical">NILE BED / EGYPT</span><div className="about-monogram">N<span>B</span></div><div className="about-caption"><span>ORIGIN / 01</span><span>EGYPT</span></div></div><div className="about-copy"><div className="section-label"><span>06</span>{t.aboutKicker}</div><h2>{t.aboutTitle}</h2><p>{t.aboutText}</p><div className="about-note"><Globe2 size={17}/>{t.aboutNote}</div><div className="industry-list"><span>{t.industries}</span><h3>{t.industryTitle}</h3><div>{t.industryItems.map((it,i)=><span key={it}><i>0{i+1}</i>{it}</span>)}</div></div></div></section>
