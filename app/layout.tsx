@@ -7,13 +7,13 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_PROJECT_
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: 'Nile Bed | نايل بد — خامات ومستلزمات المراتب وتصنيع السوست',
-  description: 'نايل بد مورد جملة لخامات ومستلزمات المراتب وتصنيع السوست في مصر، ولا تصنّع مراتب جاهزة. تحديثات عامة تذكر رولات ميموري فوم تركي بارتفاعي 2 و4 سم؛ التوافر يؤكد عند الاستفسار. Nile Bed is a wholesale supplier of mattress materials and springs in Egypt and does not manufacture finished mattresses.',
+  description: 'نايل بد تورّد خامات ومستلزمات المراتب في مصر وتصنّع السوست، ولا تصنّع مراتب جاهزة. تحديثات عامة تذكر رولات ميموري فوم تركي بارتفاعَي ٢ سم و٤ سم، والتوافر يُؤكَّد عند الاستفسار. Nile Bed supplies mattress materials and manufactures springs in Egypt; it does not make finished mattresses.',
   applicationName: 'Nile Bed',
   alternates: { canonical: '/' },
   keywords: ['خامات المراتب','مستلزمات المراتب','توريد خامات مراتب','تصنيع السوست','Nile Bed','mattress materials Egypt'],
   openGraph: {
     title: 'Nile Bed | نايل بد',
-    description: 'Wholesale mattress materials and springs from Egypt. We do not manufacture finished mattresses.',
+    description: 'Mattress materials from Egypt, and springs made in-house. No finished mattresses.',
     type: 'website',
     locale: 'ar_EG',
     alternateLocale: 'en_US',
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Nile Bed | نايل بد',
-    description: 'Wholesale mattress materials and springs from Egypt. We do not manufacture finished mattresses.',
+    description: 'Mattress materials from Egypt, and springs made in-house. No finished mattresses.',
     images: ['/og.png'],
   },
   robots: { index: true, follow: true },
@@ -43,7 +43,7 @@ const organizationSchema = {
   '@type': 'Organization',
   name: 'Nile Bed',
   alternateName: 'نايل بد',
-  description: 'Wholesaler of mattress materials and supplies, and manufacturer of springs. Nile Bed does not manufacture or sell finished mattresses.',
+  description: 'Supplier of mattress materials and components, and manufacturer of springs. Nile Bed does not make or sell finished mattresses.',
   url: siteUrl,
   logo: new URL('/logo-on-light.svg', siteUrl).href,
   image: new URL('/og.png', siteUrl).href,
@@ -51,7 +51,7 @@ const organizationSchema = {
   telephone: '+20 10 90000676',
   areaServed: 'EG',
   knowsAbout: ['mattress materials', 'mattress supplies', 'springs', 'memory foam'],
-  slogan: 'Mattress materials and supplies. Springs. No finished mattresses.',
+  slogan: 'We make the springs. We supply the materials.',
 };
 
 // Applies the saved/system theme before first paint so there is no flash of the
