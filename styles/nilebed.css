@@ -267,6 +267,10 @@ html[data-theme='dark'] .brand-logo.is-auto .logo-alt { display: block; }
 }
 .theme-switch:hover, .lang-switch:hover { color: var(--copper-hi-2); }
 .theme-switch svg, .lang-switch svg { flex-shrink: 0; }
+/* the icon follows the applied theme, so it is right before JS hydrates */
+.theme-switch .icon-sun { display: none; }
+html[data-theme='dark'] .theme-switch .icon-sun { display: block; }
+html[data-theme='dark'] .theme-switch .icon-moon { display: none; }
 .nav-cta {
   border: 1px solid rgba(255, 255, 255, .55);
   padding: 11px 15px;
