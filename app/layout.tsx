@@ -6,7 +6,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_PROJECT_
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: 'Nile Bed | نايل بد — خامات المراتب وتصنيع السوست',
-  description: 'نايل بد بقيادة عاطف طه: خامات ومستلزمات المراتب وتصنيع السوست في مصر. Nile Bed — mattress materials, supplies and spring manufacturing.',
+  description: 'نايل بد مورد جملة لخامات ومستلزمات المراتب وتصنيع السوست في مصر. تحديثات عامة تذكر رولات ميموري فوم تركي بارتفاعي 2 و4 سم؛ التوافر يؤكد عند الاستفسار. Nile Bed supplies mattress materials and manufactures springs in Egypt.',
   alternates: { canonical: '/' },
   openGraph: { title: 'Nile Bed | نايل بد', type: 'website', locale: 'ar_EG' },
 };
