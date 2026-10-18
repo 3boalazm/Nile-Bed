@@ -25,4 +25,6 @@ The website source is merged into `main`. If this GitHub repository is connected
 
 The repository originally contained only a patch, not its original Next.js/PMO base. The patch could not be applied verbatim: the public page and CSS were reconstructed, the missing app scaffolding was created, and the legacy Firebase provider was intentionally omitted. The patch's JPEG entry contained no image bytes; an original local SVG illustration replaces it. The supplied patch is retained unchanged for reference.
 
+**Scope:** the site presents Nile Bed as a wholesaler of mattress materials and supplies that manufactures springs. It does not present the company as a maker or seller of finished mattresses, and the page states that explicitly in the scope band, catalog, about and metadata. See `docs/scope-audit-2026-10-18.md`.
+
 The form is deliberately disabled until approved sales routing is supplied. Public Facebook pages were readable in the connected browser; the site includes the public company email and WhatsApp contact details. No company product/factory photo was saved for use, so the SVG remains explicitly illustrative. See `docs/research-2026-10-18.md` and `docs/nile-bed-source-audit.md` for source findings, limits and verification checklist.
