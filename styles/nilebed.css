@@ -10,3 +10,39 @@
 .contact-mini a{display:flex;align-items:center;gap:9px;color:inherit;text-decoration:none;width:fit-content}.contact-mini a:hover{color:var(--copper)}
 
 .gallery-source-links{display:flex;flex-direction:column;gap:10px;margin-top:22px}.gallery-source-links a{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:10px;line-height:1.7;color:#73513f}.gallery-source-links a:hover{color:var(--copper)}
+
+/* Scope band: explicit trading vs. manufacturing statement */
+.scope-band{padding:78px 10% 104px;background:var(--white)}
+.scope-inner{border-top:1px solid var(--line);padding-top:34px}
+.scope-top{display:flex;align-items:flex-end;justify-content:space-between;gap:50px;margin-bottom:30px}
+.scope-top h2{font-size:clamp(28px,3.4vw,44px);line-height:1.15;letter-spacing:-.05em;font-weight:500;margin:18px 0 0;max-width:720px}
+.scope-top>p{max-width:380px;font-size:11px;line-height:1.9;color:#666e69;margin:0 0 4px}
+.scope-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.scope-card{background:#ecece5;border:1px solid var(--line);padding:20px 20px 18px;min-height:168px;display:flex;flex-direction:column;gap:14px}
+.scope-card>span{font-size:8px;letter-spacing:.14em;color:#a2745a}
+.scope-card h3{font-size:14px;font-weight:700;margin:0 0 6px}
+.scope-card p{font-size:10px;line-height:1.8;color:#717873;margin:0;max-width:300px}
+.scope-card svg{margin-top:auto;color:#7d8d82}
+.scope-card-no{background:#202726;border-color:#202726;color:#f2f1eb}
+.scope-card-no>span{color:#d28b66}
+.scope-card-no p{color:#a9b0aa}
+.scope-card-no svg{color:#d28b66}
+
+@media(max-width:1000px){
+.scope-top{display:block}
+.scope-top>p{margin-top:16px;max-width:560px}
+.scope-grid{grid-template-columns:1fr}
+.scope-card{min-height:0}
+}
+@media(max-width:760px){
+.scope-band{padding-top:58px;padding-bottom:78px}
+.scope-top h2{font-size:34px}
+.scope-card p{max-width:none}
+}
+
+/* Foam-roll illustration for the imported-materials card */
+.roll-graphic{display:flex;flex-direction:column;gap:9px;width:66%;transform:rotate(-9deg);filter:drop-shadow(0 16px 10px rgba(45,52,46,.22))}
+.roll-graphic i{display:block;height:44px;border-radius:22px;background:linear-gradient(180deg,#f0efe8 0%,#cfd3ca 46%,#9aa59b 100%);border:1px solid #8d978e;position:relative}
+.roll-graphic i:after{content:'';position:absolute;top:50%;left:14px;width:20px;height:20px;margin-top:-10px;border-radius:50%;border:4px solid #7f8a80;background:#e7e8e0}
+.roll-graphic i:nth-child(2){width:94%;margin-inline-start:6%}
+.roll-graphic i:nth-child(3){width:88%;margin-inline-start:12%}
