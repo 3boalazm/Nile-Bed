@@ -1,0 +1,1 @@
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0}button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}button{cursor:pointer}a:focus-visible,button:focus-visible{outline:3px solid #bb7149;outline-offset:5px}::selection{background:#bb7149;color:white}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
