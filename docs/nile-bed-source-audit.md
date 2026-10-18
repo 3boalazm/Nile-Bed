@@ -1,59 +1,20 @@
-# Nile Bed — preliminary source & asset audit
+# Nile Bed — source and asset audit
 
-**Audit date:** 18 October 2026  
-**Status:** Patch audit preserved below; current-session checks confirmed the three Facebook URLs return HTTP 403 and the machinery supplier homepage is accessible. Mobile fetches, searches, and subpage observations below originate in the supplied patch and were not independently repeated. Partial desk research. No Facebook post or image has been authenticated or downloaded. This is not launch approval.
+**Audit date:** 18 October 2026. **Status:** Public page text was reviewed in the connected browser. User-supplied ownership and business details remain attributed to the user. No factory/product image was added to the site; request company-approved originals before treating any photography as a company asset.
 
-## 1. Sources checked
+## Sources reviewed
 
-| Source | What happened | Evidence / decision |
-|---|---|---|
-| Facebook profile ID `100047775297291` | Direct fetch returned HTTP 403; mobile-domain fetch also returned HTTP 403. Exact-ID web search did not surface an attributable result. | No posts, photos, videos, bio, contact details, dates, or rights could be inspected. **Pending**. User identifies this as one of the accounts used for updates. |
-| Facebook profile ID `100009326443352` | Direct fetch returned HTTP 403; mobile-domain fetch also returned HTTP 403. Search did not establish an attributable company result. | No account relationship or content could be independently checked. **Pending**. User identifies this as one of the accounts used for updates. |
-| Facebook `tefa.elsid` | Direct fetch returned HTTP 403; mobile-domain fetch also returned HTTP 403. Search did not surface relevant, attributable posts. | No personal or business posts were inspected. Do not use personal content. **Pending**. User identifies this as one of the update accounts. |
-| Veysel Kütüklü reference website | Homepage and select Turkish product pages were accessible. | Used only to study product-page architecture and manufacturing storytelling. It is a machinery supplier/reference, **not a Nile Bed source**. Do not copy its text, photos, technical specs, testimonials, logos, or claim those machines are Nile Bed assets. |
+- The public [Nile Bed Facebook business page](https://www.facebook.com/p/Nile-Bed-100047775297291/) was accessible. It describes the business as a wholesaler of mattress materials and publicly lists 010 90000676 and info@nilebed.com. A post dated 4 December 2025 mentions an imported memory-foam shipment and multiple heights. This is evidence of a dated post, not current stock or a fixed product specification.
+- The public [Nile Bed Facebook profile, ID 100009326443352](https://www.facebook.com/profile.php?id=100009326443352) was accessible and showed a Nile Bed profile based in Cairo. A visible post described imported medical/mask fabric. This was excluded from the mattress catalog because its current relevance to the mattress business could not be established.
+- The public [Atef Taha Facebook profile](https://www.facebook.com/tefa.elsid) was accessible. A visible post mentioned memory foam from a Turkish source, in 2 cm and 4 cm heights. The user identified Atef Taha as the owner; that ownership claim is not independently established by the profile. An unrelated garment-factory employer entry was not used.
+- The machinery supplier's official [VTC 100 page](https://www.veyselkutuklu.com/en/machines/vtc-series-automatic-bonnell-spring-transfer-machine/) was accessible and names VTC Series, Bonnell spring units, nominal performance of 80 springs per minute and stated capacity of 38,400 springs per 8 hours. These figures describe the supplier's machine, not verified Nile Bed equipment or capacity. The [VKY page](https://www.veyselkutuklu.com/en/machines/vky-series-automatic-bonnell-spring-coiling-machine/) returned 404 when opened during this review.
 
-### Reference-site observations (UX only)
+## Asset inventory and rights
 
-The accessible reference homepage organizes machines as a catalog with a product image, series/model name, concise value proposition, detail page and direct enquiry path. An accessible VKY machine page presents a product-specific overview, a technical-specification table, options, brochure downloads and quote/service links. A VTC product page includes an illustrated process sequence and machine-specific options/specifications. These are useful patterns for a later Nile Bed catalog; the equipment, capacities, specifications, process and claims belong to Veysel Kütüklü and must not be represented as Nile Bed facts.
+The repository includes a local generic vector spring illustration at `public/nilebed-springs.svg`. It is not a photo of Nile Bed, its factory or a confirmed product, and the page labels it as illustrative. The Facebook pages show logos and posts/videos, but this pass did not save an original media file suitable for deployment. The machine images found in image search belong to Veysel Kütüklü and were not copied into the site or presented as Nile Bed equipment. Request the company’s original logo and approved product, raw-material, workshop and machine-line photos/videos, with permission for commercial website use.
 
-A linked machine-page URL returned a 404 and the reference pages also rendered a reCAPTCHA domain warning. Information is therefore limited to the accessible page extracts, not a complete website audit.
+## Website safeguards and remaining checks
 
-## 2. Information provided directly by the user (not independently verified)
+The website now lists the public email and WhatsApp contact link and describes the memory-foam detail only as information from a dated public update, with current availability and specifications subject to confirmation. Its RFQ form remains disabled and does not submit or store information. No specific spring model, production capacity, product guarantee, factory address or Veysel machine ownership is claimed.
 
-| Claim | Provenance | Status / use |
-|---|---|---|
-| The three Facebook accounts listed above are used by the business to post updates. | User message, 18 Oct 2026 | **User-reported; pending confirmation by company.** |
-| Atef/Aatif Taha (عاطف طه) is the owner. | User message, 18 Oct 2026 | **User-reported; confirm preferred English spelling and public use.** The current prototype uses “Atef Taha”. |
-| The business works across mattress raw materials and supplies, broadly/end-to-end. | User message, 18 Oct 2026 | **User-reported; scope, exact categories, and whether this means trading/supply or manufacture need clarification.** Do not say every category is manufactured by Nile Bed. |
-| The business manufactures springs and has a spring-production line with machinery associated with the Veysel Kütüklü reference. | User message, 18 Oct 2026 | **User-reported; machine make/model, ownership, installation, photos, and usage rights need confirmation.** No reference-site image is used in the website. |
-
-## 3. Asset inventory
-
-| Asset | Location | Provenance / rights | Status |
-|---|---|---|---|
-| Original vector spring illustration created for layout | `public/nilebed-springs.svg` | Code-drawn, generic SVG illustration; not a Nile Bed product/factory photograph. | **Supporting / illustrative.** It is explicitly labeled as illustrative in the interface and must be replaced by approved company photography before launch. |
-| Nile Bed logo | None received | No original logo file could be retrieved. | **Pending** |
-| Product photographs | None retrieved | Facebook inaccessible; no files provided. | **Pending** |
-| Factory, line and machinery photographs/video | None retrieved | Facebook inaccessible; no files provided. | **Pending** |
-| Approved product specs, brochures, certificates, customer references | None received | No independent company source available. | **Pending** |
-
-## 4. Current website content safeguards
-
-- The catalog uses broad inquiry categories (mattress materials and supplies, spring manufacturing, commercial requirements); it does not name unconfirmed spring types or invent technical properties.
-- The image is labeled illustrative; it does not purport to show Nile Bed’s factory or a verified product.
-- The RFQ form is intentionally disabled and states that it does not send data. No verified sales address or secure submission integration was supplied.
-- The manufacturing section is framed as a customer enquiry/review process, not a claimed sequence of verified Nile Bed factory stages.
-- No Veysel Kütüklü machine specs, images, testimonials, customer logos, or claims have been carried into the Nile Bed site.
-
-## 5. Remaining verification checklist
-
-1. Ask the company/account owner to provide original logo (SVG/transparent PNG), approved brand colors, and permission to use the files.
-2. Request original, uncompressed product, raw-material, factory/line, operator-at-work and packaging photos/videos, with source account/post URL and written commercial-use approval. Keep originals and retain a rights/source register.
-3. Confirm which of the three Facebook accounts is official/business-owned and whether the personal profile should be excluded. Obtain direct post URLs or account export/downloads; do not scrape private or access-controlled content.
-4. Confirm the correct English spelling of عاطف طه, preferred title, and permission to identify the owner publicly.
-5. Get the exact materials/supplies categories offered, which are made vs. distributed/sourced, and the actual spring product families made by Nile Bed.
-6. Verify factory location, operating history, export markets, production steps, machine make/model, available dimensions/materials, QC, capacity, MOQ, packaging and lead times. Collect evidence for every public specification/claim.
-7. Get approved sales email, phone/WhatsApp, address, response routing, privacy notice, and the owner of RFQs. Configure backend validation, spam protection, delivery, failure handling and retention before enabling the form.
-8. Replace the illustrative image with approved, rights-cleared Nile Bed originals; optimize web derivatives while preserving originals.
-
-**Conclusion:** The Facebook assets could not be reached from this research environment (403 responses); no claim is made that they were exhaustively retrieved. The most valuable next step is for the company to share original files or public post links and confirm the facts above. +#+#+#+#+#+
+Before launch, confirm the preferred spelling/title for Atef Taha and permission to name him; identify exact product and supply categories; confirm which materials are sourced, traded or manufactured; confirm current memory-foam availability; and verify spring families, equipment models, capacity, dimensions, quality processes, MOQ, lead times and delivery. Obtain approved company imagery and rights, and configure/validate a secure RFQ destination before enabling form submission.
