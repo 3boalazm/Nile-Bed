@@ -1,1 +1,10 @@
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0}button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}button{cursor:pointer}a:focus-visible,button:focus-visible{outline:3px solid #bb7149;outline-offset:5px}::selection{background:#bb7149;color:white}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+:root { color-scheme: light; --page-bg: #f3f1eb; }
+html[data-theme='dark'] { color-scheme: dark; --page-bg: #0f1312; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; background: var(--page-bg); }
+body { margin: 0; background: var(--page-bg); }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #bb7149; outline-offset: 5px; }
+::selection { background: #bb7149; color: #fff; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
