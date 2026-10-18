@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { ArrowUpRight, ArrowLeft, ArrowRight, Menu, X, Globe2, Truck, Layers3, BadgeCheck, MoveUpRight, ChevronDown, Mail, Phone, MapPin, CircleHelp, Check } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Menu, X, Globe2, Truck, Layers3, BadgeCheck, Mail, Phone, CircleHelp, Check, Moon, Sun } from 'lucide-react';
 
 type Lang = 'ar' | 'en';
 const copy = {
@@ -66,26 +65,59 @@ const copy = {
   },
 } as const;
 
+type Theme = 'light' | 'dark';
+
+const themeLabels = {
+  ar: { switchToDark: 'الوضع الليلي', switchToLight: 'الوضع النهاري', label: 'تبديل المظهر' },
+  en: { switchToDark: 'Dark mode', switchToLight: 'Light mode', label: 'Toggle colour theme' },
+} as const;
+
+/**
+ * The supplied brand has two artwork variants: one for light surfaces and one
+ * for dark surfaces. Both files stay mounted and CSS shows the right one, so
+ * there is no flash when the theme or the language changes.
+ */
+function BrandLogo({ variant, className }: { variant: 'light' | 'dark' | 'auto'; className?: string }) {
+  return (
+    <span className={`brand-logo is-${variant}${className ? ` ${className}` : ''}`}>
+      <img className="logo-light" src="/logo-on-light.svg" alt="Nile Bed" width={454} height={270} decoding="async" />
+      <img className="logo-alt" src="/logo-on-dark.svg" alt="" aria-hidden="true" width={454} height={270} decoding="async" />
+    </span>
+  );
+}
+
 export default function Home() {
   const [lang, setLang] = useState<Lang>('ar');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<Theme>('light');
   useEffect(() => { document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'; }, [lang]);
+  useEffect(() => {
+    const saved = document.documentElement.dataset.theme;
+    setTheme(saved === 'dark' ? 'dark' : 'light');
+  }, []);
+  const toggleTheme = () => {
+    const next: Theme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    document.documentElement.dataset.theme = next;
+    try { window.localStorage.setItem('nilebed-theme', next); } catch { /* storage can be blocked; theme still applies */ }
+  };
   const t = copy[lang]; const ar = lang === 'ar';
+  const themeLabel = theme === 'dark' ? themeLabels[lang].switchToLight : themeLabels[lang].switchToDark;
   return <main className="nile" dir={ar ? 'rtl' : 'ltr'} lang={lang}>
-    <header className="topbar"><a className="brand" href="#home" aria-label="Nile Bed home"><span className="brand-symbol"><i/><i/><i/></span><span><b>NILE BED</b><small>MATERIALS & SPRINGS</small></span></a>
+    <header className="topbar"><a className="brand" href="#home" aria-label={ar ? 'نايل بد — الصفحة الرئيسية' : 'Nile Bed — home'}><BrandLogo variant="dark" /></a>
       <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="Main navigation">{t.nav.map((n,i)=><a key={n} href={['#products','#process','#capabilities','#about','#contact'][i]} onClick={()=>setMenuOpen(false)}>{n}</a>)}</nav>
-      <div className="nav-actions"><button className="lang-switch" onClick={()=>setLang(ar?'en':'ar')}><Globe2 size={15}/>{t.toggle}</button><a className="nav-cta" href="#contact">{t.quote.split(' ')[0]} <ArrowUpRight size={15}/></a><button className="menu-btn" aria-expanded={menuOpen} aria-label={menuOpen?t.close:t.menu} onClick={()=>setMenuOpen(!menuOpen)}>{menuOpen?<X/>:<Menu/>}</button></div>
+      <div className="nav-actions"><button className="theme-switch" type="button" onClick={toggleTheme} aria-label={themeLabel} aria-pressed={theme === 'dark'} title={themeLabel}>{theme === 'dark' ? <Sun size={15}/> : <Moon size={15}/>}<span>{themeLabel}</span></button><button className="lang-switch" type="button" onClick={()=>setLang(ar?'en':'ar')} aria-label={ar ? 'Switch to English' : 'التبديل إلى العربية'}><Globe2 size={15}/>{t.toggle}</button><a className="nav-cta" href="#contact">{t.quote.split(' ')[0]} <ArrowUpRight size={15}/></a><button className="menu-btn" type="button" aria-expanded={menuOpen} aria-label={menuOpen?t.close:t.menu} onClick={()=>setMenuOpen(!menuOpen)}>{menuOpen?<X/>:<Menu/>}</button></div>
     </header>
     <section className="hero" id="home"><div className="hero-image"/><div className="hero-shade"/><div className="hero-inner"><div className="hero-copy"><div className="eyebrow"><span className="eyebrow-line"/>{t.eyebrow}</div><h1>{t.titleA}<br/>{t.titleB}<br/><em>{t.titleC}</em></h1><p className="hero-intro">{t.intro}</p><div className="hero-buttons"><a className="button button-copper" href="#products">{t.explore}<ArrowUpRight size={17}/></a><a className="button button-glass" href="#contact">{t.quote}<ArrowUpRight size={17}/></a></div><div className="hero-foot"><span className="tiny-mark">NB</span><span>{t.note}</span><span className="foot-rule"/></div></div><div className="hero-index"><span>01</span><i/>04</div></div><div className="hero-vertical">{ar?'نايل بد · خامات المراتب والسوست':'NILE BED · MATTRESS MATERIALS'}</div></section>
-    <section className="intro section-pad"><div className="intro-stamp"><span>NB</span><i/><small>ESTABLISHED<br/>IN EGYPT</small></div><div className="intro-content"><div className="section-label"><span>01</span>{t.introLabel}</div><h2>{t.introTitle}</h2><div className="intro-bottom"><p>{t.introBody}</p><div className="intro-proof"><span><Check size={15}/>{t.since}</span><small>{t.introFoot}</small></div></div></div></section>
+    <section className="intro section-pad"><div className="intro-stamp"><BrandLogo variant="auto"/><i/><small>ESTABLISHED<br/>IN EGYPT</small></div><div className="intro-content"><div className="section-label"><span>01</span>{t.introLabel}</div><h2>{t.introTitle}</h2><div className="intro-bottom"><p>{t.introBody}</p><div className="intro-proof"><span><Check size={15}/>{t.since}</span><small>{t.introFoot}</small></div></div></div></section>
     <section className="scope-band" aria-label={ar?'نطاق عملنا':'Our business scope'}><div className="scope-inner"><div className="scope-top"><div><div className="section-label"><span>02</span>{t.scopeKicker}</div><h2>{t.scopeTitle}</h2></div><p>{t.scopeText}</p></div><div className="scope-grid">{t.scopeCards.map(([n,title,body],i)=><article className={i===2?'scope-card scope-card-no':'scope-card'} key={title}><span>{n}</span><div><h3>{title}</h3><p>{body}</p></div>{i===2?<X size={18}/>:<Check size={18}/>}</article>)}</div></div></section>
     <section className="products section-pad" id="products"><div className="section-head"><div><div className="section-label"><span>03</span>{t.productsKicker}</div><h2>{t.productsTitle}</h2></div><p>{t.productsDesc}</p></div><div className="product-grid">{t.productNames.map((name,i)=><article className={`product-card pc-${i}`} key={name}><div className="product-art"><span className="product-no">0{i+1} / NB</span>{i===0?<div className="custom-graphic"><Layers3 size={58} strokeWidth={0.7}/></div>:i===1?<div className="spring-graphic"><span/><span/><span/><span/><span/><span/><span/></div>:<div className="roll-graphic"><i/><i/><i/></div>}<span className="product-marker">{['MATERIALS & SUPPLIES','SPRING MANUFACTURING','FOAM & IMPORTS'][i]}</span></div><div className="product-info"><div><h3>{name}</h3><p>{t.productDesc[i]}</p></div><a href="#contact" aria-label={`${t.enquire}: ${name}`}><ArrowUpRight size={19}/></a></div><div className="product-foot"><span>{t.illustrative}</span><span>{t.details} <ArrowUpRight size={12}/></span></div></article>)}</div><div className="catalog-caveat"><CircleHelp size={17}/>{t.quoteHint}</div></section>
     <section className="process" id="process"><div className="section-pad process-inner"><div className="process-head"><div className="section-label light"><span>04</span>{t.processTag}</div><h2>{t.processTitle}</h2><p>{t.processDesc}</p></div><div className="steps">{t.steps.map((step,i)=><article className="step" key={step[0]}><span className="step-number">{step[0]}</span><div className="step-icon">{i===0?<Layers3/>:i===1?<BadgeCheck/>:<Truck/>}</div><h3>{step[1]}</h3><p>{step[2]}</p><span className="step-line"/></article>)}</div><div className="process-bottom"><span>NB / PROCESS</span><span>{ar?'نستمع، نراجع، ثم نخطط.':'LISTEN. REVIEW. PLAN.'}</span></div></div></section>
     <section className="capabilities section-pad" id="capabilities"><div className="cap-intro"><div className="section-label"><span>05</span>{t.capabilityKicker}</div><h2>{t.capabilityTitle}</h2><p>{t.capabilityBody}</p><a className="text-link" href="#contact">{t.capabilityCta}<ArrowUpRight size={16}/></a></div><div className="cap-cards">{t.capabilityCards.map(([n,title,body])=><article key={n}><span>{n}</span><div><h3>{title}</h3><p>{body}</p></div><ArrowUpRight size={17}/></article>)}</div></section>
     <section className="about" id="about"><div className="about-art"><div className="about-gridlines"/><span className="about-vertical">NILE BED / EGYPT</span><div className="about-monogram">N<span>B</span></div><div className="about-caption"><span>ORIGIN / 01</span><span>EGYPT</span></div></div><div className="about-copy"><div className="section-label"><span>06</span>{t.aboutKicker}</div><h2>{t.aboutTitle}</h2><p>{t.aboutText}</p><div className="about-note"><Globe2 size={17}/>{t.aboutNote}</div><div className="industry-list"><span>{t.industries}</span><h3>{t.industryTitle}</h3><div>{t.industryItems.map((it,i)=><span key={it}><i>0{i+1}</i>{it}</span>)}</div></div></div></section>
-    <section className="gallery section-pad"><div className="gallery-image"><Image src="/nilebed-springs.svg" alt={ar?'صورة توضيحية عامة لتفاصيل سوست معدنية':'Illustrative close-up of a generic steel spring assembly'} fill sizes="(max-width: 760px) 100vw, 50vw"/><span className="image-disclaimer">ILLUSTRATIVE IMAGE · NOT NILE BED FACTORY</span><span className="gallery-index">NB — 01</span></div><div className="gallery-copy"><div className="section-label"><span>07</span>{t.gallery}</div><h2>{t.galleryTitle}</h2><p>{t.galleryText}</p><span className="gallery-line"/><div className="gallery-source-links"><a href="https://www.facebook.com/tefa.elsid/posts/pfbid0m1srtgZL3xKRrUy1B8Ve1XZSwSYnRtrsd5rBF3UdTY7djEPLXLvafFK79gz2ScX3l" target="_blank" rel="noopener noreferrer">{ar?'منشور وصول رولات الميموري فوم التركي · ٢ سم و٤ سم':'Turkish memory foam rolls · 2 cm and 4 cm update'}<ArrowUpRight size={14}/></a><a href="https://www.facebook.com/permalink.php?story_fbid=pfbid02sJkKNaECJVkjv9qMyKWYhxNRhSQnSBfs62dZo83d38hQ1UagWkLpKHiBWjdgxYpTl&id=100047775297291" target="_blank" rel="noopener noreferrer">{ar?'منشور شحنة خامات المراتب وصور المنتجات':'Mattress materials shipment and product photos'}<ArrowUpRight size={14}/></a></div></div></section>
+    <section className="gallery section-pad"><div className="gallery-image"><img src="/nilebed-springs.svg" alt={ar?'صورة توضيحية عامة لتفاصيل سوست معدنية':'Illustrative close-up of a generic steel spring assembly'} loading="lazy" decoding="async" width={1600} height={1000}/><span className="image-disclaimer">ILLUSTRATIVE IMAGE · NOT NILE BED FACTORY</span><span className="gallery-index">NB — 01</span></div><div className="gallery-copy"><div className="section-label"><span>07</span>{t.gallery}</div><h2>{t.galleryTitle}</h2><p>{t.galleryText}</p><span className="gallery-line"/><div className="gallery-source-links"><a href="https://www.facebook.com/tefa.elsid/posts/pfbid0m1srtgZL3xKRrUy1B8Ve1XZSwSYnRtrsd5rBF3UdTY7djEPLXLvafFK79gz2ScX3l" target="_blank" rel="noopener noreferrer">{ar?'منشور وصول رولات الميموري فوم التركي · ٢ سم و٤ سم':'Turkish memory foam rolls · 2 cm and 4 cm update'}<ArrowUpRight size={14}/></a><a href="https://www.facebook.com/permalink.php?story_fbid=pfbid02sJkKNaECJVkjv9qMyKWYhxNRhSQnSBfs62dZo83d38hQ1UagWkLpKHiBWjdgxYpTl&id=100047775297291" target="_blank" rel="noopener noreferrer">{ar?'منشور شحنة خامات المراتب وصور المنتجات':'Mattress materials shipment and product photos'}<ArrowUpRight size={14}/></a></div></div></section>
     <section className="cta-band"><div className="cta-orbit orbit-one"/><div className="cta-orbit orbit-two"/><div className="cta-copy"><div className="section-label light"><span>08</span>{t.ctaKicker}</div><h2>{t.ctaTitle}</h2><p>{t.ctaText}</p></div><a href="#contact" className="button button-copper">{t.ctaButton}<ArrowUpRight size={17}/></a></section>
     <section className="contact section-pad" id="contact"><div className="contact-heading"><div className="section-label"><span>09</span>{t.contactLabel}</div><h2>{t.contactTitle}</h2><p>{t.contactText}</p><div className="social-links">{["https://www.facebook.com/profile.php?id=100047775297291", "https://www.facebook.com/profile.php?id=100009326443352", "https://www.facebook.com/tefa.elsid"].map((url, i) => <a key={url} href={url} target="_blank" rel="noopener noreferrer">{ar ? ["صفحة Nile Bed التجارية", "حساب Nile Bed", "تحديثات عاطف طه"][i] : ["Nile Bed business page", "Nile Bed profile", "Atef Taha updates"][i]} <ArrowUpRight size={14}/></a>)}</div><div className="contact-mini"><a href="mailto:info@nilebed.com"><Mail size={16}/>info@nilebed.com</a><a href="https://wa.me/201090000676" target="_blank" rel="noopener noreferrer"><Phone size={16}/>{ar?'واتساب: 010 90000676':'WhatsApp: 010 90000676'}</a></div></div><form className="rfq-form" onSubmit={e=>e.preventDefault()}><div className="form-grid"><label>{t.fields[0]}<input required placeholder={ar?'اسمك':'Your name'}/></label><label>{t.fields[1]}<input placeholder={ar?'اسم الشركة':'Company name'}/></label><label>{t.fields[2]}<input type="email" required placeholder="name@company.com"/></label><label>{t.fields[3]}<input placeholder={ar?'الدولة':'Country'}/></label><label>{t.fields[4]}<select defaultValue=""><option value="" disabled>{t.product}</option>{t.productNames.map(x=><option key={x}>{x}</option>)}</select></label><label>{t.fields[5]}<input placeholder={t.qty}/></label><label className="full-field">{t.fields[6]}<textarea rows={4} placeholder={ar?'اكتب متطلباتك هنا...':'Tell us about your requirements...'}/></label></div><button className="button button-dark" type="submit" disabled>{t.submit}<ArrowUpRight size={17}/></button><small className="form-note"><CircleHelp size={14}/>{t.formNote}</small></form></section>
-    <footer className="footer"><a className="brand footer-brand" href="#home"><span className="brand-symbol"><i/><i/><i/></span><span><b>NILE BED</b><small>MATERIALS & SPRINGS</small></span></a><span>{t.footer}</span><a href="#home">{t.back}<ArrowRight size={14}/></a><small>© {new Date().getFullYear()} NILE BED</small></footer>
+    <footer className="footer"><a className="brand footer-brand" href="#home" aria-label={ar ? 'نايل بد' : 'Nile Bed'}><BrandLogo variant="dark"/></a><span>{t.footer}</span><a href="#home">{t.back}<ArrowRight size={14}/></a><small>© {new Date().getFullYear()} NILE BED</small></footer>
   </main>;
 }
