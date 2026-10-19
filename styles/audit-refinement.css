@@ -295,3 +295,13 @@ html[data-theme='dark'] .catalog-page .catalog-cta { background: #090c0b; }
 @media (prefers-reduced-motion: reduce) {
   .home-clean *, .catalog-page * { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* Keep inverse-section headings and labels bright on the deep panels. */
+.home-clean .hc-production .hc-h2-light,
+.home-clean .hc-trust .hc-h2-light { color: #fff !important; }
+.home-clean .hc-production .hc-kicker-light,
+.home-clean .hc-trust .hc-kicker-light { color: #c3cac4 !important; }
+.home-clean .hc-production .hc-kicker-light > span,
+.home-clean .hc-trust .hc-kicker-light > span { color: #f08a6d !important; }
+.home-clean .hc-trust-stamp { color: #e6e9e4 !important; }
+.home-clean .hc-trust-stamp span { color: #f08a6d !important; }
