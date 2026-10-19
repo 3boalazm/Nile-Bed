@@ -5,6 +5,7 @@ import '@/styles/nilebed.css';
 import '@/styles/nilebed-refresh.css';
 import '@/styles/home-clean.css';
 import '@/styles/ko-sans-headings.css';
+import '@/styles/audit-refinement.css';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000');
 
@@ -60,7 +61,7 @@ const organizationSchema = {
 
 // Applies the saved/system theme before first paint so there is no flash of the
 // wrong mode. Kept tiny and inline on purpose.
-const themeScript = `(function(){try{var s=localStorage.getItem('nilebed-theme-v3');document.documentElement.dataset.theme=(s==='dark')?'dark':'light';}catch(e){document.documentElement.dataset.theme='light';}})();`;
+const themeScript = `(function(){try{var s=localStorage.getItem('nilebed-theme-v3');var dark=s==='dark'||(!s&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=dark?'dark':'light';}catch(e){document.documentElement.dataset.theme='light';}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

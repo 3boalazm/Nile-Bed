@@ -5,9 +5,9 @@ Bilingual Arabic/English public website for Nile Bed — a wholesaler of mattres
 ## What is in the site
 
 - **Arabic-first, RTL** page with a one-tap English switch (the whole page, including layout direction, flips).
-- **Light and dark themes.** The theme follows the visitor's system preference on first visit, is remembered in `localStorage` (`nilebed-theme`), and is applied by a tiny inline script before first paint so there is no flash of the wrong mode.
+- **Light and dark themes.** The theme follows the visitor's system preference on first visit, can be toggled at any time, is remembered in `localStorage` (`nilebed-theme-v3`), and is applied before first paint to avoid a flash of the wrong mode.
 - **Official brand artwork in both variants** (see below), used in the header, the footer, and the "established" stamp.
-- Sections: image-free hero, supply-partner intro, business scope (manufactures springs · supplies materials · does **not** make finished mattresses), catalog, process, capabilities, about, materials gallery, CTA, contact and a preview enquiry form, footer.
+- Sections: product-led hero, business scope (manufactures springs · supplies materials · does **not** make finished mattresses), featured catalog, supply process, partner network, quality, contact and a preview enquiry form, footer.
 - **Catalog:** 69 items in 8 groups — springs/frames/wire, assembled shasia units, pocket rolls and ready-spread pocket, memory/latex/mattress cores, felt & fabrics, threads & tapes, assembly fasteners, and glue & tools. See `docs/inventory-2026-10-19.md`.
 - Metadata for search and sharing: canonical URL, Open Graph/Twitter card with a 1200×630 image (`public/og.png`), Organization JSON-LD, `manifest.webmanifest`, favicon and Apple touch icon, `robots.txt` and `sitemap.xml`.
 
@@ -23,7 +23,7 @@ Bilingual Arabic/English public website for Nile Bed — a wholesaler of mattres
 
 Both logo files stay mounted where the theme can change; CSS (`.brand-logo.is-light`, `.is-dark`, `.is-auto`) decides which one is visible, so there is no flash or layout shift when the theme or language changes. The header and footer sit on dark bands and always use the dark-surface logo.
 
-Colours live in `styles/nilebed.css` as design tokens on `.nile` plus a `html[data-theme='dark']` override block, so a new section only needs to use `var(--token)` to support both themes.
+Base theme colours live in `styles/nilebed.css`; the shared editorial refinement tokens and responsive home/catalog treatments live in `styles/audit-refinement.css` and support both light and dark modes.
 
 Typography: Arabic headings (H1–H6) use the self-hosted **KO Sans** family in `public/Fonts` — all seven supplied weights (100–700) are registered in `styles/ko-sans-headings.css` and applied to every heading level on both the home and catalog pages. English/LTR headings keep Fraunces + Cormorant Garamond, Arabic body copy uses Cairo, and UI text uses Manrope/DM Sans.
 
