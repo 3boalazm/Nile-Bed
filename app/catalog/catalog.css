@@ -116,7 +116,7 @@ html[data-theme='dark'] .catalog-card:hover { box-shadow: 0 10px 30px rgba(0,0,0
 /* Responsive */
 @media (max-width: 1080px) {
   .catalog-hero-inner { grid-template-columns: 1fr; }
-  .catalog-hero-stats { grid-template-columns: repeat(3, 1fr); }
+  .catalog-hero-stats { grid-template-columns: repeat(2, 1fr); }
   .catalog-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 760px) {

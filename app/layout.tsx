@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: 'نايل بد تصنّع السوست في مصر وتنسّق توريد خامات ومستلزمات المراتب من مسار واحد، مع شركاء للقماش والإسفنج. نرحب بطلبات الإنتاج الكبيرة وفرص الموردين والاستيراد؛ المواصفات والتوافر يؤكدان لكل طلب. Nile Bed manufactures springs and coordinates a complete mattress-material supply route in Egypt.',
   applicationName: 'Nile Bed',
   alternates: { canonical: '/' },
-  keywords: ['خامات المراتب','مستلزمات المراتب','تصنيع السوست','فريم سوست','سلك 1.3','بوكيت رول','ميموري فوم','لاتكس','غراء هوت ميلت','Nile Bed','mattress materials Egypt'],
+  keywords: ['خامات المراتب','مستلزمات المراتب','تصنيع السوست','شاسيه سوست','فريم سوست','سلك 1.3','بوكيت رول','بوكيت مفروش','ميموري فوم','لاتكس','لباد','تيب 3D','غراء هوت ميلت','Nile Bed','mattress materials Egypt','shasia','pocket springs'],
   openGraph: {
     title: 'Nile Bed | نايل بد',
     description: 'Egypt-made springs and a coordinated supply route for mattress makers, with partner sourcing for fabric and sponge. Large-volume enquiries, supplier proposals and import opportunities welcome.',
