@@ -1,0 +1,55 @@
+/* KO Sans — Arabic headings only. Body copy and LTR/English headings remain unchanged. */
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/Fonts/KOSans-Thin.otf') format('opentype');
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/Fonts/KOSans-ExtraLight.otf') format('opentype');
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/Fonts/KOSans-Light.otf') format('opentype');
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/Fonts/KOSans-Regular.otf') format('opentype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/Fonts/KOSans-Medium.otf') format('opentype');
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/Fonts/KOSans-SemiBold.otf') format('opentype');
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'KO Sans';
+  src: url('/Fonts/KOSans-Bold.otf') format('opentype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* The site switches direction for English. Keep KO Sans scoped to RTL headings. */
+.nile[dir='rtl'] :is(h1, h2, h3, h4, h5, h6) {
+  font-family: 'KO Sans', 'Cairo', sans-serif;
+}
