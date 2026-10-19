@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, Search, Filter, Phone, Mail, Globe2, Menu, X, Moon, Sun, Check, Package, Layers3, Sparkles, Wrench, ShieldCheck, Info } from 'lucide-react';
+import { ArrowUpRight, Search, Filter, Phone, Mail, Globe2, Menu, X, Moon, Sun, Check, Package, Layers3, Boxes, Scissors, Link2, Sparkles, Wrench, ShieldCheck, Info } from 'lucide-react';
 import { groups, items } from './data';
 import './catalog.css';
 
@@ -12,9 +12,9 @@ const ui = {
   ar: {
     nav: ['الرئيسية', 'الكتالوج', 'تواصل'],
     title: 'كتالوج خامات نايل بد',
-    subtitle: 'كل الأصناف في مكان واحد — سوست وفريم ورول سلك 1.3، بوكيت 12–18، ميموري ولاتكس، ولباد وغراء وخيوط ولوازم. الصور والرسوم توضيحية أُعدّت لتمثيل أنواع الخامات، وليست صورًا فعلية لمنتجات نايل بد أو لمخزونها. المواصفات النهائية تُؤكَّد مع الفريق.',
+    subtitle: 'كل الأصناف في مكان واحد — سوست وفريم وسلك، شاسيهات مجمّعة، بوكيت رول ومفروش جاهز، ميموري ولاتكس وخام مراتب، لباد وفازلين وميلتون وبلاستيك، خيوط وتيب، لوازم تجميع، وغراء وعدد. الصور والرسوم توضيحية أُعدّت لتمثيل أنواع الخامات، وليست صورًا فعلية لمنتجات نايل بد أو لمخزونها. المواصفات النهائية تُؤكَّد مع الفريق.',
     disclaimer: 'الصور والرسوم توضيحية معدّة لتمثيل فئات الخامات، وليست صورًا فعلية من مصنع نايل بد أو لمخزونها الحالي. نورّد الخامات ونصنّع السوست فقط، ولا نصنّع مراتب جاهزة. محتاج قماش أو إسفنج؟ نوجّهك لشريك من شركائنا لتشتري بسعر مميز.',
-    searchPlaceholder: 'ابحث في الأصناف… مثل: سلك 2.4، ميموري، لباد أسود، رمادي، فازلين',
+    searchPlaceholder: 'ابحث في الأصناف… مثل: شاسية 18×25، بوكيت مفروش، سلك 2.4، لباد أسود، تيب 3D',
     all: 'الكل',
     count: (n: number) => `${n} صنف`,
     enquire: 'استفسر عبر واتساب',
@@ -33,9 +33,9 @@ const ui = {
   en: {
     nav: ['Home', 'Catalog', 'Contact'],
     title: 'Nile Bed Catalog',
-    subtitle: 'Every category in one place — springs, frames and 1.3 mm wire rolls, pocket 12–18, memory and latex, felt, glue, threads and supplies. Product illustrations are for category reference only; they are not photos of Nile Bed or confirmed stock. Final specs are confirmed with the team.',
+    subtitle: 'Every category in one place — springs, frames and wire, assembled shasia units, pocket rolls and ready-spread pocket, memory, latex and mattress cores, felt, non-woven, Melton and plastic, threads and tape, assembly fasteners, glue and tools. Product illustrations are for category reference only; they are not photos of Nile Bed or confirmed stock. Final specs are confirmed with the team.',
     disclaimer: 'Product illustrations show representative material types only; they are not photos of Nile Bed, actual products or current stock. We supply materials and make springs only; we do not make finished mattresses. Need fabric or sponge? We refer you to one of our partners so you can buy at a special price.',
-    searchPlaceholder: 'Search items… e.g. wire 2.4, memory, black felt, grey felt, non-woven',
+    searchPlaceholder: 'Search items… e.g. shasia 18×25, ready pocket, wire 2.4, black felt, 3D tape',
     all: 'All',
     count: (n: number) => `${n} items`,
     enquire: 'Enquire on WhatsApp',
@@ -55,10 +55,12 @@ const ui = {
 
 const groupMeta: Record<string, { icon: React.ReactNode }> = {
   springs: { icon: <Layers3 size={16} /> },
+  shasia: { icon: <Boxes size={16} /> },
   pocket: { icon: <Package size={16} /> },
   foam: { icon: <Sparkles size={16} /> },
-  'latex-mattress': { icon: <Layers3 size={16} /> },
   materials: { icon: <ShieldCheck size={16} /> },
+  supplies: { icon: <Scissors size={16} /> },
+  fasteners: { icon: <Link2 size={16} /> },
   tools: { icon: <Wrench size={16} /> },
 };
 
@@ -100,13 +102,23 @@ export default function CatalogPage() {
     try { localStorage.setItem('nilebed-theme-v3', next); } catch {}
   };
 
+  // Sizes are written as 18×25 across the catalog, but people often type 18*25
+  // (as on the stock sheets) or with Arabic-Indic digits; normalise both sides.
+  const normalizeSearch = (value: string) => value
+    .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[\u06f0-\u06f9]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
+    .replace(/(\d)\s*[*xX×]\s*(\d)/g, '$1×$2')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = normalizeSearch(query);
     return items.filter((it) => {
       const byGroup = activeGroup === 'all' || it.group === activeGroup;
       if (!byGroup) return false;
       if (!q) return true;
-      const hay = `${it.ar.name} ${it.ar.desc} ${it.ar.specs.join(' ')} ${it.en.name} ${it.en.desc} ${it.en.specs.join(' ')}`.toLowerCase();
+      const hay = normalizeSearch(`${it.ar.name} ${it.ar.desc} ${it.ar.specs.join(' ')} ${it.en.name} ${it.en.desc} ${it.en.specs.join(' ')}`);
       return hay.includes(q);
     });
   }, [activeGroup, query]);
@@ -116,6 +128,8 @@ export default function CatalogPage() {
     // show grouped by group id in order of groups definition
     return groups.map((g) => ({ id: g.id, items: items.filter((it) => it.group === g.id) }));
   }, [activeGroup, query, filtered]);
+
+  const countBy = (groupId: string) => items.filter((it) => it.group === groupId).length;
 
   const waNumber = '201090000676';
   const email = 'info@nilebed.com';
@@ -169,17 +183,22 @@ export default function CatalogPage() {
             <div className="stat-card">
               <strong>{items.length}</strong>
               <span>{ar ? 'صنف في الكتالوج' : 'items in catalog'}</span>
-              <small>{ar ? 'مقسمة على 6 مجموعات' : 'across 6 groups'}</small>
+              <small>{ar ? `مقسمة على ${groups.length} مجموعات` : `across ${groups.length} groups`}</small>
             </div>
             <div className="stat-card">
-              <strong>8</strong>
-              <span>{ar ? 'أنواع سلك وسوست' : 'wire & spring types'}</span>
+              <strong>{countBy('springs')}</strong>
+              <span>{ar ? 'سوست وسلك وفريم' : 'springs, wire & frames'}</span>
               <small>2.4 · 2.3 · 2.2 · 2.05 · 1.3</small>
+            </div>
+            <div className="stat-card">
+              <strong>{countBy('shasia')}</strong>
+              <span>{ar ? 'مقاس شاسية مجمّع' : 'assembled shasia sizes'}</span>
+              <small>{ar ? 'من 18×25 إلى 29×30' : '18×25 to 29×30'}</small>
             </div>
             <div className="stat-card">
               <strong>12–18</strong>
               <span>{ar ? 'سم ارتفاع بوكيت' : 'cm pocket height'}</span>
-              <small>{ar ? 'والكثافة حسب الطلب' : 'density on request'}</small>
+              <small>{ar ? 'رول ومفروش جاهز' : 'rolls & ready-spread'}</small>
             </div>
             <div className="catalog-contact-mini">
               <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer"><Phone size={15} />{ar ? 'واتساب: 010 90000676' : 'WhatsApp: 010 90000676'}</a>
@@ -240,7 +259,7 @@ export default function CatalogPage() {
                       <h2>{ar ? groupDef.ar.title : groupDef.en.title}</h2>
                       <p>{ar ? groupDef.ar.desc : groupDef.en.desc}</p>
                     </div>
-                    <div className="group-count">{ar ? `${section.items.length} أصناف` : `${section.items.length} items`}</div>
+                    <div className="group-count">{ar ? `${section.items.length} صنف` : `${section.items.length} items`}</div>
                   </div>
                 )}
                 {isResults && (

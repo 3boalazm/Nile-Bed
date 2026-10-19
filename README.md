@@ -8,6 +8,7 @@ Bilingual Arabic/English public website for Nile Bed — a wholesaler of mattres
 - **Light and dark themes.** The theme follows the visitor's system preference on first visit, is remembered in `localStorage` (`nilebed-theme`), and is applied by a tiny inline script before first paint so there is no flash of the wrong mode.
 - **Official brand artwork in both variants** (see below), used in the header, the footer, and the "established" stamp.
 - Sections: image-free hero, supply-partner intro, business scope (manufactures springs · supplies materials · does **not** make finished mattresses), catalog, process, capabilities, about, materials gallery, CTA, contact and a preview enquiry form, footer.
+- **Catalog:** 69 items in 8 groups — springs/frames/wire, assembled shasia units, pocket rolls and ready-spread pocket, memory/latex/mattress cores, felt & fabrics, threads & tapes, assembly fasteners, and glue & tools. See `docs/inventory-2026-10-19.md`.
 - Metadata for search and sharing: canonical URL, Open Graph/Twitter card with a 1200×630 image (`public/og.png`), Organization JSON-LD, `manifest.webmanifest`, favicon and Apple touch icon, `robots.txt` and `sitemap.xml`.
 
 ## Brand assets
@@ -51,4 +52,4 @@ The site presents Nile Bed as a wholesaler of mattress materials and supplies th
 
 Product availability, current stock, dimensions and technical specifications are always stated as "confirmed on enquiry". Public Facebook updates are linked as sources rather than quoted as a live catalogue. Replace the illustrative spring artwork with approved company photography when it is available.
 
-The current 41-item catalog, the springs/frame/1.3 mm-wire story and the fabric-and-foam partner referral are recorded in `docs/product-confirmation-2026-10-19.md`, including the few shorthand specs that still need the company's final confirmation.
+The current 69-item catalog across 8 groups is recorded in `docs/inventory-2026-10-19.md`, which maps every line of the company's stock sheet (including the 11 shasia sizes and the five ready-spread pocket sizes) to a catalog card and lists the shorthand specs that still need final confirmation. The springs/frame/1.3 mm-wire story and the fabric-and-foam partner referral are recorded in `docs/product-confirmation-2026-10-19.md`. Prices and the figures written on the sheet are deliberately not published — everything is confirmed on enquiry.
