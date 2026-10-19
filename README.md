@@ -51,3 +51,5 @@ Pushing to the production branch connected in Vercel triggers the deployment.
 The site presents Nile Bed as a wholesaler of mattress materials and supplies that manufactures springs. It does not present the company as a maker or seller of finished mattresses, and it says so explicitly in the hero note, the scope band, the catalog, the about section, the metadata and the Organization JSON-LD. See `docs/scope-audit-2026-10-18.md` and `docs/nile-bed-source-audit.md`.
 
 Product availability, current stock, dimensions and technical specifications are always stated as "confirmed on enquiry". Public Facebook updates are linked as sources rather than quoted as a live catalogue. Replace the illustrative spring artwork with approved company photography when it is available.
+
+The current 41-item catalog, the springs/frame/1.3 mm-wire story and the fabric-and-foam partner referral are recorded in `docs/product-confirmation-2026-10-19.md`, including the few shorthand specs that still need the company's final confirmation.
