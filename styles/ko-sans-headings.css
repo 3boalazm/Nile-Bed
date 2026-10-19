@@ -75,3 +75,13 @@
   /* Use the supplied faces only; never fake a bold/italic the family lacks. */
   font-synthesis: none;
 }
+
+/* Arabic needs taller line boxes than the Latin-only headings were tuned for
+   (KO Sans ascent/descent = 1000/350 per 1000 upem). Open up the leading a
+   little, with progressively more air on the smaller levels. */
+.nile[dir='rtl'].nile h1 { line-height: 1.25; }
+.nile[dir='rtl'].nile h2 { line-height: 1.35; }
+.nile[dir='rtl'].nile h3 { line-height: 1.45; }
+.nile[dir='rtl'].nile h4 { line-height: 1.5; }
+.nile[dir='rtl'].nile h5 { line-height: 1.55; }
+.nile[dir='rtl'].nile h6 { line-height: 1.6; }
