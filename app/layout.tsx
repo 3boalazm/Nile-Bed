@@ -7,10 +7,10 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_PROJECT_
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: 'Nile Bed | نايل بد — خامات ومستلزمات المراتب وتصنيع السوست',
-  description: 'نايل بد تورّد خامات ومستلزمات المراتب في مصر وتصنّع السوست، ولا تصنّع مراتب جاهزة. تحديثات عامة تذكر رولات ميموري فوم تركي بارتفاعَي ٢ سم و٤ سم، والتوافر يُؤكَّد عند الاستفسار. Nile Bed supplies mattress materials and manufactures springs in Egypt; it does not make finished mattresses.',
+  description: 'نايل بد تصنّع السوست في مصر وتورّد خامات المراتب: فريم ورول سلك ١٫٣ مم، بوكيت ١٢–١٨ سم، ميموري تركي ٢ و٤ سم، لاتكس نيوترال من شرق آسيا، لباد وغراء هوت ميلت وخيوط وتيب. لا نصنّع مراتب جاهزة. Nile Bed manufactures springs and supplies mattress materials in Egypt; it does not make finished mattresses.',
   applicationName: 'Nile Bed',
   alternates: { canonical: '/' },
-  keywords: ['خامات المراتب','مستلزمات المراتب','توريد خامات مراتب','تصنيع السوست','Nile Bed','mattress materials Egypt'],
+  keywords: ['خامات المراتب','مستلزمات المراتب','تصنيع السوست','فريم سوست','سلك 1.3','بوكيت رول','ميموري فوم','لاتكس','غراء هوت ميلت','Nile Bed','mattress materials Egypt'],
   openGraph: {
     title: 'Nile Bed | نايل بد',
     description: 'Mattress materials from Egypt, and springs made in-house. No finished mattresses.',
@@ -50,7 +50,7 @@ const organizationSchema = {
   email: 'info@nilebed.com',
   telephone: '+20 10 90000676',
   areaServed: 'EG',
-  knowsAbout: ['mattress materials', 'mattress supplies', 'springs', 'memory foam'],
+  knowsAbout: ['mattress materials', 'mattress supplies', 'springs', 'pocket springs', 'memory foam', 'latex', 'hot-melt adhesive', 'mattress felt'],
   slogan: 'We make the springs. We supply the materials.',
 };
 

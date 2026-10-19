@@ -13,6 +13,10 @@
 
 The repository includes a local generic vector spring illustration at `public/nilebed-springs.svg`. It is not a photo of Nile Bed, its factory or a confirmed product, and the page labels it as illustrative. The Facebook pages show logos and posts/videos, but this pass did not save an original media file suitable for deployment. The machine images found in image search belong to Veysel Kütüklü and were not copied into the site or presented as Nile Bed equipment. Request the company’s original logo and approved product, raw-material, workshop and machine-line photos/videos, with permission for commercial website use.
 
+## Owner confirmation — 19 October 2026
+
+The product range, dimensions and sources shown in the catalog are now owner-confirmed through the working conversation (springs manufacturing, frame, 1.3 mm wire rolls, pocket 12–18 cm with density on request, Turkish memory foam and hot-melt glue, East Asian neutral latex, felt, threads, tape, Melton, clips/doubles/frame fasteners, and the fabric/sponge partner referral). Facebook posts remain linked as historical sources, not as the live catalog. See `docs/product-confirmation-2026-10-19.md` for the mapping and the shorthand specs still to confirm.
+
 ## Website safeguards and remaining checks
 
 The website now states the business scope explicitly and in both languages: Nile Bed is a wholesaler of mattress materials and supplies and manufactures springs; it does not manufacture or sell finished mattresses. That statement appears in the hero footnote, a dedicated scope section, the catalog, the about section, the page metadata and the Organization JSON-LD. The site lists the public email and WhatsApp contact link and describes the memory-foam detail only as information from a dated public update, with current availability and specifications subject to confirmation. See `docs/scope-audit-2026-10-18.md`. Its RFQ form remains disabled and does not submit or store information. No specific spring model, production capacity, product guarantee, factory address or Veysel machine ownership is claimed.

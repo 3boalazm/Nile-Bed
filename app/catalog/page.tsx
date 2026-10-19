@@ -12,8 +12,8 @@ const ui = {
   ar: {
     nav: ['الرئيسية', 'الكتالوج', 'تواصل'],
     title: 'كتالوج خامات نايل بد',
-    subtitle: 'كل الأصناف في مكان واحد — مع صور توضيحية ومواصفات مبدئية. المخزون والمواصفات النهائية تُؤكَّد مع الفريق عبر واتساب أو البريد.',
-    disclaimer: 'صور توضيحية من مصادر عامة للعرض فقط — ليست صور مصنع نايل بد. نحن نورّد الخامات ونصنّع السوست فقط، ولا نصنّع مراتب جاهزة.',
+    subtitle: 'كل الأصناف في مكان واحد — سوست وفريم ورول سلك 1.3، بوكيت 12–18، ميموري ولاتكس، ولباد وغراء وخيوط ولوازم. الصور توضيحية والمواصفات النهائية تُؤكَّد مع الفريق عبر واتساب أو البريد.',
+    disclaimer: 'صور توضيحية من مصادر عامة للعرض فقط — ليست صور مصنع نايل بد. نحن نورّد الخامات ونصنّع السوست فقط، ولا نصنّع مراتب جاهزة. محتاج قماش أو إسفنج؟ نوجّهك لشريك من شركائنا بسعر مميز.',
     searchPlaceholder: 'ابحث في الأصناف… مثل: سلك 2.4، ميموري، لاتكس، لباد، فازلين',
     all: 'الكل',
     count: (n: number) => `${n} صنف`,
@@ -33,8 +33,8 @@ const ui = {
   en: {
     nav: ['Home', 'Catalog', 'Contact'],
     title: 'Nile Bed Catalog',
-    subtitle: 'All categories in one place — with illustrative photos and preliminary specs. Stock and final specs are confirmed with the team via WhatsApp or email.',
-    disclaimer: 'Illustrative images from public sources for display only — not Nile Bed factory photos. We supply materials and make springs only; we do not make finished mattresses.',
+    subtitle: 'Every category in one place — springs, frames and 1.3 mm wire rolls, pocket 12–18, memory and latex, felt, glue, threads and supplies. Photos are illustrative; final specs are confirmed with the team via WhatsApp or email.',
+    disclaimer: 'Illustrative images from public sources for display only — not Nile Bed factory photos. We supply materials and make springs only; we do not make finished mattresses. Need fabric or foam? We refer you to one of our partners at a special price.',
     searchPlaceholder: 'Search items… e.g. wire 2.4, memory, latex, felt, non-woven',
     all: 'All',
     count: (n: number) => `${n} items`,
@@ -157,7 +157,7 @@ export default function CatalogPage() {
             <div className="catalog-hero-badges">
               <span><Check size={14} />{ar ? 'تصنيع سوست في مصر' : 'Springs made in Egypt'}</span>
               <span><Check size={14} />{ar ? 'توريد خامات مراتب' : 'Mattress materials supply'}</span>
-              <span><Check size={14} />{ar ? 'للتصدير والجملة' : 'Wholesale & export'}</span>
+              <span><Check size={14} />{ar ? 'فريم ورول سلك 1.3' : 'Frame & 1.3 mm wire roll'}</span>
             </div>
             <div className="catalog-hero-cta">
               <a className="button button-copper" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer"><Phone size={16} />{t.enquire}</a>
@@ -172,14 +172,14 @@ export default function CatalogPage() {
               <small>{ar ? 'مقسمة على 6 مجموعات' : 'across 6 groups'}</small>
             </div>
             <div className="stat-card">
-              <strong>7</strong>
-              <span>{ar ? 'أنواع سلك سوست' : 'spring wire types'}</span>
-              <small>2.4 · 2.3 · 2.2 · 2.05</small>
+              <strong>8</strong>
+              <span>{ar ? 'أنواع سلك وسوست' : 'wire & spring types'}</span>
+              <small>2.4 · 2.3 · 2.2 · 2.05 · 1.3</small>
             </div>
             <div className="stat-card">
-              <strong>2–5</strong>
-              <span>{ar ? 'سم لاتكس وميموري' : 'cm latex & memory'}</span>
-              <small>{ar ? 'رول وشيت' : 'roll & sheet'}</small>
+              <strong>12–18</strong>
+              <span>{ar ? 'سم ارتفاع بوكيت' : 'cm pocket height'}</span>
+              <small>{ar ? 'والكثافة حسب الطلب' : 'density on request'}</small>
             </div>
             <div className="catalog-contact-mini">
               <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer"><Phone size={15} />{ar ? 'واتساب: 010 90000676' : 'WhatsApp: 010 90000676'}</a>
@@ -297,7 +297,7 @@ export default function CatalogPage() {
           <div>
             <div className="section-label light"><span>—</span>{ar ? 'جاهز للطلب؟' : 'READY TO ORDER?'}</div>
             <h2>{ar ? 'أخبرنا بمقاسك وكميتك، ونؤكد المواصفات والسعر.' : 'Tell us your size and quantity. We’ll confirm specs and price.'}</h2>
-            <p>{ar ? 'السوست نصنعها، والخامات نورّدها. لا نبيع مراتب جاهزة. كل المواصفات والأسعار تُؤكَّد مباشرة مع الفريق.' : 'We make springs, we supply materials. No finished mattresses. All specs and prices are confirmed directly with the team.'}</p>
+            <p>{ar ? 'السوست نصنعها، والخامات نورّدها. لا نبيع مراتب جاهزة. ولو محتاج قماش أو إسفنج، نوجّهك لشريك من شركائنا بسعر مميز. كل المواصفات والأسعار تُؤكَّد مباشرة مع الفريق.' : 'We make springs, we supply materials. No finished mattresses. Need fabric or foam? We refer you to one of our partners at a special price. All specs and prices are confirmed directly with the team.'}</p>
           </div>
           <div className="cta-actions">
             <a className="button button-copper" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer">{t.enquire} <ArrowUpRight size={16} /></a>
