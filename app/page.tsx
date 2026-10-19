@@ -1,80 +1,171 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, ArrowRight, Menu, X, Globe2, Truck, Layers3, BadgeCheck, Mail, Phone, CircleHelp, Check, Moon, Sun, Network } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Menu, X, Globe2, Layers3, BadgeCheck, Mail, Phone, CircleHelp, Check, Moon, Sun, Network, Sparkles, Package, Truck } from 'lucide-react';
 import { items } from './catalog/data';
 
 type Lang = 'ar' | 'en';
+
+/* ——— Copy: kept truthful, same business scope, but presented as brief + focused ——— */
 const copy = {
   en: {
-    nav: ['Catalog', 'Mattress cycle', 'Partners', 'Contact'],
-    eyebrow: 'A COMPLETE MATTRESS-MAKING SUPPLY CYCLE · EGYPT',
-    titleA: 'Everything', titleB: 'behind your next', titleC: 'great mattress.',
-    intro: 'Made-in-Egypt springs, carefully sourced materials, and a trusted partner network for fabric and sponge. One coordinated supply route for mattress makers.',
-    explore: 'Explore the catalog', quote: 'Talk to our team', note: 'One coordinated supply route. Flexible options. Built around your production.', heroVisualKicker: 'THE MATTRESS-MAKING CYCLE', heroStatLabel: 'catalog items', heroGroupsLabel: 'supply categories', heroVisualNote: 'One clear place to start. We confirm the right product, specification and supply route with you.',
-    since: 'MADE FOR MATTRESS MAKERS', introLabel: 'YOUR PRODUCTION, CONNECTED', introTitle: 'Bring the mattress-making supply chain closer.',
-    introBody: 'Nile Bed manufactures springs in Egypt and brings together the materials mattress makers need: assembled shasia units, pocket rolls and ready-spread pocket, memory foam, imported latex, felt, glue, threads and assembly supplies. Need fabric or sponge? We connect you with a partner. Discuss specifications and availability with one team, then source each item through the right channel.',
-    introFoot: 'One point of contact to coordinate a broader supply list.',
-    scopeKicker: 'A MORE CONNECTED SUPPLY CYCLE',
+    nav: ['Catalog', 'Supply cycle', 'Partners', 'Contact'],
+    eyebrow: 'Mattress supply cycle · Egypt · Since springs',
+    eyebrowAccent: '01 — NILE BED',
+    titleA: 'Everything',
+    titleB: 'behind your next',
+    titleC: 'great mattress.',
+    intro:
+      'Made-in-Egypt springs, carefully sourced materials, and a trusted partner network for fabric & sponge. One coordinated supply route — built around your production.',
+    explore: 'Explore the catalog',
+    quote: 'Talk to our team',
+    note: 'One coordinated route. Flexible specs. Confirmed before supply.',
+    heroStatLabel: 'catalog items',
+    heroGroupsLabel: 'supply groups',
+    heroVisualNote: 'One clear place to start — we confirm the right spec and the right supply route with you.',
+
+    anchorLabel: 'Jump to',
+    anchors: ['Scope', 'Catalog', 'Partners', 'Contact'],
+
+    scopeKicker: 'WHAT WE DO',
     scopeTitle: 'From spring wire to the finishing layers.',
-    scopeText: 'We make springs, supply mattress materials and connect customers with partner suppliers for fabric and sponge. One coordinated conversation; the right supplier for each product.',
+    scopeText:
+      'We make springs, supply mattress materials and connect you with partner suppliers for fabric and sponge. One conversation — the right channel for each product.',
     scopeCards: [
-      ['01', 'Made in Egypt', 'Bonnell springs, frames and wire rolls manufactured to your order.'],
-      ['02', 'Sourced for production', 'Pocket springs, foam, latex, felt, glue, threads and assembly supplies.'],
-      ['03', 'Partner connected', 'Fabric and sponge through our partners; the partner handles the sale and supply.'],
+      ['01', 'Made in Egypt', 'Bonnell springs, frames and 1.3 mm wire rolls — manufactured to your order.'],
+      ['02', 'Sourced for production', 'Pocket rolls, foam, latex, felt, glue, threads and assembly supplies — specs confirmed per enquiry.'],
+      ['03', 'Partner connected', 'Fabric and sponge via trusted partners. We introduce, the partner handles sale & supply.'],
     ],
-    cycleKicker: 'ONE COORDINATED SUPPLY ROUTE', cycleTitle: 'Less chasing suppliers. More time for production.', cycleBody: 'Bring your spring, foam and production-supply needs to one conversation. We coordinate what Nile Bed supplies directly and connect you with partners for fabric and sponge—helping reduce repeat trips, scattered orders and uncertainty around each item’s cost and margin.', cycleBenefits: [['01','Save time','Coordinate multiple categories through one point of contact.'],['02','Reduce the runaround','Fewer separate trips and fewer disconnected supplier conversations.'],['03','See the full picture','Compare specifications, costs and margins across the order before confirming.']],
-    productionKicker: 'BUILT AROUND YOUR ORDER', productionTitle: 'Large production plans. Flexible technical choices.', productionBody: 'Share your target quantity, application and technical requirements. We review available options with you, confirm specifications and plan supply in a way that protects consistency across the order. Large-volume enquiries are welcome; capacity and lead time are confirmed for each brief.', productionPoints: ['Flexible product specifications','Quality checks at order planning','Large-volume enquiries welcome'],
-    supplierKicker: 'FOR QUALITY-FOCUSED SUPPLIERS', supplierTitle: 'Have a product mattress makers should know about?', supplierBody: 'We welcome suppliers who can offer consistently high quality, competitive market terms and reliable supply. Tell us about your product, specifications, origin and production capacity so we can explore a fit.', supplierCta: 'Introduce your product',
-    importKicker: 'IMPORT OPPORTUNITIES', importTitle: 'Let’s bring standout products closer to the market.', importBody: 'We are open to distinctive imported materials and production products that meet a clear need, offer strong quality and compete in the market. Share the source, technical details, samples and supply plan for review.', importCta: 'Discuss an import opportunity',
-    partnershipKicker: 'A LONG-TERM PARTNER, NOT A ONE-OFF ORDER', partnershipTitle: 'Start with one order. Build a stronger supply relationship.', partnershipBody: 'When the fit is right, flexible specifications, clear communication and reliable supply can grow into an ongoing partnership. Tell us what would make that work for your business.', partnershipCta: 'Start a conversation',
-    productsKicker: 'THE CATALOG', productsTitle: 'Build the supply list that fits your line.', productsDesc: 'Explore the categories we manufacture and supply — springs, shasia units, pocket, foam, latex, felt, threads, fasteners and tools — then tell us your specs and quantities. Fabric and sponge are available through partner introductions; stock and terms are confirmed per enquiry.',
-    enquire: 'Enquire about this', details: 'Ask our team', illustrative: 'CATEGORY DETAILS CONFIRMED ON ENQUIRY',
-    processTag: 'HOW WE WORK', processTitle: 'A clear brief. A considered supply plan.', processDesc: 'We review your requirements, confirm technical details and coordinate the right supply route—direct or through a partner.',
-    steps: [['01','Share your brief','Tell us the application, approximate quantity, and any technical requirements.'],['02','Review together','Our team can discuss available options and confirm specifications.'],['03','Plan supply','Align on packaging, timing, and delivery details for your order.']],
-    capabilityKicker: 'WHY NILE BED', capabilityTitle: 'Our edge in Egypt starts with springs—and extends to carefully chosen imports.', capabilityBody: 'Nile Bed makes springs in Egypt and imports latex, memory foam and glue for mattress makers. Need fabric or sponge? Tell us what you’re looking for and we’ll connect you with the right partner, so you can buy at a special price.', capabilityCta: 'Explore what we do', capabilityCards: [['01','Made here','Bonnell springs, frames, shasia units and 1.3 mm wire rolls — manufactured in Egypt to your order.'],['02','Sourced with care','Imported latex, memory foam and glue, with specifications confirmed for each enquiry.'],['03','A useful introduction','Fabric and sponge come through our partners. Share your needs and we’ll help you find the right supplier at a special price.']],
-    aboutKicker: 'ABOUT NILE BED', aboutTitle: 'We make springs. We supply the rest.', aboutText: 'Nile Bed is an Egyptian supplier of the materials and components mattress makers use, and a spring manufacturer. It does not make or sell finished mattresses. We manufacture springs, frames, shasia units and wire rolls, and supply Turkish memory foam and glue, East Asian neutral latex, felt, threads, tape and assembly supplies. For fabric and sponge, we can connect you with a partner so you can buy at a special price. Stock and technical specifications are confirmed on enquiry.', aboutNote: 'Export enquiries welcome · Availability confirmed per enquiry',
-    industries: 'WHO WE WORK WITH', industryTitle: 'For businesses built around better products.', industryItems: ['Mattress manufacturers','Furniture makers','Wholesale distributors','International buyers'],
-    gallery: 'OUR STANDARD', galleryTitle: 'Quality is built into the supply plan.', galleryText: 'Our aim is quality that competes with the best in the market, backed by clear specifications, consistent materials and a dependable supply route. Availability and technical details are confirmed against each order.',
-    ctaKicker: 'LET’S BUILD A BETTER SUPPLY RELATIONSHIP', ctaTitle: 'Start with one requirement. Build from there.', ctaText: 'Share your specs, supply opportunity or production plan. Let’s explore a practical way to work together.', ctaButton: 'Request a quotation', contactLabel: 'CONTACT & RFQ', contactTitle: 'Start with the details.', contactText: 'Contact Nile Bed directly using the published email or WhatsApp below. This enquiry form is a preview and does not submit or store information.',
-    fields: ['Full name','Company','Business email','Country','Product of interest','Approx. quantity','Technical requirements / notes'], country: 'Select country', product: 'Select a product category', qty: 'e.g. 10,000 units', submit: 'Prepare enquiry', formNote: 'This preview does not send or store messages. Contact the company by email or WhatsApp using the links beside this form.', footer: 'Mattress materials & spring manufacturing · Egypt', back: 'Back to top', menu: 'Open navigation', close: 'Close navigation', toggle: 'العربية',
-    partnerKicker: 'OUR PARTNER NETWORK', partnerTitle: 'Need fabric or sponge? We’ll make the right introduction.', partnerText: 'Tell us what you’re looking for and we’ll connect you with the right partner, where you can buy at a special price. The partner handles the sale and supply.', partnerCta: 'Find a fabric & foam partner',
-    productNames:['Mattress materials & supplies','Spring manufacturing','Foam, latex & memory','Fabric & sponge (via partners)'], productDesc:['Mattress-making materials and supplies for factories, workshops, and trade buyers. Availability and grade are confirmed per item.','Springs, frames and 1.3 mm wire rolls made by Nile Bed in Egypt. Share your dimensions and quantity and the team will confirm the right specification.','Turkish memory-foam rolls in 2 and 4 cm, East Asian neutral latex in 2.5–5 cm, and latex cores in 15 and 18 cm. Current stock and specifications are confirmed on enquiry.','Need fabric or sponge? We refer you to one of our partners so you can buy at a special price. Tell us the type and quantity.'], specs: 'Specifications vary by product. Contact our team for confirmed details.', quoteHint: 'Availability and technical specifications are confirmed on enquiry. Contact the team by email or WhatsApp below.',
+
+    featuredKicker: 'THE CATALOG — BRIEF',
+    featuredTitle: 'Build the supply list that fits your line.',
+    featuredDesc:
+      'Four essential families we manufacture and supply. See the full 69-item catalog for every size, thickness and fastener — stock and terms confirmed on enquiry.',
+    // Only 4 featured, not 8 — keeps home clean
+    featuredNote: 'Fabric & sponge available via partner introduction.',
+    enquire: 'Enquire',
+    illustrative: 'Illustrative image — confirmed on enquiry',
+    viewCatalog: 'View full catalog',
+    viewCatalogSub: '69 items · 8 groups',
+    talkHint: 'Availability & specs confirmed on enquiry — email or WhatsApp below.',
+
+    productionKicker: 'HOW WE SUPPLY',
+    productionTitle: 'Large plans. Flexible choices. Clear specs.',
+    productionBody:
+      'Share your quantity, application and technical needs. We review options, confirm specs and plan supply to protect consistency. Large-volume enquiries welcome — capacity & lead time confirmed per brief.',
+    productionPoints: ['Flexible specifications', 'Quality checks at planning', 'Large volumes welcome'],
+
+    partnersKicker: 'PARTNER NETWORK',
+    partnersTitle: 'Make more than a one-off order.',
+    partnersText:
+      'For mattress makers — and for quality-focused suppliers. Whether you need fabric & sponge, or you supply a product mattress makers should know about, we make the right introduction.',
+    supplierTitle: 'Need fabric or sponge?',
+    supplierBody: 'Tell us what you’re looking for — we connect you with a partner so you can buy at a special price.',
+    supplierCta: 'Find a partner',
+    importTitle: 'Have a product to supply?',
+    importBody: 'If you offer consistent quality, competitive terms and reliable supply — tell us about your product, origin and capacity.',
+    importCta: 'Introduce your product',
+    partnershipTitle: 'Start with one order.',
+    partnershipBody: 'When the fit is right, clear communication and dependable supply grow into an ongoing relationship.',
+    partnershipCta: 'Start a conversation',
+
+    trustKicker: 'OUR STANDARD',
+    trustTitle: 'Quality is built into the supply plan.',
+    trustText:
+      'Our aim is quality that competes with the best — clear specifications, consistent materials and a dependable route. Details confirmed per order.',
+    trustPoints: ['Clear specifications', 'Competing quality', 'Confirmed before supply'],
+
+    contactLabel: 'CONTACT & RFQ',
+    contactTitle: 'Start with the details.',
+    contactText:
+      'Contact Nile Bed directly via email or WhatsApp. This form is a preview — it does not submit or store information.',
+    fields: ['Full name', 'Company', 'Business email', 'Product of interest', 'Approx. quantity', 'Technical requirements / notes'],
+    qty: 'e.g. 10,000 units',
+    productHint: 'Select a product family',
+    submit: 'Prepare enquiry',
+    formNote: 'Preview only — use email / WhatsApp beside the form to contact us.',
+    footer: 'Mattress materials & spring manufacturing · Egypt',
+    back: 'Back to top',
+    menu: 'Open navigation',
+    close: 'Close navigation',
+    toggle: 'العربية',
   },
   ar: {
-    nav: ['الكتالوج', 'دورة المرتبة', 'الشركاء', 'تواصل'],
+    nav: ['الكتالوج', 'دورة التوريد', 'الشركاء', 'تواصل'],
     eyebrow: 'دورة توريد متكاملة لصناعة المراتب · مصر',
-    titleA: 'كل اللي', titleB: 'يكمل شغل', titleC: 'المرتبة.',
-    intro: 'سوست نصنعها في مصر، وخامات نختارها بعناية، وشركاء نوصّلك بيهم للقماش والإسفنج. طريق توريد واحد يسهّل شغل مصنعك.',
-    explore: 'استكشف الكتالوج', quote: 'تواصل مع فريقنا', note: 'مسار توريد واحد. اختيارات مرنة. تفاصيل تبدأ من احتياج إنتاجك.', heroVisualKicker: 'دورة صناعة المرتبة', heroStatLabel: 'صنف في الكتالوج', heroGroupsLabel: 'فئات توريد', heroVisualNote: 'ابدأ من مكان واضح؛ ونراجع معك الصنف والمواصفة ومسار التوريد المناسب.',
-    since: 'لصُنّاع المراتب', introLabel: 'شغل مصنعك، مترابط', introTitle: 'قرّب سلسلة توريد المرتبة من مكان واحد.',
-    introBody: 'تصنّع نايل بد السوست في مصر، وتجمع لصانع المرتبة مدخلات إنتاج أساسية: شاسيهات مجمّعة، بوكيت رول ومفروش، ميموري فوم، لاتكس مستورد، لباد، غراء، خيوط ولوازم تجميع. ولو محتاج قماش أو إسفنج، نوصّلك بشريك مناسب. راجع المواصفات والتوافر مع فريق واحد، وخلي كل صنف ييجي من قناة توريده الصحيحة.',
-    introFoot: 'نقطة تواصل واحدة تساعدك تنسّق قائمة توريد أكبر.',
-    scopeKicker: 'دورة توريد أوضح',
+    eyebrowAccent: '٠١ — نايل بد',
+    titleA: 'كل اللي',
+    titleB: 'يكمل شغل',
+    titleC: 'المرتبة.',
+    intro:
+      'سوست نصنعها في مصر، وخامات نختارها بعناية، وشركاء نوصّلك بيهم للقماش والإسفنج. طريق توريد واحد — مبني على احتياج مصنعك.',
+    explore: 'استكشف الكتالوج',
+    quote: 'تواصل مع فريقنا',
+    note: 'مسار واحد. اختيارات مرنة. تُؤكّد قبل التوريد.',
+    heroStatLabel: 'صنف في الكتالوج',
+    heroGroupsLabel: 'فئات توريد',
+    heroVisualNote: 'ابدأ من مكان واضح — ونراجع معك الصنف والمواصفة ومسار التوريد المناسب.',
+
+    anchorLabel: 'انتقل إلى',
+    anchors: ['نطاق العمل', 'الكتالوج', 'الشركاء', 'تواصل'],
+
+    scopeKicker: 'نطاق عملنا',
     scopeTitle: 'من سلك السوستة لآخر طبقة تكمل المرتبة.',
-    scopeText: 'نصنع السوست، ونورّد خامات المراتب، ونوصّل العميل بشركائنا للقماش والإسفنج. تواصل واحد، وكل منتج من قناة توريده المناسبة.',
+    scopeText: 'نصنع السوست، ونورّد خامات المراتب، ونوصّل العميل بشركائنا للقماش والإسفنج. تواصل واحد — وكل منتج من قناة توريده المناسبة.',
     scopeCards: [
-      ['٠١', 'تصنيع مصري', 'سوست بونيل وفريم ورولات سلك نصنعها حسب طلبك.'],
-      ['٠٢', 'خامات تكمل شغلك', 'بوكيت، فوم، لاتكس، لباد، غراء، خيوط ولوازم إنتاج.'],
-      ['٠٣', 'شبكة شركاء', 'القماش والإسفنج من شركائنا؛ البيع والتوريد مباشرة من الشريك.'],
+      ['٠١', 'تصنيع مصري', 'سوست بونيل وفريم ورولات سلك 1.3 مم — نصنعها في مصر حسب طلبك.'],
+      ['٠٢', 'خامات تكمل شغلك', 'بوكيت، فوم، لاتكس، لباد، غراء، خيوط ولوازم إنتاج — المواصفات تُؤكَّد مع كل استفسار.'],
+      ['٠٣', 'شبكة شركاء', 'القماش والإسفنج من شركائنا؛ نوصّلك بالشريك والبيع والتوريد مباشرة منه.'],
     ],
-    cycleKicker: 'مسار توريد واحد', cycleTitle: 'موردين أقل ومشاوير أقل… ووقت أكتر للإنتاج.', cycleBody: 'اجمع احتياجات السوست والفوم ومستلزمات الإنتاج في محادثة واحدة. ننسّق الأصناف اللي بتوردها نايل بد مباشرة، ونوصّلك بشركائنا للقماش والإسفنج؛ عشان تقلل تكرار المشاوير وتشتت الطلبات، وتبقى تكلفة كل صنف وهامش ربحه أوضح قدامك.', cycleBenefits: [['٠١','وقت أوفر','نسّق أكتر من فئة من خلال نقطة تواصل واحدة.'],['٠٢','مشاوير أقل','قلّل التنقل بين موردين ومحادثات منفصلة لكل خامة.'],['٠٣','صورة أوضح للتكلفة','راجع المواصفات والتكلفة وهوامش الربح قبل تأكيد الطلب.']],
-    productionKicker: 'على مقاس طلبك', productionTitle: 'طلبات إنتاج كبيرة. ومواصفات فنية مرنة.', productionBody: 'شاركنا الكمية المستهدفة والاستخدام والمواصفات الفنية. نراجع معك الخيارات المتاحة، ونؤكد المواصفات ونخطط للتوريد بما يحافظ على ثبات الجودة في الطلب. نرحب بالطلبات الكبيرة، وتُراجع القدرة ومدة التوريد لكل طلب على حدة.', productionPoints: ['مرونة في المواصفات الفنية','مراجعة الجودة عند تخطيط الطلب','نرحب بطلبات الإنتاج الكبيرة'],
-    supplierKicker: 'للموردين المهتمين بالجودة', supplierTitle: 'عندك منتج يستحق يوصل لصُنّاع المراتب؟', supplierBody: 'باب التعاون مفتوح للموردين القادرين على تقديم جودة ثابتة، وأسعار منافسة، وتوريد يعتمد عليه. عرّفنا بمنتجك ومواصفاته ومصدره وقدرتك على التوريد، ونبحث سويًا مدى مناسبته لاحتياج السوق.', supplierCta: 'عرّفنا بمنتجك',
-    importKicker: 'فرص الاستيراد', importTitle: 'منتجات مميزة تستحق فرصة في السوق.', importBody: 'نرحب بفرص استيراد خامات ومنتجات إنتاج مميزة، تلبي احتياجًا واضحًا وتجمع بين الجودة العالية والقدرة على المنافسة. ابعتلنا المصدر والمواصفات الفنية والعينات وخطة التوريد للمراجعة.', importCta: 'ناقش فرصة استيراد',
-    partnershipKicker: 'شراكة مستمرة، مش طلب وخلاص', partnershipTitle: 'نبدأ بطلب… ونبني علاقة توريد تكبر مع شغلك.', partnershipBody: 'لما تكون المواصفات واضحة والتوريد موثوق، الطلب الأول ممكن يبقى بداية تعاون طويل. نسمع احتياجك، ونراجع المرونة والتوافر، ونبني طريقة شغل تناسب نشاطك.', partnershipCta: 'ابدأ حوار شراكة',
-    productsKicker: 'الكتالوج', productsTitle: 'كوّن قائمة التوريد المناسبة لخطك.', productsDesc: 'استكشف فئات السوست والشاسيهات والبوكيت والفوم واللاتكس واللباد والخيوط واللوازم والعدد اللي نصنّعها ونوردها، وبعدها شاركنا المواصفات والكميات. القماش والإسفنج من خلال شركائنا، والتوافر وشروط التوريد تُؤكَّد لكل استفسار.',
-    enquire: 'استفسر عن المنتج', details: 'اسأل فريقنا', illustrative: 'تفاصيل الفئات تُؤكد عند الاستفسار',
-    processTag: 'كيف نشتغل', processTitle: 'طلب واضح. وخطة توريد محسوبة.', processDesc: 'نراجع احتياجك، ونؤكد التفاصيل الفنية، ونرتّب مسار التوريد المناسب—مباشرة أو من خلال شريك.',
-    steps: [['٠١','شارك متطلباتك','أخبرنا بالاستخدام والكمية التقريبية وأي متطلبات فنية.'],['٠٢','نراجعها معًا','يناقش فريقنا الخيارات المتاحة ويؤكد المواصفات.'],['٠٣','نخطط للتوريد','نتفق على تفاصيل التعبئة والتوقيت والتسليم لطلبك.']],
-    capabilityKicker: 'لماذا نايل بد', capabilityTitle: 'تميّزنا في مصر يبدأ من السوستة… ويكتمل بخامات مستوردة بعناية.', capabilityBody: 'من مصر نصنع السوست، ونستورد اللاتكس والميموري فوم والغراء بجودة نعتز بها. ومحتاج قماش أو إسفنج؟ قولنا بتدور على إيه، ونوصّلك بالشريك المناسب عشان تشتري بسعر مميز جدًا.', capabilityCta: 'اكتشف إمكانياتنا', capabilityCards: [['٠١','صناعة مصرية','سوست بونيل وفريم وشاسيهات مجمّعة ورول سلك 1.3 مم — تصنيع في مصر حسب طلبك.'],['٠٢','خامات مختارة','لاتكس وميموري فوم وغراء مستورد، والمواصفات تُؤكَّد مع كل استفسار.'],['٠٣','نوصّلك بالشريك المناسب','القماش والإسفنج من خلال شركائنا. شاركنا احتياجك ونوجّهك للمورّد المناسب بسعر مميز جدًا.']],
-    aboutKicker: 'عن نايل بد', aboutTitle: 'نصنّع السوست، ونورّد باقي المستلزمات.', aboutText: 'نايل بد شركة مصرية تورّد الخامات والمستلزمات التي يعمل بها صانع المرتبة، وتصنّع السوست. لا تصنّع مراتب جاهزة ولا تبيعها. نصنّع السوست والفريم والشاسيهات ورولات السلك، ونورّد ميموري فوم وغراء تركي، ولاتكس نيوترال من شرق آسيا، ولباد وخيوط وتيب ولوازم تجميع. وفي القماش والإسفنج نوجّه العميل للشريك المناسب عشان يشتري بسعر مميز جدًا. المخزون والمواصفات الفنية تُؤكَّد عند الاستفسار.', aboutNote: 'نرحب باستفسارات التصدير · التوافر يؤكد لكل استفسار',
-    industries: 'من نخدم', industryTitle: 'لأعمال تصنع منتجات أفضل.', industryItems: ['مصانع المراتب','مصانع الأثاث','الموزعون وتجار الجملة','المشترون الدوليون'],
-    gallery: 'معيارنا', galleryTitle: 'الجودة جزء من خطة التوريد.', galleryText: 'هدفنا جودة تنافس الأفضل في السوق، بمواصفات واضحة وثبات في الخامات ومسار توريد يعتمد عليه. التوافر والتفاصيل الفنية تُؤكَّد بما يناسب كل طلب.',
-    ctaKicker: 'نبدأ بتواصل ونبني شراكة', ctaTitle: 'احتياج واحد ممكن يكون بداية تعاون طويل.', ctaText: 'شاركنا مواصفاتك أو فرصة التوريد أو خطة الإنتاج، ونبحث معًا عن طريقة عملية للتعاون.', ctaButton: 'اطلب عرض سعر', contactLabel: 'التواصل وطلب عرض سعر', contactTitle: 'ابدأ بالتفاصيل.', contactText: 'تواصل مع نايل بد عبر البريد أو واتساب المنشورين أدناه. نموذج الاستفسار للمعاينة فقط ولا يرسل أو يخزن البيانات.',
-    fields: ['الاسم الكامل','الشركة','البريد الإلكتروني للعمل','الدولة','المنتج المطلوب','الكمية التقريبية','المواصفات الفنية / ملاحظات'], country: 'اختر الدولة', product: 'اختر فئة المنتج', qty: 'مثال: 10,000 وحدة', submit: 'جهّز الاستفسار', formNote: 'هذه المعاينة لا ترسل أو تخزن الرسائل. تواصل بالبريد أو واتساب عبر الروابط بجوار النموذج.', footer: 'خامات المراتب وتصنيع السوست · مصر', back: 'العودة للأعلى', menu: 'فتح القائمة', close: 'إغلاق القائمة', toggle: 'English',
-    partnerKicker: 'شبكة شركائنا', partnerTitle: 'القماش أو الإسفنج؟ نختصر عليك طريق الوصول.', partnerText: 'احكيلنا محتاج إيه، ونوصّلك بالشريك المناسب من شبكتنا عشان تشتري منه بسعر مميز جدًا. البيع والتوريد بيكونوا مباشرة من الشريك.', partnerCta: 'اعرف شريك القماش والإسفنج',
-    productNames:['خامات ومستلزمات المراتب','تصنيع السوست','الفوم واللاتكس والميموري','أقمشة وإسفنج (عبر شركائنا)'], productDesc:['نورّد للمصانع والورش وتجار الجملة خامات ومستلزمات تصنيع المراتب، من الشاسيهات والبوكيت للباد والفازلين والخيوط واللوازم. يُؤكَّد توافر كل صنف ودرجته عند الاستفسار.','سوست وفريم ورولات سلك 1.3 مم من تصنيعنا في مصر. شاركنا المقاسات والكمية ليؤكد الفريق المواصفات المناسبة.','ميموري فوم تركي 2 و4 سم، ولاتكس نيوترال من شرق آسيا بارتفاعات 2.5–5 سم، ولاتكس خام 15 و18 سم. يُؤكد المخزون والمواصفات عند الاستفسار.','محتاج قماش أو إسفنج؟ نوجّهك لواحد من شركائنا عشان تشتري بسعر مميز جدًا. قولنا النوع والكمية.'], specs: 'تختلف المواصفات حسب المنتج. تواصل مع فريقنا لمعرفة التفاصيل المؤكدة.', quoteHint: 'التوافر والمواصفات الفنية تُؤكَّد عند الاستفسار. تواصل مع الفريق بالبريد أو واتساب أدناه.',
+
+    featuredKicker: 'الكتالوج — باختصار',
+    featuredTitle: 'كوّن قائمة التوريد المناسبة لخطك.',
+    featuredDesc:
+      'أربع عائلات أساسية نصنّعها ونورّدها. استكشف الكتالوج الكامل بـ 69 صنف في 8 مجموعات لكل المقاسات والسماكات ولوازم التجميع — التوافر والشروط تُؤكَّد عند الاستفسار.',
+    featuredNote: 'القماش والإسفنج عبر شركائنا.',
+    enquire: 'استفسر',
+    illustrative: 'صورة توضيحية — تُؤكّد عند الاستفسار',
+    viewCatalog: 'عرض الكتالوج الكامل',
+    viewCatalogSub: '69 صنف · 8 مجموعات',
+    talkHint: 'التوافر والمواصفات تُؤكَّد عند الاستفسار — عبر البريد أو واتساب أدناه.',
+
+    productionKicker: 'كيف نورّد',
+    productionTitle: 'خطط كبيرة. اختيارات مرنة. ومواصفات واضحة.',
+    productionBody:
+      'شاركنا الكمية والاستخدام والمواصفات الفنية. نراجع معك الخيارات المتاحة، ونؤكد المواصفات ونخطط للتوريد بما يحافظ على ثبات الجودة. نرحب بطلبات الإنتاج الكبيرة — القدرة ومدة التوريد تُؤكَّدان لكل طلب.',
+    productionPoints: ['مرونة في المواصفات', 'مراجعة الجودة عند التخطيط', 'نرحب بالطلبات الكبيرة'],
+
+    partnersKicker: 'شبكة الشركاء',
+    partnersTitle: 'أكثر من مجرّد طلب واحد.',
+    partnersText: 'لصُنّاع المراتب — وللموردين المهتمين بالجودة. سواء تحتاج قماش وإسفنج، أو عندك منتج يستحق أن يعرفه صُنّاع المراتب، نوصّلك بالطريق الصحيح.',
+    supplierTitle: 'محتاج قماش أو إسفنج؟',
+    supplierBody: 'احكيلنا بتدوّر على إيه — ونوصّلك بشريك من شبكتنا عشان تشتري بسعر مميز جدًا.',
+    supplierCta: 'اعرف شريكك',
+    importTitle: 'عندك منتج تريد توريده؟',
+    importBody: 'لو بتقدّم جودة ثابتة وأسعار منافسة وتوريد يعتمد عليه — عرّفنا بمنتجك ومصدره وقدرتك.',
+    importCta: 'عرّفنا بمنتجك',
+    partnershipTitle: 'نبدأ بطلب واحد.',
+    partnershipBody: 'لما المواصفات واضحة والتوريد موثوق، الطلب الأول يتحوّل لعلاقة توريد مستمرة.',
+    partnershipCta: 'ابدأ حوار شراكة',
+
+    trustKicker: 'معيارنا',
+    trustTitle: 'الجودة جزء من خطة التوريد.',
+    trustText: 'هدفنا جودة تنافس الأفضل في السوق — بمواصفات واضحة وثبات في الخامات ومسار توريد يعتمد عليه. التفاصيل تُؤكَّد لكل طلب.',
+    trustPoints: ['مواصفات واضحة', 'جودة تنافس الأفضل', 'تأكيد قبل التوريد'],
+
+    contactLabel: 'التواصل وطلب عرض سعر',
+    contactTitle: 'ابدأ بالتفاصيل.',
+    contactText: 'تواصل مع نايل بد عبر البريد أو واتساب المنشورين. نموذج الاستفسار للمعاينة فقط ولا يرسل أو يخزن البيانات.',
+    fields: ['الاسم الكامل', 'الشركة', 'البريد للتواصل', 'المنتج المطلوب', 'الكمية التقريبية', 'المواصفات / ملاحظات'],
+    qty: 'مثال: 10,000 وحدة',
+    productHint: 'اختر فئة المنتج',
+    submit: 'جهّز الاستفسار',
+    formNote: 'هذه المعاينة لا ترسل أو تخزن الرسائل. تواصل بالبريد أو واتساب عبر الروابط بجوار النموذج.',
+    footer: 'خامات المراتب وتصنيع السوست · مصر',
+    back: 'العودة للأعلى',
+    menu: 'فتح القائمة',
+    close: 'إغلاق القائمة',
+    toggle: 'English',
   },
 } as const;
 
@@ -85,11 +176,6 @@ const themeLabels = {
   en: { switchToDark: 'Dark mode', switchToLight: 'Light mode', label: 'Toggle colour theme' },
 } as const;
 
-/**
- * The supplied brand has two artwork variants: one for light surfaces and one
- * for dark surfaces. Both files stay mounted and CSS shows the right one, so
- * there is no flash when the theme or the language changes.
- */
 function BrandLogo({ variant, className }: { variant: 'light' | 'dark' | 'auto'; className?: string }) {
   return (
     <span className={`brand-logo is-${variant}${className ? ` ${className}` : ''}`}>
@@ -103,86 +189,354 @@ export default function Home() {
   const [lang, setLang] = useState<Lang>('ar');
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState<Theme>('light');
-  useEffect(() => { document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'; }, [lang]);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  }, [lang]);
+
   useEffect(() => {
     const saved = document.documentElement.dataset.theme;
     setTheme(saved === 'dark' ? 'dark' : 'light');
   }, []);
+
   const toggleTheme = () => {
     const next: Theme = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     document.documentElement.dataset.theme = next;
-    try { window.localStorage.setItem('nilebed-theme-v3', next); } catch { /* storage can be blocked; theme still applies */ }
+    try {
+      window.localStorage.setItem('nilebed-theme-v3', next);
+    } catch {}
   };
-  const t = copy[lang]; const ar = lang === 'ar';
+
+  const t = copy[lang];
+  const ar = lang === 'ar';
   const countByGroup = (id: string) => items.filter((it) => it.group === id).length;
   const themeLabel = theme === 'dark' ? themeLabels[lang].switchToLight : themeLabels[lang].switchToDark;
-  return <main className="nile home-page" dir={ar ? 'rtl' : 'ltr'} lang={lang}>
-    <header className="topbar"><a className="brand" href="#home" aria-label={ar ? 'نايل بد — الصفحة الرئيسية' : 'Nile Bed — home'}><BrandLogo variant="auto" /></a>
-      <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="Main navigation">{t.nav.map((n,i)=><a key={n} href={['#products','#cycle','#suppliers','#contact'][i]} onClick={()=>setMenuOpen(false)}>{n}</a>)}</nav>
-      <div className="nav-actions"><button className="theme-switch" type="button" onClick={toggleTheme} aria-label={themeLabel} aria-pressed={theme === 'dark'} title={themeLabel}><Moon className="icon-moon" size={15}/><Sun className="icon-sun" size={15}/><span>{themeLabel}</span></button><button className="lang-switch" type="button" onClick={()=>setLang(ar?'en':'ar')} aria-label={ar ? 'Switch to English' : 'التبديل إلى العربية'}><Globe2 size={15}/>{t.toggle}</button><a className="nav-cta" href="#contact">{t.quote.split(' ')[0]} <ArrowUpRight size={15}/></a><button className="menu-btn" type="button" aria-expanded={menuOpen} aria-label={menuOpen?t.close:t.menu} onClick={()=>setMenuOpen(!menuOpen)}>{menuOpen?<X/>:<Menu/>}</button></div>
-    </header>
-    <section className="hero" id="home"><div className="hero-inner"><div className="hero-copy"><div className="eyebrow"><span className="eyebrow-line"/>{t.eyebrow}</div><h1>{t.titleA}<br/>{t.titleB}<br/><em>{t.titleC}</em></h1><p className="hero-intro">{t.intro}</p><div className="hero-buttons"><a className="button button-copper" href="#products">{t.explore}<ArrowUpRight size={17}/></a><a className="button button-glass" href="#contact">{t.quote}<ArrowUpRight size={17}/></a></div><div className="hero-foot"><span className="tiny-mark">NB</span><span>{t.note}</span><span className="foot-rule"/></div></div><figure className="hero-visual"><img src="/images/hero-springs-product.webp" alt={ar ? 'صورة توضيحية لوحدة سوست بونيل' : 'Illustrative image of a Bonnell spring unit'} fetchPriority="high" decoding="async"/><figcaption className="hero-image-label"><span>{ar ? 'تصنيع السوست في مصر' : 'SPRINGS MADE IN EGYPT'}</span><small>{ar ? 'صورة توضيحية' : 'ILLUSTRATIVE IMAGE'}</small></figcaption></figure></div><div className="hero-vertical">{ar?'نايل بد · خامات المراتب والسوست':'NILE BED · MATTRESS MATERIALS'}</div></section>
-    <section className="scope-band" aria-label={ar?'نطاق عملنا':'Our business scope'}><div className="scope-inner"><div className="scope-top"><div><div className="section-label"><span>01</span>{t.scopeKicker}</div><h2>{t.scopeTitle}</h2></div><p>{t.scopeText}</p></div><div className="scope-grid">{t.scopeCards.map(([n,title,body],i)=><article className={i===2?'scope-card scope-card-no':'scope-card'} key={title}><span>{n}</span><div><h3>{title}</h3><p>{body}</p></div>{i===2?<Network size={18}/>:<Check size={18}/>}</article>)}</div></div></section>
-    <section className="one-stop section-pad" id="cycle"><div className="one-stop-head"><div><div className="section-label"><span>02</span>{t.cycleKicker}</div><h2>{t.cycleTitle}</h2></div><p>{t.cycleBody}</p></div><div className="one-stop-grid">{t.cycleBenefits.map(([n,title,body])=><article key={n}><span>{n}</span><div><h3>{title}</h3><p>{body}</p></div><ArrowUpRight size={18}/></article>)}</div><div className="cycle-ribbon"><span>{ar ? 'السوست' : 'SPRINGS'}</span><i/><span>{ar ? 'فوم ولاتكس' : 'FOAM & LATEX'}</span><i/><span>{ar ? 'لباد ومستلزمات' : 'FELT & SUPPLIES'}</span><i/><span>{ar ? 'قماش وإسفنج · عبر الشركاء' : 'FABRIC & SPONGE · PARTNER NETWORK'}</span></div></section>
-    <section className="products section-pad" id="products"><div className="section-head"><div><div className="section-label"><span>03</span>{t.productsKicker}</div><h2>{t.productsTitle}</h2></div><p>{t.productsDesc}</p></div>
-      {/* Featured wire specs chips */}
-      <div className="wire-chips" aria-label={ar ? 'أنواع السلك المتاحة' : 'Available wire types'}>
-        {[
-          ar ? 'سلك 2.4 — 14.5/16.5 سم' : 'Wire 2.4 — 14.5/16.5 cm',
-          ar ? 'سلك 2.3 — 16.5 سم' : 'Wire 2.3 — 16.5 cm',
-          ar ? 'سلك 2.2 — 16.5 سم' : 'Wire 2.2 — 16.5 cm',
-          ar ? 'سلك 2.05 — 16/16.5 سم' : 'Wire 2.05 — 16/16.5 cm',
-          ar ? 'فريم حديد 4.5 و5' : 'Border frame 4.5 & 5',
-          ar ? 'رول سلك 1.3 مم' : '1.3 mm wire roll',
-          ar ? 'شاسيه 18×25–29×30' : 'Shasia 18×25–29×30',
-          ar ? 'بوكيت 12–18 سم' : 'Pocket 12–18 cm',
-          ar ? 'بوكيت مفروش 80×25–32' : 'Ready pocket 80×25–32',
-          ar ? 'تيب 3D' : '3D tape',
-        ].map(c => <span key={c} className="wire-chip"><em>NB</em>{c}</span>)}
-      </div>
-      <div className="catalog-preview-grid">
-        {[
-          { img: '/catalog/springs/bonnell-unit.jpg', count: `${countByGroup('springs')} ${ar ? 'صنف' : 'items'}`, tag: ar ? 'تصنيع نايل بد' : 'MADE BY NILE BED', title: ar ? 'السوست والفريم والسلك' : 'Springs, Frames & Wire', desc: ar ? 'سوست بونيل بأقطار سلك 2.05–2.4 مم وارتفاع 14.5–16.5 سم، وفريم 4.5 و5، ورول سلك 1.3 وسلك بونيل خام. تصنيع حسب الطلب.' : 'Bonnell springs in 2.05–2.4 mm wire at 14.5–16.5 cm, frames 4.5 and 5, 1.3 mm wire rolls and raw Bonnell wire. Made to order.', link: '/catalog#springs' },
-          { img: '/images/hero-springs-product.webp', count: `${countByGroup('shasia')} ${ar ? 'مقاس' : 'sizes'}`, tag: ar ? 'مجمّع وجاهز' : 'ASSEMBLED', title: ar ? 'الشاسيهات المجمّعة' : 'Assembled Shasia', desc: ar ? 'أحد عشر مقاس من 18×25 حتى 29×30 — وحدات سوست مجمّعة تُثبَّت بالكلبس أو الدبل أو الدوفيل.' : 'Eleven sizes from 18×25 to 29×30 — assembled spring units fixed with clips, doubles or dovil.', link: '/catalog#shasia' },
-          { img: '/catalog/pocket/pocket-roll.jpg', count: `${countByGroup('pocket')} ${ar ? 'صنف' : 'items'}`, tag: 'POCKET', title: ar ? 'بوكيت رول ومفروش' : 'Pocket Rolls & Ready', desc: ar ? 'رولات بارتفاع 12 و14 و16 و18 سم، وبوكيت مفروش جاهز بمقاسات 80×25 و80×29 و80×31 و80×32.' : 'Rolls in 12, 14, 16 and 18 cm heights, plus ready-spread pocket in 80×25, 80×29, 80×31 and 80×32.', link: '/catalog#pocket' },
-          { img: '/images/foam-materials.webp', count: `${countByGroup('foam')} ${ar ? 'صنف' : 'items'}`, tag: ar ? 'تركي وشرق آسيا' : 'TURKEY & EAST ASIA', title: ar ? 'ميموري ولاتكس وخام مراتب' : 'Memory, Latex & Cores', desc: ar ? 'ميموري تركي 2 و4 سم، ولاتكس نيوترال 2.5–5 سم، وخام مرتبة لاتكس 15 و18 سم — خام فقط.' : 'Turkish memory 2 & 4 cm, neutral latex 2.5–5 cm, latex cores 15 & 18 cm — material only.', link: '/catalog#foam' },
-          { img: '/images/mattress-supplies.webp', count: `${countByGroup('materials')} ${ar ? 'صنف' : 'items'}`, tag: ar ? 'عزل وتغطية' : 'INSULATION', title: ar ? 'لباد وفازلين وأقمشة' : 'Felt, Non-woven & Fabrics', desc: ar ? 'لباد قطن وأبيض 2 سم وأسود وثلاث درجات رمادي وبلاك تايجر، وفازلين 210/160/15، وميلتون بجميع ألوانه وإسباني، وبلاستيك.' : 'Cotton/white 2 cm felt, black, three greys and Black Tiger, non-woven 210/160/15, Melton in all colours and Spanish, plus plastic.', link: '/catalog#materials' },
-          { img: '/catalog/materials/thread-supplies.jpg', count: `${countByGroup('supplies')} ${ar ? 'صنف' : 'items'}`, tag: ar ? 'خياطة وتقفيل' : 'SEWING', title: ar ? 'الخيوط والأشرطة' : 'Threads & Tapes', desc: ar ? 'خيوط كابوتينية 150/3 و40/2 و210/3، وتيب 4.2 سم بجميع ألوانه، وتيب 3D.' : 'Quilting threads 150/3, 40/2 and 210/3, 4.2 cm tape in all colours, and 3D tape.', link: '/catalog#supplies' },
-          { img: '/catalog/materials/fasteners.svg', count: `${countByGroup('fasteners')} ${ar ? 'صنف' : 'items'}`, tag: ar ? 'تجميع الشاسية' : 'ASSEMBLY', title: ar ? 'لوازم التثبيت' : 'Assembly Fasteners', desc: ar ? 'كلبس ودبل وبرشامة فريم ودوفيل شاسية ودعامة شاسية 18 سم ودعامة سوستة وطلقات 5 مم.' : 'Clips, doubles, frame fasteners, shasia dovil, 18 cm shasia support, spring support and 5 mm shots.', link: '/catalog#fasteners' },
-          { img: '/catalog/tools/fastening-tools.jpg', count: `${countByGroup('tools')} ${ar ? 'عدد' : 'items'}`, tag: ar ? 'غراء وعدد' : 'TOOLS & GLUE', title: ar ? 'الغراء والعدد' : 'Glue & Guns', desc: ar ? 'غراء هوت ميلت تركي، ومسدس غراء، ومسدس كلبس، ومسدس دبل، وسوستة مسدس كلبس.' : 'Turkish hot-melt glue, glue gun, clip gun, double-clip gun and a clip-gun spring.', link: '/catalog#tools' },
-        ].map(card => (
-          <article key={card.title} className="catalog-preview-card">
-            <div className="preview-media">
-              <img src={card.img} alt={card.title} loading="lazy" decoding="async" />
-              <span className="preview-tag">{card.tag}</span>
-              <span className="preview-count">{card.count}</span>
+
+  // Four featured families only — keeps home clean (was 8 + chips)
+  const featured = [
+    {
+      img: '/catalog/springs/bonnell-unit.jpg',
+      count: `${countByGroup('springs')} ${ar ? 'صنف' : 'items'}`,
+      kicker: ar ? 'تصنيع نايل بد' : 'MADE BY NILE BED',
+      title: ar ? 'السوست والفريم والسلك' : 'Springs, Frames & Wire',
+      desc: ar
+        ? 'سوست بونيل 2.05–2.4 مم بارتفاع 14.5–16.5 سم، وفريم 4.5 و5، ورول سلك 1.3 — تصنيع حسب الطلب.'
+        : 'Bonnell springs 2.05–2.4 mm at 14.5–16.5 cm, frames 4.5 & 5, 1.3 mm wire rolls — made to order.',
+      href: '/catalog#springs',
+    },
+    {
+      img: '/catalog/pocket/pocket-roll.jpg',
+      count: `${countByGroup('pocket')} ${ar ? 'صنف' : 'items'}`,
+      kicker: 'POCKET',
+      title: ar ? 'البوكيت — رول ومفروش' : 'Pocket — Rolls & Ready',
+      desc: ar
+        ? 'رولات 12–18 سم، ومفروش جاهز 80×25 إلى 80×32 — الكثافة والمقاس يُؤكَّدان مع الفريق.'
+        : 'Rolls 12–18 cm, ready-spread 80×25 to 80×32 — density & size confirmed per enquiry.',
+      href: '/catalog#pocket',
+    },
+    {
+      img: '/images/foam-materials.webp',
+      count: `${countByGroup('foam')} ${ar ? 'صنف' : 'items'}`,
+      kicker: ar ? 'تركي وشرق آسيا' : 'TURKEY & EAST ASIA',
+      title: ar ? 'ميموري ولاتكس وخام مراتب' : 'Memory, Latex & Cores',
+      desc: ar
+        ? 'ميموري تركي 2 و4 سم، ولاتكس 2.5–5 سم، وخام لاتكس 15 و18 سم — توريد خام فقط.'
+        : 'Turkish memory 2 & 4 cm, neutral latex 2.5–5 cm, latex cores 15 & 18 cm — material only.',
+      href: '/catalog#foam',
+    },
+    {
+      img: '/catalog/materials/thread-supplies.jpg',
+      count: `${countByGroup('materials') + countByGroup('supplies')} ${ar ? 'صنف' : 'items'}`,
+      kicker: ar ? 'لباد وفازلين وخيوط' : 'FELT & THREADS',
+      title: ar ? 'لباد ومستلزمات إنتاج' : 'Felt & Production Supplies',
+      desc: ar
+        ? 'لباد بجميع درجاته، فازلين وميلتون، خيوط كابوتينية وتيب 3D ولوازم تجميع وغراء.'
+        : 'Felt in all shades, non-woven & Melton, quilting threads, 3D tape, fasteners & glue.',
+      href: '/catalog#materials',
+    },
+  ];
+
+  return (
+    <main className="nile home-clean" dir={ar ? 'rtl' : 'ltr'} lang={lang}>
+      {/* ── Topbar — sticky, breathable, not cramped ── */}
+      <header className="hc-topbar">
+        <a className="brand" href="#home" aria-label={ar ? 'نايل بد — الصفحة الرئيسية' : 'Nile Bed — home'}>
+          <BrandLogo variant="auto" />
+        </a>
+
+        <nav className={menuOpen ? 'hc-nav open' : 'hc-nav'} aria-label="Main navigation">
+          <a href="#scope" onClick={() => setMenuOpen(false)}>{t.nav[1]}</a>
+          <a href="#catalog" onClick={() => setMenuOpen(false)}>{t.nav[0]}</a>
+          <a href="#partners" onClick={() => setMenuOpen(false)}>{t.nav[2]}</a>
+          <a href="#contact" onClick={() => setMenuOpen(false)}>{t.nav[3]}</a>
+        </nav>
+
+        <div className="hc-actions">
+          <button className="theme-switch" type="button" onClick={toggleTheme} aria-label={themeLabel} aria-pressed={theme === 'dark'} title={themeLabel}>
+            <Moon className="icon-moon" size={16} />
+            <Sun className="icon-sun" size={16} />
+            <span>{themeLabel}</span>
+          </button>
+          <button className="lang-switch" type="button" onClick={() => setLang(ar ? 'en' : 'ar')} aria-label={ar ? 'Switch to English' : 'التبديل إلى العربية'}>
+            <Globe2 size={16} />{t.toggle}
+          </button>
+          <a className="hc-cta" href="#contact">
+            {ar ? 'تواصل' : 'Get in touch'} <ArrowUpRight size={15} />
+          </a>
+          <button className="hc-menu" type="button" aria-expanded={menuOpen} aria-label={menuOpen ? t.close : t.menu} onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+      </header>
+
+      {/* ── Mobile drawer overlay ── */}
+      {menuOpen && <button className="hc-overlay" aria-label="close menu" onClick={() => setMenuOpen(false)} />}
+
+      {/* ── HERO — creative, focused, decorative headings ── */}
+      <section className="hc-hero" id="home">
+        <div className="hc-hero-inner">
+          <div className="hc-hero-copy">
+            <div className="hc-eyebrow">
+              <span className="hc-eyebrow-num">{t.eyebrowAccent}</span>
+              <i />
+              <span>{t.eyebrow}</span>
             </div>
-            <div className="preview-body">
-              <h3>{card.title}</h3>
-              <p>{card.desc}</p>
+
+            <h1 className="hc-title">
+              <span className="hc-title-line">{t.titleA}</span>
+              <span className="hc-title-line">{t.titleB}</span>
+              <em className="hc-title-accent">{t.titleC}</em>
+            </h1>
+
+            <p className="hc-intro">{t.intro}</p>
+
+            <div className="hc-hero-actions">
+              <a className="hc-btn hc-btn-primary" href="#catalog">
+                {t.explore} <ArrowUpRight size={16} />
+              </a>
+              <a className="hc-btn hc-btn-ghost" href="#contact">
+                {t.quote} <ArrowUpRight size={16} />
+              </a>
             </div>
-            <div className="preview-foot">
-              <span><i />{ar ? 'صورة توضيحية' : 'Illustrative image'}</span>
-              <div className="preview-links">
-                <a href="/catalog" aria-label={`${ar ? 'عرض' : 'View'} ${card.title}`}><ArrowUpRight size={14} /></a>
+
+            <div className="hc-hero-note">
+              <span className="hc-nb">NB</span>
+              <span>{t.note}</span>
+            </div>
+          </div>
+
+          <figure className="hc-hero-visual">
+            <img
+              src="/images/hero-springs-product.webp"
+              alt={ar ? 'وحدة سوست بونيل — صورة توضيحية' : 'Bonnell spring unit — illustrative image'}
+              fetchPriority="high"
+              decoding="async"
+            />
+            <figcaption className="hc-visual-caption">
+              <span>{ar ? 'تصنيع السوست في مصر' : 'SPRINGS MADE IN EGYPT'}</span>
+              <small>{ar ? 'صورة توضيحية' : 'ILLUSTRATIVE IMAGE'}</small>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      {/* ── Anchor pill — creative scroll navigation ── */}
+      <nav className="hc-anchor" aria-label={t.anchorLabel}>
+        <span className="hc-anchor-label">{t.anchorLabel}</span>
+        <div className="hc-anchor-pills">
+          <a href="#scope"><i />{t.anchors[0]}</a>
+          <a href="#catalog"><i />{t.anchors[1]}</a>
+          <a href="#partners"><i />{t.anchors[2]}</a>
+          <a href="#contact"><i />{t.anchors[3]}</a>
+        </div>
+      </nav>
+
+      {/* ── SCOPE — 3 cards only, generous whitespace ── */}
+      <section className="hc-section hc-scope" id="scope">
+        <div className="hc-section-head">
+          <div>
+            <div className="hc-kicker"><span>01</span>{t.scopeKicker}</div>
+            <h2 className="hc-h2">{t.scopeTitle}</h2>
+          </div>
+          <p>{t.scopeText}</p>
+        </div>
+        <div className="hc-scope-grid">
+          {t.scopeCards.map(([num, title, body], i) => (
+            <article key={title} className={i === 2 ? 'hc-card hc-card-dark' : 'hc-card'}>
+              <span className="hc-card-num">{num}</span>
+              <h3>{title}</h3>
+              <p>{body}</p>
+              <div className="hc-card-icon">{i === 2 ? <Network size={18} /> : i === 1 ? <Layers3 size={18} /> : <Check size={18} />}</div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* ── FEATURED CATALOG — only 4 cards, clean, no chips ── */}
+      <section className="hc-section hc-catalog" id="catalog">
+        <div className="hc-section-head">
+          <div>
+            <div className="hc-kicker"><span>02</span>{t.featuredKicker}</div>
+            <h2 className="hc-h2">{t.featuredTitle}</h2>
+          </div>
+          <p>{t.featuredDesc}</p>
+        </div>
+
+        <div className="hc-featured-grid">
+          {featured.map((card) => (
+            <article key={card.title} className="hc-featured-card">
+              <div className="hc-featured-media">
+                <img src={card.img} alt={card.title} loading="lazy" decoding="async" />
+                <span className="hc-tag">{card.kicker}</span>
+                <span className="hc-count">{card.count}</span>
               </div>
-            </div>
+              <div className="hc-featured-body">
+                <h3>{card.title}</h3>
+                <p>{card.desc}</p>
+              </div>
+              <div className="hc-featured-foot">
+                <span className="hc-avail"><i />{t.illustrative}</span>
+                <a href={card.href} aria-label={card.title}><ArrowUpRight size={14} /></a>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="hc-catalog-actions">
+          <a className="hc-btn hc-btn-primary hc-btn-lg" href="/catalog">
+            {t.viewCatalog} <span className="hc-btn-sub">{t.viewCatalogSub}</span> <ArrowUpRight size={17} />
+          </a>
+          <a className="hc-btn hc-btn-ghost" href="#contact">{t.quote} <ArrowUpRight size={17} /></a>
+        </div>
+        <div className="hc-hint"><CircleHelp size={15} />{t.talkHint}</div>
+      </section>
+
+      {/* ── PRODUCTION — single elegant band, not cramped ── */}
+      <section className="hc-production" id="production">
+        <div className="hc-production-inner">
+          <div className="hc-production-copy">
+            <div className="hc-kicker hc-kicker-light"><span>03</span>{t.productionKicker}</div>
+            <h2 className="hc-h2 hc-h2-light">{t.productionTitle}</h2>
+            <p>{t.productionBody}</p>
+            <a className="hc-btn hc-btn-primary" href="#contact">{t.quote} <ArrowUpRight size={17} /></a>
+          </div>
+          <ul className="hc-production-points">
+            {t.productionPoints.map((p, i) => (
+              <li key={p}><span>0{i + 1}</span><strong>{p}</strong><Check size={16} /></li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ── PARTNERS — one creative split, replaces 3 stacked sections ── */}
+      <section className="hc-section hc-partners" id="partners">
+        <div className="hc-section-head">
+          <div>
+            <div className="hc-kicker"><span>04</span>{t.partnersKicker}</div>
+            <h2 className="hc-h2">{t.partnersTitle}</h2>
+          </div>
+          <p>{t.partnersText}</p>
+        </div>
+
+        <div className="hc-partners-grid">
+          <article className="hc-partner-card">
+            <div className="hc-partner-icon"><Truck size={18} /></div>
+            <span className="hc-partner-kicker">01 — {ar ? 'لصُنّاع المراتب' : 'FOR MAKERS'}</span>
+            <h3>{t.supplierTitle}</h3>
+            <p>{t.supplierBody}</p>
+            <a className="hc-btn hc-btn-dark" href={`https://wa.me/201090000676?text=${encodeURIComponent(ar ? 'مرحبًا نايل بد، أبحث عن شريك للقماش والإسفنج:' : 'Hello Nile Bed, I am looking for a fabric & sponge partner:')}`} target="_blank" rel="noopener noreferrer">
+              {t.supplierCta} <ArrowUpRight size={15} />
+            </a>
+            <span className="hc-partner-mark">S</span>
           </article>
-        ))}
-      </div>
-      <div className="catalog-preview-actions">
-        <a className="button button-copper" href="/catalog">{ar ? 'عرض الكتالوج الكامل' : 'View full catalog'} — {ar ? `${items.length} صنف في الكتالوج` : `${items.length} catalog items`}<ArrowUpRight size={17} /></a>
-        <a className="button button-glass" href="#contact" style={{ borderColor: 'var(--line-2)', color: 'var(--t-1)', background: 'var(--card)' }}>{t.quote}<ArrowUpRight size={17} /></a>
-      </div>
-      <div className="catalog-preview-note"><CircleHelp size={14} />{t.quoteHint}</div>
-    </section>
-    <section className="production-band" id="production"><div className="production-main"><div className="section-label light"><span>04</span>{t.productionKicker}</div><h2>{t.productionTitle}</h2><p>{t.productionBody}</p><a className="button button-copper" href="#contact">{t.quote}<ArrowUpRight size={17}/></a></div><div className="production-points">{t.productionPoints.map((point,i)=><div key={point}><span>0{i+1}</span><strong>{point}</strong><Check size={17}/></div>)}</div></section>
-    <section className="opportunities section-pad supplier-section" id="suppliers"><div className="opportunity-intro"><div className="section-label"><span>05</span>{t.supplierKicker}</div><span className="opportunity-index">{ar ? '٠١ / شركاء التوريد' : '01 / SUPPLIER PARTNERS'}</span></div><div className="opportunity-feature"><div><h2>{t.supplierTitle}</h2><p>{t.supplierBody}</p></div><a className="button button-dark" href={`https://wa.me/201090000676?text=${encodeURIComponent(ar ? 'مرحبًا نايل بد، أرغب في عرض منتج للتوريد. المنتج والمواصفات:' : 'Hello Nile Bed, I would like to introduce a product for supply. Product and specs:')}`} target="_blank" rel="noopener noreferrer">{t.supplierCta}<ArrowUpRight size={17}/></a><span className="opportunity-mark">S</span></div></section>
-    <section className="opportunities section-pad import-section" id="import"><div className="opportunity-intro"><div className="section-label"><span>06</span>{t.importKicker}</div><span className="opportunity-index">{ar ? '٠٢ / فرص الاستيراد' : '02 / IMPORT OPPORTUNITIES'}</span></div><div className="opportunity-feature"><div><h2>{t.importTitle}</h2><p>{t.importBody}</p></div><a className="button button-dark" href={`https://wa.me/201090000676?text=${encodeURIComponent(ar ? 'مرحبًا نايل بد، لدي فرصة استيراد لمنتج/خامة مميزة. المصدر والمواصفات:' : 'Hello Nile Bed, I have an import opportunity for a distinctive product/material. Source and specs:')}`} target="_blank" rel="noopener noreferrer">{t.importCta}<ArrowUpRight size={17}/></a><span className="opportunity-mark">I</span></div></section>
-    <section className="partner-band" id="partnership"><div className="partner-band-inner"><div><div className="section-label"><span>NB</span>{t.partnershipKicker}</div><h2>{t.partnershipTitle}</h2><p>{t.partnershipBody}</p></div><a className="button button-copper" href="https://wa.me/201090000676" target="_blank" rel="noopener noreferrer"><Network size={17}/>{t.partnershipCta}<ArrowUpRight size={17}/></a></div></section>
-    <section className="quality-section" id="quality"><div className="quality-inner"><div className="quality-stamp"><span>NB</span><i/>{ar ? 'جودة / توريد' : 'QUALITY / SUPPLY'}</div><div className="quality-copy"><div className="section-label light"><span>07</span>{t.gallery}</div><h2>{t.galleryTitle}</h2><p>{t.galleryText}</p><div className="quality-points"><span>{ar ? 'مواصفات واضحة' : 'Clear specifications'}</span><span>{ar ? 'جودة تنافس الأفضل' : 'Quality that competes with the best'}</span><span>{ar ? 'تأكيد قبل التوريد' : 'Confirmed before supply'}</span></div></div></div></section>
-    <section className="contact section-pad" id="contact"><div className="contact-heading"><div className="section-label"><span>08</span>{t.contactLabel}</div><h2>{t.contactTitle}</h2><p>{t.contactText}</p><div className="social-links">{["https://www.facebook.com/profile.php?id=100047775297291", "https://www.facebook.com/profile.php?id=100009326443352", "https://www.facebook.com/tefa.elsid"].map((url, i) => <a key={url} href={url} target="_blank" rel="noopener noreferrer">{ar ? ["صفحة Nile Bed التجارية", "حساب Nile Bed", "تحديثات عاطف طه"][i] : ["Nile Bed business page", "Nile Bed profile", "Atef Taha updates"][i]} <ArrowUpRight size={14}/></a>)}</div><div className="contact-mini"><a href="mailto:info@nilebed.com"><Mail size={16}/>info@nilebed.com</a><a href="https://wa.me/201090000676" target="_blank" rel="noopener noreferrer"><Phone size={16}/>{ar?'واتساب: 010 90000676':'WhatsApp: 010 90000676'}</a></div></div><form className="rfq-form" onSubmit={e=>e.preventDefault()}><div className="form-grid"><label>{t.fields[0]}<input required placeholder={ar?'اسمك':'Your name'}/></label><label>{t.fields[1]}<input placeholder={ar?'اسم الشركة':'Company name'}/></label><label>{t.fields[2]}<input type="email" required placeholder="name@company.com"/></label><label>{t.fields[3]}<input placeholder={ar?'الدولة':'Country'}/></label><label>{t.fields[4]}<select defaultValue=""><option value="" disabled>{t.product}</option>{t.productNames.map(x=><option key={x}>{x}</option>)}</select></label><label>{t.fields[5]}<input placeholder={t.qty}/></label><label className="full-field">{t.fields[6]}<textarea rows={4} placeholder={ar?'اكتب متطلباتك هنا...':'Tell us about your requirements...'}/></label></div><button className="button button-dark" type="submit" disabled>{t.submit}<ArrowUpRight size={17}/></button><small className="form-note"><CircleHelp size={14}/>{t.formNote}</small></form></section>
-    <footer className="footer"><a className="brand footer-brand" href="#home" aria-label={ar ? 'نايل بد' : 'Nile Bed'}><BrandLogo variant="dark"/></a><span>{t.footer}</span><a href="#home">{t.back}<ArrowRight size={14}/></a><small>© {new Date().getFullYear()} NILE BED</small></footer>
-  </main>;
+
+          <article className="hc-partner-card hc-partner-card-dark">
+            <div className="hc-partner-icon"><Sparkles size={18} /></div>
+            <span className="hc-partner-kicker">02 — {ar ? 'للموردين' : 'FOR SUPPLIERS'}</span>
+            <h3>{t.importTitle}</h3>
+            <p>{t.importBody}</p>
+            <a className="hc-btn hc-btn-primary" href={`https://wa.me/201090000676?text=${encodeURIComponent(ar ? 'مرحبًا نايل بد، أرغب في عرض منتج للتوريد:' : 'Hello Nile Bed, I would like to introduce a product:')}`} target="_blank" rel="noopener noreferrer">
+              {t.importCta} <ArrowUpRight size={15} />
+            </a>
+            <span className="hc-partner-mark">I</span>
+          </article>
+        </div>
+
+        <div className="hc-partnership-strip">
+          <div>
+            <h3>{t.partnershipTitle}</h3>
+            <p>{t.partnershipBody}</p>
+          </div>
+          <a className="hc-btn hc-btn-ghost" href="https://wa.me/201090000676" target="_blank" rel="noopener noreferrer"><Network size={16} />{t.partnershipCta} <ArrowUpRight size={16} /></a>
+        </div>
+      </section>
+
+      {/* ── TRUST — minimal, airy ── */}
+      <section className="hc-trust" id="quality">
+        <div className="hc-trust-inner">
+          <div className="hc-trust-stamp"><span>NB</span><i />{ar ? 'جودة / توريد' : 'QUALITY / SUPPLY'}</div>
+          <div className="hc-trust-copy">
+            <div className="hc-kicker hc-kicker-light"><span>05</span>{t.trustKicker}</div>
+            <h2 className="hc-h2 hc-h2-light">{t.trustTitle}</h2>
+            <p>{t.trustText}</p>
+            <div className="hc-trust-points">
+              {t.trustPoints.map((p) => <span key={p}>{p}</span>)}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CONTACT — generous form, not crowded ── */}
+      <section className="hc-section hc-contact" id="contact">
+        <div className="hc-contact-head">
+          <div className="hc-kicker"><span>06</span>{t.contactLabel}</div>
+          <h2 className="hc-h2">{t.contactTitle}</h2>
+          <p>{t.contactText}</p>
+
+          <div className="hc-contact-links">
+            <a href="mailto:info@nilebed.com"><Mail size={16} />info@nilebed.com</a>
+            <a href="https://wa.me/201090000676" target="_blank" rel="noopener noreferrer"><Phone size={16} />{ar ? 'واتساب: 010 90000676' : 'WhatsApp: 010 90000676'}</a>
+          </div>
+
+          <div className="hc-social">
+            {['https://www.facebook.com/profile.php?id=100047775297291', 'https://www.facebook.com/profile.php?id=100009326443352', 'https://www.facebook.com/tefa.elsid'].map((url, i) => (
+              <a key={url} href={url} target="_blank" rel="noopener noreferrer">
+                {ar ? ['صفحة Nile Bed', 'حساب Nile Bed', 'تحديثات عاطف طه'][i] : ['Business page', 'Profile', 'Atef Taha updates'][i]} <ArrowUpRight size={13} />
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <form className="hc-form" onSubmit={(e) => e.preventDefault()}>
+          <div className="hc-form-grid">
+            <label>{t.fields[0]} <input required placeholder={ar ? 'اسمك' : 'Your name'} /></label>
+            <label>{t.fields[1]} <input placeholder={ar ? 'اسم الشركة' : 'Company name'} /></label>
+            <label>{t.fields[2]} <input type="email" required placeholder="name@company.com" /></label>
+            <label>{t.fields[3]}
+              <select defaultValue="">
+                <option value="" disabled>{t.productHint}</option>
+                <option>{ar ? 'سوست وفريم وسلك' : 'Springs & Wire'}</option>
+                <option>{ar ? 'بوكيت ومفروش' : 'Pocket & Ready'}</option>
+                <option>{ar ? 'فوم ولاتكس' : 'Foam & Latex'}</option>
+                <option>{ar ? 'لباد وخيوط ومستلزمات' : 'Felt & Supplies'}</option>
+              </select>
+            </label>
+            <label>{t.fields[4]} <input placeholder={t.qty} /></label>
+            <label className="hc-full">{t.fields[5]} <textarea rows={4} placeholder={ar ? 'اكتب متطلباتك هنا...' : 'Tell us about your requirements...'} /></label>
+          </div>
+          <button className="hc-btn hc-btn-dark" type="submit" disabled>{t.submit} <ArrowUpRight size={17} /></button>
+          <small className="hc-form-note"><CircleHelp size={14} />{t.formNote}</small>
+        </form>
+      </section>
+
+      <footer className="hc-footer">
+        <a className="brand" href="#home" aria-label="Nile Bed"><BrandLogo variant="dark" /></a>
+        <span>{t.footer}</span>
+        <a href="#home">{t.back} <ArrowRight size={14} /></a>
+        <small>© {new Date().getFullYear()} NILE BED</small>
+      </footer>
+    </main>
+  );
 }

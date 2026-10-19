@@ -3,6 +3,7 @@ import Script from 'next/script';
 import '@/styles/globals.css';
 import '@/styles/nilebed.css';
 import '@/styles/nilebed-refresh.css';
+import '@/styles/home-clean.css';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000');
 
@@ -66,7 +67,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        {/* Decorative headings: Fraunces + Cormorant for EN, Reem Kufi + Amiri for AR, plus clean UI fonts */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;600;700&family=Cairo:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800;9..144,900&family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
         <Script id="nilebed-theme" strategy="beforeInteractive">{themeScript}</Script>
       </head>
       <body>
