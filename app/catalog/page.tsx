@@ -12,9 +12,9 @@ const ui = {
   ar: {
     nav: ['الرئيسية', 'الكتالوج', 'تواصل'],
     title: 'كتالوج خامات نايل بد',
-    subtitle: 'كل الأصناف في مكان واحد — سوست وفريم ورول سلك 1.3، بوكيت 12–18، ميموري ولاتكس، ولباد وغراء وخيوط ولوازم. الصور توضيحية والمواصفات النهائية تُؤكَّد مع الفريق عبر واتساب أو البريد.',
-    disclaimer: 'صور توضيحية من مصادر عامة للعرض فقط — ليست صور مصنع نايل بد. نحن نورّد الخامات ونصنّع السوست فقط، ولا نصنّع مراتب جاهزة. محتاج قماش أو إسفنج؟ نوجّهك لشريك من شركائنا بسعر مميز.',
-    searchPlaceholder: 'ابحث في الأصناف… مثل: سلك 2.4، ميموري، لاتكس، لباد، فازلين',
+    subtitle: 'كل الأصناف في مكان واحد — سوست وفريم ورول سلك 1.3، بوكيت 12–18، ميموري ولاتكس، ولباد وغراء وخيوط ولوازم. الصور والرسوم توضيحية أُعدّت لتمثيل أنواع الخامات، وليست صورًا فعلية لمنتجات نايل بد أو لمخزونها. المواصفات النهائية تُؤكَّد مع الفريق.',
+    disclaimer: 'الصور والرسوم توضيحية معدّة لتمثيل فئات الخامات، وليست صورًا فعلية من مصنع نايل بد أو لمخزونها الحالي. نورّد الخامات ونصنّع السوست فقط، ولا نصنّع مراتب جاهزة. محتاج قماش أو إسفنج؟ نوجّهك لشريك من شركائنا لتشتري بسعر مميز.',
+    searchPlaceholder: 'ابحث في الأصناف… مثل: سلك 2.4، ميموري، لباد أسود، رمادي، فازلين',
     all: 'الكل',
     count: (n: number) => `${n} صنف`,
     enquire: 'استفسر عبر واتساب',
@@ -33,16 +33,16 @@ const ui = {
   en: {
     nav: ['Home', 'Catalog', 'Contact'],
     title: 'Nile Bed Catalog',
-    subtitle: 'Every category in one place — springs, frames and 1.3 mm wire rolls, pocket 12–18, memory and latex, felt, glue, threads and supplies. Photos are illustrative; final specs are confirmed with the team via WhatsApp or email.',
-    disclaimer: 'Illustrative images from public sources for display only — not Nile Bed factory photos. We supply materials and make springs only; we do not make finished mattresses. Need fabric or foam? We refer you to one of our partners at a special price.',
-    searchPlaceholder: 'Search items… e.g. wire 2.4, memory, latex, felt, non-woven',
+    subtitle: 'Every category in one place — springs, frames and 1.3 mm wire rolls, pocket 12–18, memory and latex, felt, glue, threads and supplies. Product illustrations are for category reference only; they are not photos of Nile Bed or confirmed stock. Final specs are confirmed with the team.',
+    disclaimer: 'Product illustrations show representative material types only; they are not photos of Nile Bed, actual products or current stock. We supply materials and make springs only; we do not make finished mattresses. Need fabric or sponge? We refer you to one of our partners so you can buy at a special price.',
+    searchPlaceholder: 'Search items… e.g. wire 2.4, memory, black felt, grey felt, non-woven',
     all: 'All',
     count: (n: number) => `${n} items`,
     enquire: 'Enquire on WhatsApp',
     emailEnquire: 'Email us',
     specs: 'Specs',
     available: 'Available on order',
-    illustrative: 'Illustrative photo',
+    illustrative: 'Illustrative image',
     backTop: 'Back to top',
     toggle: 'العربية',
     contactNote: 'For orders: WhatsApp 010 90000676 • info@nilebed.com',
@@ -97,7 +97,7 @@ export default function CatalogPage() {
     const next: Theme = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     document.documentElement.dataset.theme = next;
-    try { localStorage.setItem('nilebed-theme', next); } catch {}
+    try { localStorage.setItem('nilebed-theme-v3', next); } catch {}
   };
 
   const filtered = useMemo(() => {
@@ -125,11 +125,11 @@ export default function CatalogPage() {
       {/* Topbar — same as home but with catalog link */}
       <header className="topbar catalog-topbar">
         <a className="brand" href="/" aria-label={ar ? 'نايل بد — الرئيسية' : 'Nile Bed — home'}>
-          <BrandLogo variant="dark" />
+<BrandLogo variant="auto" />
         </a>
         <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="Main navigation">
           <a href="/">{t.nav[0]}</a>
-          <a href="/catalog" aria-current="page" style={{ color: '#fff', borderBottom: '1px solid var(--copper-bright)' }}>{t.nav[1]}</a>
+          <a href="/catalog" aria-current="page">{t.nav[1]}</a>
           <a href="/#contact" onClick={() => setMenuOpen(false)}>{t.nav[2]}</a>
         </nav>
         <div className="nav-actions">
@@ -232,7 +232,7 @@ export default function CatalogPage() {
             const groupDef = groups.find((g) => g.id === section.id);
             const isResults = section.id === 'results';
             return (
-              <div key={section.id} className="group-block">
+              <div id={isResults ? 'results' : section.id} key={section.id} className="group-block">
                 {!isResults && groupDef && (
                   <div className="group-head">
                     <div>
@@ -258,15 +258,13 @@ export default function CatalogPage() {
                     const waText = encodeURIComponent(ar ? `مرحبا نايل بد، أستفسر عن: ${it.ar.name} — ${it.ar.specs.join('، ')}` : `Hi Nile Bed, enquiry about: ${it.en.name} — ${it.en.specs.join(', ')}`);
                     return (
                       <article key={it.id} className={`catalog-card ${it.highlight ? 'highlight' : ''}`}>
-                        <div className="card-media">
+                        <div className="catalog-card-photo">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={it.image} alt={name} loading="lazy" decoding="async" />
-                          <span className="media-label">{t.illustrative}</span>
-                          {badge && <span className="media-badge">{badge}</span>}
-                          <span className="media-group">{groupDef ? (ar ? groupDef.ar.kicker : groupDef.en.kicker) : it.group}</span>
+                          <img src={it.image} alt={`${name} — ${t.illustrative}`} loading="lazy" decoding="async" />
+                          <span>{t.illustrative}</span>
                         </div>
                         <div className="card-body">
-                          <h3>{name}</h3>
+                          <div className="card-title-row"><h3>{name}</h3>{badge && <span className="product-badge">{badge}</span>}</div>
                           <p>{desc}</p>
                           <ul className="specs">
                             {specs.map((s) => (
@@ -297,7 +295,7 @@ export default function CatalogPage() {
           <div>
             <div className="section-label light"><span>—</span>{ar ? 'جاهز للطلب؟' : 'READY TO ORDER?'}</div>
             <h2>{ar ? 'أخبرنا بمقاسك وكميتك، ونؤكد المواصفات والسعر.' : 'Tell us your size and quantity. We’ll confirm specs and price.'}</h2>
-            <p>{ar ? 'السوست نصنعها، والخامات نورّدها. لا نبيع مراتب جاهزة. ولو محتاج قماش أو إسفنج، نوجّهك لشريك من شركائنا بسعر مميز. كل المواصفات والأسعار تُؤكَّد مباشرة مع الفريق.' : 'We make springs, we supply materials. No finished mattresses. Need fabric or foam? We refer you to one of our partners at a special price. All specs and prices are confirmed directly with the team.'}</p>
+            <p>{ar ? 'السوست نصنعها، والخامات نورّدها. لا نبيع مراتب جاهزة. ولو محتاج قماش أو إسفنج، نوجّهك إلى الشريك المناسب من شركائنا لتشتري بسعر مميز. كل المواصفات والأسعار تُؤكَّد مباشرة مع الفريق.' : 'We make springs, we supply materials. No finished mattresses. Need fabric or foam? We point you to one of our partners so you can buy at a special price. All specs and prices are confirmed directly with the team.'}</p>
           </div>
           <div className="cta-actions">
             <a className="button button-copper" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer">{t.enquire} <ArrowUpRight size={16} /></a>

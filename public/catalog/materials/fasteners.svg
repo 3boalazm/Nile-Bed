@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-labelledby="title desc">
+  <title id="title">Mattress assembly fasteners</title>
+  <desc id="desc">Illustrative metallic clips, double fastener and frame rivet</desc>
+  <defs>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f6f8fa"/><stop offset=".28" stop-color="#9ca7b0"/><stop offset=".52" stop-color="#edf0f2"/><stop offset=".78" stop-color="#78848e"/><stop offset="1" stop-color="#cbd2d7"/></linearGradient>
+    <linearGradient id="darkSteel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dce2e6"/><stop offset="1" stop-color="#717d86"/></linearGradient>
+    <filter id="shadow" x="-.2" y="-.2" width="1.4" height="1.5"><feDropShadow dx="0" dy="13" stdDeviation="16" flood-color="#23313b" flood-opacity=".14"/></filter>
+  </defs>
+  <rect width="800" height="800" rx="38" fill="#f5f4f1"/>
+  <ellipse cx="402" cy="630" rx="258" ry="48" fill="#d9d8d4" opacity=".55"/>
+  <g filter="url(#shadow)" fill="none" stroke="url(#steel)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M215 276v95q0 51 52 51h64q52 0 52-51v-95" stroke-width="34"/>
+    <path d="M425 275v95q0 51 52 51h64q52 0 52-51v-95" stroke-width="34"/>
+    <path d="M277 452v75q0 44 44 44h164q44 0 44-44v-75" stroke-width="32"/>
+  </g>
+  <g fill="url(#darkSteel)" stroke="#68757e" stroke-width="5">
+    <circle cx="620" cy="290" r="53"/><circle cx="620" cy="290" r="20" fill="#f5f4f1"/>
+    <path d="M620 346v190" stroke="url(#steel)" stroke-width="24" stroke-linecap="round"/>
+  </g>
+  <path d="M177 238h245M265 552h267" stroke="#fff" stroke-width="5" opacity=".8" stroke-linecap="round"/>
+</svg>

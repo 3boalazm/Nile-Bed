@@ -7,7 +7,7 @@ Bilingual Arabic/English public website for Nile Bed — a wholesaler of mattres
 - **Arabic-first, RTL** page with a one-tap English switch (the whole page, including layout direction, flips).
 - **Light and dark themes.** The theme follows the visitor's system preference on first visit, is remembered in `localStorage` (`nilebed-theme`), and is applied by a tiny inline script before first paint so there is no flash of the wrong mode.
 - **Official brand artwork in both variants** (see below), used in the header, the footer, and the "established" stamp.
-- Sections: hero, supply-partner intro, business scope (manufactures springs · trades materials · does **not** make finished mattresses), catalog, process, capabilities, about, materials gallery with source links, CTA, contact and a preview enquiry form, footer.
+- Sections: image-free hero, supply-partner intro, business scope (manufactures springs · supplies materials · does **not** make finished mattresses), catalog, process, capabilities, about, materials gallery, CTA, contact and a preview enquiry form, footer.
 - Metadata for search and sharing: canonical URL, Open Graph/Twitter card with a 1200×630 image (`public/og.png`), Organization JSON-LD, `manifest.webmanifest`, favicon and Apple touch icon, `robots.txt` and `sitemap.xml`.
 
 ## Brand assets
@@ -19,7 +19,6 @@ Bilingual Arabic/English public website for Nile Bed — a wholesaler of mattres
 | `app/icon.svg`, `app/apple-icon.png` | Favicon / Apple touch icon (wave mark on the brand charcoal) |
 | `public/icon-192.png`, `public/icon-512.png`, `public/icon-maskable-512.png` | PWA/Android icons |
 | `public/og.png` | Social sharing card |
-| `public/nilebed-springs.svg` | Generic spring illustration, labelled on the page as illustrative (not a Nile Bed factory photo) |
 
 Both logo files stay mounted where the theme can change; CSS (`.brand-logo.is-light`, `.is-dark`, `.is-auto`) decides which one is visible, so there is no flash or layout shift when the theme or language changes. The header and footer sit on dark bands and always use the dark-surface logo.
 
