@@ -25,6 +25,8 @@ Both logo files stay mounted where the theme can change; CSS (`.brand-logo.is-li
 
 Colours live in `styles/nilebed.css` as design tokens on `.nile` plus a `html[data-theme='dark']` override block, so a new section only needs to use `var(--token)` to support both themes.
 
+Typography: Arabic headings (H1–H6) use the self-hosted **KO Sans** family in `public/Fonts` — all seven supplied weights (100–700) are registered in `styles/ko-sans-headings.css` and applied to every heading level on both the home and catalog pages. English/LTR headings keep Fraunces + Cormorant Garamond, Arabic body copy uses Cairo, and UI text uses Manrope/DM Sans.
+
 ## Local development
 
 Use Node.js 22.
