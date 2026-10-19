@@ -68,9 +68,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Decorative headings: Fraunces + Cormorant for EN, Reem Kufi + Amiri for AR, plus clean UI fonts */}
+        {/* Arabic headings: self-hosted KO Sans (styles/ko-sans-headings.css).
+            Latin headings: Fraunces + Cormorant Garamond. Body/UI: Cairo, Manrope, DM Sans. */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;600;700&family=Cairo:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800;9..144,900&family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800;9..144,900&family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
         <Script id="nilebed-theme" strategy="beforeInteractive">{themeScript}</Script>

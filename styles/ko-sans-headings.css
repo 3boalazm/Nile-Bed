@@ -1,4 +1,12 @@
-/* KO Sans — Arabic headings only. Body copy and LTR/English headings remain unchanged. */
+/* ==========================================================================
+   KO Sans — the Arabic heading face for every heading level (H1–H6)
+   --------------------------------------------------------------------------
+   The seven supplied files map to weights 100–700. Headings keep the weights
+   set by the rest of the design, and any requested weight resolves to the
+   closest supplied face (for example 750/800/900 use Bold), so there is no
+   synthetic bold. Arabic body copy and the English/LTR headings are unchanged.
+   ========================================================================== */
+
 @font-face {
   font-family: 'KO Sans';
   src: url('/Fonts/KOSans-Thin.otf') format('opentype');
@@ -49,7 +57,21 @@
   font-display: swap;
 }
 
-/* The site switches direction for English. Keep KO Sans scoped to RTL headings. */
-.nile[dir='rtl'] :is(h1, h2, h3, h4, h5, h6) {
-  font-family: 'KO Sans', 'Cairo', sans-serif;
+/* One shared stack for every heading. .nile[dir] is deliberately more specific
+   than Home Clean's .home-clean block, so the token also wins regardless of
+   stylesheet import order. --heading-ar is the variable Home Clean's
+   decorative headings already read. */
+.nile[dir] {
+  --ko-sans-heading: 'KO Sans', 'Cairo', sans-serif;
+  --heading-ar: var(--ko-sans-heading);
+}
+
+/* Apply the family to all six heading levels on every Arabic page. The doubled
+   .nile class is intentional: Home Clean targets decorative headings with
+   .home-clean[dir='rtl'] .hc-h2 (specificity 0,3,0), and this rule needs to be
+   stronger (0,3,1) so those headings are covered too — not just bare h1–h6. */
+.nile[dir='rtl'].nile :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--ko-sans-heading);
+  /* Use the supplied faces only; never fake a bold/italic the family lacks. */
+  font-synthesis: none;
 }
