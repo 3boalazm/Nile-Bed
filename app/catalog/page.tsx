@@ -1,8 +1,20 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, Search, Filter, Phone, Mail, Globe2, Menu, X, Moon, Sun, Check, Package, Layers3, Boxes, Scissors, Link2, Sparkles, Wrench, ShieldCheck, Info } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ArrowUpRight, Search, Filter, Phone, Mail, Globe2, Menu, X, Moon, Sun, Check, Package, Layers3, Boxes, Scissors, Link2, Sparkles, Wrench, ShieldCheck, Info, Plus, Minus, ShoppingBag, Trash2, Send } from 'lucide-react';
 import { groups, items } from './data';
+import OrderDialog from './OrderDialog';
+import {
+  CART_KEY,
+  cartCount,
+  clampQty,
+  defaultUnitFor,
+  trimCart,
+  type Cart,
+  type OrderLineView,
+  type UnitId,
+  unitLabel,
+} from './order';
 import './catalog.css';
 
 type Lang = 'ar' | 'en';
@@ -29,6 +41,20 @@ const ui = {
     footer: 'خامات المراتب وتصنيع السوست · مصر',
     themeDark: 'الوضع الليلي',
     themeLight: 'الوضع النهاري',
+    addToOrder: 'أضف للطلب',
+    addAgain: 'أضف صنف تاني',
+    inOrder: 'في الطلب',
+    removeFromOrder: 'شيل من الطلب',
+    decreaseQty: 'تقليل الكمية',
+    increaseQty: 'زيادة الكمية',
+    orderBarTitle: (n: number) => `${n} صنف في الطلب`,
+    orderBarHint: (q: number) => `${q.toLocaleString('ar-EG-u-nu-latn')} وحدة · جاهز للإرسال على واتساب`,
+    completeOrder: 'إتمام الطلب',
+    clearOrder: 'مسح الطلب',
+    addedToOrder: (name: string) => `تمت إضافة ${name} للطلب.`,
+    orderAgain: 'طلب جديد',
+    orderHeroBadge: 'طلب مباشر على واتساب',
+    orderBarAria: 'ملخص الطلب',
   },
   en: {
     nav: ['Home', 'Catalog', 'Contact'],
@@ -50,6 +76,20 @@ const ui = {
     footer: 'Mattress materials & spring manufacturing · Egypt',
     themeDark: 'Dark mode',
     themeLight: 'Light mode',
+    addToOrder: 'Add to order',
+    addAgain: 'Add another item',
+    inOrder: 'In order',
+    removeFromOrder: 'Remove from order',
+    decreaseQty: 'Decrease quantity',
+    increaseQty: 'Increase quantity',
+    orderBarTitle: (n: number) => `${n} ${n === 1 ? 'item' : 'items'} in your order`,
+    orderBarHint: (q: number) => `${q.toLocaleString('en-GB')} units · ready to send on WhatsApp`,
+    completeOrder: 'Complete order',
+    clearOrder: 'Clear order',
+    addedToOrder: (name: string) => `${name} added to your order.`,
+    orderAgain: 'New order',
+    orderHeroBadge: 'Order directly on WhatsApp',
+    orderBarAria: 'Order summary',
   },
 } as const;
 
@@ -81,6 +121,10 @@ export default function CatalogPage() {
   const [activeGroup, setActiveGroup] = useState<string>('all');
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [cart, setCart] = useState<Cart>({});
+  const [orderOpen, setOrderOpen] = useState(false);
+  const [announcement, setAnnouncement] = useState('');
+  const [confirmClear, setConfirmClear] = useState(false);
 
   const t = ui[lang];
   const ar = lang === 'ar';
@@ -89,6 +133,90 @@ export default function CatalogPage() {
     document.documentElement.lang = lang;
     document.documentElement.dir = ar ? 'rtl' : 'ltr';
   }, [lang, ar]);
+
+  // The order list lives in localStorage so a reload or a phone call in the
+  // middle of browsing does not lose it. Nothing is uploaded anywhere.
+  // `hydrated` keeps the empty first render from overwriting saved data (and
+  // keeps StrictMode's double effect run from wiping it).
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(CART_KEY);
+      if (raw) setCart(trimCart(JSON.parse(raw) as Cart));
+    } catch {}
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    } catch {}
+  }, [cart, hydrated]);
+
+  const itemsById = useMemo(() => new Map(items.map((item) => [item.id, item])), []);
+
+  const orderLines = useMemo<OrderLineView[]>(
+    () => Object.entries(cart)
+      .map(([id, line]) => {
+        const item = itemsById.get(id);
+        return item ? { item, qty: line.qty, unit: line.unit } : null;
+      })
+      .filter((line): line is OrderLineView => line !== null),
+    [cart, itemsById],
+  );
+
+  const orderCount = cartCount(cart);
+  const orderUnits = orderLines.reduce((sum, line) => sum + line.qty, 0);
+
+  const addToOrder = (id: string) => {
+    const item = itemsById.get(id);
+    if (!item) return;
+    setCart((prev) => (prev[id]
+      ? { ...prev, [id]: { ...prev[id], qty: clampQty(prev[id].qty + 1) } }
+      : { ...prev, [id]: { qty: 1, unit: defaultUnitFor(item) } }));
+    setAnnouncement(t.addedToOrder(ar ? item.ar.name : item.en.name));
+  };
+
+  const setQty = (id: string, qty: number) => {
+    setCart((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], qty: clampQty(qty) } } : prev));
+  };
+
+  const setUnit = (id: string, unit: UnitId) => {
+    setCart((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], unit } } : prev));
+  };
+
+  const removeLine = (id: string) => {
+    setCart((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  };
+
+  const clearOrder = () => {
+    setCart({});
+    setAnnouncement('');
+    setConfirmClear(false);
+  };
+
+  // Two-step clear on the sticky bar so a mis-tap does not wipe the order.
+  const requestClear = () => {
+    if (confirmClear) {
+      clearOrder();
+      return;
+    }
+    setConfirmClear(true);
+  };
+
+  useEffect(() => {
+    if (!confirmClear) return;
+    const timer = window.setTimeout(() => setConfirmClear(false), 4000);
+    return () => window.clearTimeout(timer);
+  }, [confirmClear]);
+
+  const closeOrder = useCallback(() => setOrderOpen(false), []);
 
   useEffect(() => {
     const saved = document.documentElement.dataset.theme as Theme | undefined;
@@ -135,7 +263,7 @@ export default function CatalogPage() {
   const email = 'info@nilebed.com';
 
   return (
-    <main className="nile catalog-page" dir={ar ? 'rtl' : 'ltr'} lang={lang}>
+    <main className={`nile catalog-page ${orderCount > 0 ? 'has-order-bar' : ''}`} dir={ar ? 'rtl' : 'ltr'} lang={lang}>
       {/* Topbar — same as home but with catalog link */}
       <header className="topbar catalog-topbar">
         <a className="brand" href="/" aria-label={ar ? 'نايل بد — الرئيسية' : 'Nile Bed — home'}>
@@ -172,9 +300,23 @@ export default function CatalogPage() {
               <span><Check size={14} />{ar ? 'تصنيع سوست في مصر' : 'Springs made in Egypt'}</span>
               <span><Check size={14} />{ar ? 'توريد خامات مراتب' : 'Mattress materials supply'}</span>
               <span><Check size={14} />{ar ? 'فريم ورول سلك 1.3' : 'Frame & 1.3 mm wire roll'}</span>
+              <span><Check size={14} />{t.orderHeroBadge}</span>
             </div>
             <div className="catalog-hero-cta">
-              <a className="button button-copper" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer"><Phone size={16} />{t.enquire}</a>
+              {orderCount > 0 ? (
+                <button className="button button-copper" type="button" onClick={() => setOrderOpen(true)}>
+                  <ShoppingBag size={16} />{ar ? `كمّل طلبك (${orderCount})` : `Complete your order (${orderCount})`}
+                </button>
+              ) : (
+                <button
+                  className="button button-copper"
+                  type="button"
+                  onClick={() => document.getElementById('catalog-start')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                >
+                  <ShoppingBag size={16} />{ar ? 'ابدأ طلبك من الكتالوج' : 'Start your order'}
+                </button>
+              )}
+              <a className="button button-glass" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer"><Phone size={16} />{t.enquire}</a>
               <a className="button button-glass" href={`mailto:${email}`}><Mail size={16} />{t.emailEnquire}</a>
             </div>
             <div className="catalog-disclaimer"><Info size={14} />{t.disclaimer}</div>
@@ -209,7 +351,7 @@ export default function CatalogPage() {
       </section>
 
       {/* Filters */}
-      <section className="catalog-filters">
+      <section className="catalog-filters" id="catalog-start" style={{ scrollMarginTop: '84px' }}>
         <div className="filters-inner">
           <div className="filters-top">
             <div className="search-wrap">
@@ -233,7 +375,17 @@ export default function CatalogPage() {
               );
             })}
           </div>
-          <div className="contact-note"><Info size={13} />{t.contactNote}</div>
+          <div className="contact-note">
+            <Info size={13} /><span>{t.contactNote}</span>
+          </div>
+          <div className="order-steps" aria-label={ar ? 'طريقة الطلب' : 'How to order'}>
+            <span className="order-steps-title"><ShoppingBag size={13} />{ar ? 'اطلب في ٣ خطوات' : 'Order in 3 steps'}</span>
+            <ol>
+              <li><b>1</b>{ar ? 'ضيف الأصناف للطلب' : 'Add the items'}</li>
+              <li><b>2</b>{ar ? 'حدّد الكمية والوحدة' : 'Set quantity & unit'}</li>
+              <li><b>3</b>{ar ? 'اكتب بياناتك وابعت على واتساب' : 'Add your details, send on WhatsApp'}</li>
+            </ol>
+          </div>
         </div>
       </section>
 
@@ -275,6 +427,7 @@ export default function CatalogPage() {
                     const specs = ar ? it.ar.specs : it.en.specs;
                     const badge = ar ? it.ar.badge : it.en.badge;
                     const waText = encodeURIComponent(ar ? `مرحبا نايل بد، أستفسر عن: ${it.ar.name} — ${it.ar.specs.join('، ')}` : `Hi Nile Bed, enquiry about: ${it.en.name} — ${it.en.specs.join(', ')}`);
+                    const line = cart[it.id];
                     return (
                       <article key={it.id} className={`catalog-card ${it.highlight ? 'highlight' : ''}`}>
                         <div className="catalog-card-photo">
@@ -290,6 +443,25 @@ export default function CatalogPage() {
                               <li key={s}><Check size={12} />{s}</li>
                             ))}
                           </ul>
+                        </div>
+                        <div className="card-order">
+                          {line ? (
+                            <>
+                              <div className="card-qty">
+                                <button type="button" onClick={() => setQty(it.id, line.qty - 1)} disabled={line.qty <= 1} aria-label={t.decreaseQty}><Minus size={14} /></button>
+                                <span className="card-qty-value">
+                                  <Check size={12} />
+                                  {line.qty.toLocaleString(ar ? 'ar-EG-u-nu-latn' : 'en-GB')} {unitLabel(line.unit, lang, line.qty)}
+                                </span>
+                                <button type="button" onClick={() => setQty(it.id, line.qty + 1)} disabled={line.qty >= 100000} aria-label={t.increaseQty}><Plus size={14} /></button>
+                              </div>
+                              <button className="card-remove" type="button" onClick={() => removeLine(it.id)} aria-label={`${t.removeFromOrder}: ${name}`}><Trash2 size={15} /></button>
+                            </>
+                          ) : (
+                            <button className="btn-add" type="button" onClick={() => addToOrder(it.id)}>
+                              <Plus size={15} />{t.addToOrder}
+                            </button>
+                          )}
                         </div>
                         <div className="card-foot">
                           <span className="avail"><span />{t.available}</span>
@@ -322,6 +494,43 @@ export default function CatalogPage() {
           </div>
         </div>
       </section>
+
+      <p className="order-sr-only" role="status" aria-live="polite">{announcement}</p>
+
+      {/* Sticky order bar — appears as soon as an item is added */}
+      {orderCount > 0 && (
+        <div className="order-bar" role="region" aria-label={t.orderBarAria}>
+          <div className="order-bar-inner">
+            <div className="order-bar-info">
+              <span className="order-bar-icon"><ShoppingBag size={18} /></span>
+              <div>
+                <strong>{t.orderBarTitle(orderCount)}</strong>
+                <small>{t.orderBarHint(orderUnits)}</small>
+              </div>
+            </div>
+            <div className="order-bar-actions">
+              <button className={`order-bar-clear ${confirmClear ? 'armed' : ''}`} type="button" onClick={requestClear} aria-live="polite">
+                <Trash2 size={14} />{confirmClear ? (ar ? 'متأكد؟ دوس تاني' : 'Sure? Tap again') : t.clearOrder}
+              </button>
+              <button className="order-bar-cta" type="button" onClick={() => setOrderOpen(true)}>
+                <Send size={15} />{t.completeOrder}<ArrowUpRight size={15} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <OrderDialog
+        open={orderOpen}
+        lang={lang}
+        lines={orderLines}
+        onClose={closeOrder}
+        onQtyChange={setQty}
+        onUnitChange={setUnit}
+        onRemove={removeLine}
+        onClear={clearOrder}
+        waNumber={waNumber}
+      />
 
       <footer className="footer">
         <a className="brand footer-brand" href="/" aria-label="Nile Bed"><BrandLogo variant="dark" /></a>

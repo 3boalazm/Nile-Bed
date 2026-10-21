@@ -9,6 +9,7 @@ Bilingual Arabic/English public website for Nile Bed — a wholesaler of mattres
 - **Official brand artwork in both variants** (see below), used in the header, the footer, and the "established" stamp.
 - Sections: product-led hero, business scope (manufactures springs · supplies materials · does **not** make finished mattresses), featured catalog, supply process, partner network, quality, contact and a preview enquiry form, footer.
 - **Catalog:** 69 items in 8 groups — springs/frames/wire, assembled shasia units, pocket rolls and ready-spread pocket, memory/latex/mattress cores, felt & fabrics, threads & tapes, assembly fasteners, and glue & tools. See `docs/inventory-2026-10-19.md`.
+- **Ordering from the catalog:** every card has **أضف للطلب / Add to order**. The chosen items, exact quantities and units collect in a sticky order bar (saved in the browser), and **إتمام الطلب** opens a short form for customer name, factory name, factory time, contact number and expected pickup date. Submitting opens WhatsApp with a ready message containing all of it — nothing is stored on the site or sent anywhere else. See `docs/ordering-flow-2026-10-21.md`.
 - Metadata for search and sharing: canonical URL, Open Graph/Twitter card with a 1200×630 image (`public/og.png`), Organization JSON-LD, `manifest.webmanifest`, favicon and Apple touch icon, `robots.txt` and `sitemap.xml`.
 
 ## Brand assets
@@ -44,7 +45,7 @@ Checks: `npm run typecheck` and `npm run build`.
 2. Framework preset: **Next.js**. `vercel.json` already pins `framework`, `installCommand` (`npm ci`) and `buildCommand` (`npm run build`). Leave the output directory at the framework default.
 3. Node.js version: 22.x (declared in `package.json` → `engines`).
 4. Optional: set `NEXT_PUBLIC_SITE_URL` to the full production origin (for example `https://www.nilebed.com`, no trailing slash) so canonical URLs, `sitemap.xml`, `robots.txt` and JSON-LD use the final domain. Without it, Vercel's `VERCEL_PROJECT_PRODUCTION_URL` is used; local builds fall back to `http://localhost:3000`.
-5. No secrets, environment variables, or external services are required to build. The enquiry form is intentionally disabled and does not submit or store anything; contact happens by email (`info@nilebed.com`) or WhatsApp (`+20 10 90000676`).
+5. No secrets, environment variables, or external services are required to build. The catalog order flow hands the finished order to the customer's own WhatsApp (number in `app/catalog/page.tsx` and `app/catalog/OrderDialog.tsx` wiring); the site does not receive, store or forward orders itself. The home-page enquiry form remains a preview. Contact happens by email (`info@nilebed.com`) or WhatsApp (`+20 10 90000676`).
 
 Pushing to the production branch connected in Vercel triggers the deployment.
 
