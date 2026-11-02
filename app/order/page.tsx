@@ -1,723 +1,87 @@
 'use client';
-
-import { useEffect, useMemo, useState } from 'react';
-import {
-  ArrowUpRight, Check, ClipboardList, Copy, Globe2, Info, Mail, Menu, Minus, Moon,
-  Phone, Plus, Ruler, Search, Send, Sun, Trash2, X,
-} from 'lucide-react';
-import { groups, items, type CatalogItem } from '../catalog/data';
-import { countByUnit, unitById, unitOf, units, type UnitId } from '../catalog/units';
+import {useEffect,useMemo,useState} from 'react';
+import {ArrowLeft,ArrowRight,ArrowUpRight,Check,ChevronDown,ClipboardList,Globe2,Mail,Minus,Moon,Package,Phone,Plus,Search,Send,ShoppingBag,Sun,Trash2,X} from 'lucide-react';
+import {groups,items,type CatalogItem} from '../catalog/data';
+import {unitById,unitOf} from '../catalog/units';
 import './order.css';
 
-type Lang = 'ar' | 'en';
-type Theme = 'light' | 'dark';
-type Line = { qty: string; note: string };
-type Contact = { name: string; company: string; phone: string; notes: string };
-type SubmitState = 'idle' | 'sending' | 'submitted' | 'fallback' | 'error';
-
-const STORAGE_KEY = 'nilebed-order-v1';
-const WA_NUMBER = '201090000676';
-const EMAIL = 'info@nilebed.com';
-
-const copy = {
-  ar: {
-    nav: ['الرئيسية', 'الكتالوج', 'تكوين الطلب', 'تواصل'],
-    kicker: 'الطلب حسب وحدة القياس',
-    title: 'كوّن طلبك.. صنف بصنف',
-    subtitle: 'الأصناف متصنّفة حسب وحدة القياس اللي بتتباع بيها: رول، م³، صفيحة، توب، كرتونة، كجم/كيلو وعدد. اكتب الكمية اللي عايزها قدام كل صنف، وهيظهر كل شيء في ملخص الطلب.',
-    heroNote: 'التصنيف مأخوذ من جرد «اصناف المخزون» — الأسعار والأرقام الداخلية غير معروضة.',
-    unitsLabel: 'وحدات القياس',
-    allUnits: 'كل الوحدات',
-    allGroups: 'كل الفئات',
-    filterByUnit: 'تصفية حسب وحدة القياس',
-    filterByGroup: 'تصفية حسب الفئة',
-    searchPlaceholder: 'ابحث عن صنف… مثل: شاسية 18×25، لاتكس، كلبس',
-    count: (n: number) => `${n} صنف`,
-    products: 'صنف',
-    orderBy: 'يُطلب بـ',
-    approx: 'تقديري',
-    approxTitle: 'وحدة القياس مستنتجة من نفس فئة الصنف في الجرد، وتُؤكَّد مع الفريق قبل التوريد',
-    fromSheet: 'حسب الجرد',
-    sheetLabel: (s: string) => `مكتوبة في الجرد: ${s}`,
-    qty: 'الكمية',
-    lineNote: 'ملاحظة على الصنف (مقاس، لون، درجة…)',
-    summary: 'ملخص الطلب',
-    summaryCount: (n: number) => `${n} صنف في الطلب`,
-    empty: 'لسه مضفتش أي صنف. اكتب الكمية قدام الصنف وهيظهر هنا.',
-    emptyHint: 'تقدر تطلب أكتر من صنف من أكتر من وحدة قياس في نفس الأوردر.',
-    unitTotals: 'إجمالي حسب الوحدة',
-    contactTitle: 'بيانات التواصل',
-    required: 'مطلوب',
-    nameError: 'اكتب الاسم من فضلك',
-    phoneError: 'اكتب رقم هاتف نتواصل معاك عليه',
-    name: 'الاسم',
-    company: 'الشركة / المصنع',
-    phone: 'رقم الهاتف',
-    notes: 'ملاحظات عامة على الطلب',
-    namePh: 'اسمك',
-    companyPh: 'اسم الشركة',
-    phonePh: '01xxxxxxxxx',
-    notesPh: 'ميعاد التوريد، عنوان التسليم، مواصفات خاصة…',
-    sendOrder: 'إرسال الطلب للفريق',
-    sending: 'جاري إرسال الطلب…',
-    sentTitle: 'تم استلام الطلب',
-    sentBody: (ref: string) => `طلبك اتسجّل برقم ${ref}. الفريق هيواصل معاك لتأكيد المواصفات والتوافر والسعر.`,
-    fallbackTitle: 'الاستقبال المباشر مش متفعّل دلوقتي',
-    fallbackBody: 'الطلب جاهز ومفيش حاجة ضاعت — ابعته لينا عبر واتساب أو البريد بالزرار تحت.',
-    errorTitle: 'ما قدرناش نبعت الطلب',
-    errorBody: 'جرّب تاني، أو استخدم واتساب / البريد. الطلب لسه محفوظ عندك على الجهاز.',
-    submitNote: 'لما استقبال الأوردرات يكون متوصّل، الزرار بيبعت الطلب مباشرة لفريقنا. ولو مش متوصّل، بيجهّز نفس الطلب على واتساب أو البريد.',
-    newOrder: 'ابدأ طلب جديد',
-    referenceLabel: 'رقم الطلب',
-    sendWa: 'إرسال الطلب عبر واتساب',
-    sendMail: 'إرسال الطلب بالبريد',
-    copy: 'نسخ نص الطلب',
-    copied: 'تم النسخ',
-    copyFail: 'تعذّر النسخ — استخدم واتساب أو البريد',
-    clear: 'تفريغ الطلب',
-    clearConfirm: 'تفريغ كل الكميات والملاحظات؟',
-    note: 'لما استقبال الأوردرات يكون متفعّل، الطلب بيتبعت مباشرة للفريق مع رقم طلب؛ غير كده الأزرار بتفتح واتساب أو البريد برسالة جاهزة فيها كل صنف وكميته ووحدته. الموقع مش بيخزّن بياناتك على سيرفر، والمواصفات والتوافر والسعر تُؤكَّد مع الفريق.',
-    sheetNote: 'وحدات القياس من جرد «اصناف المخزون» (٥٣ بندًا). الأصناف الموسّعة في الكتالوج وحدتها مستنتجة من نفس الفئة ومعلّمة بـ «تقديري». «كجم» و«كيلو» في الجرد هما نفس الوحدة.',
-    noResults: 'لا توجد أصناف مطابقة. جرّب كلمة تانية أو غيّر الفلتر.',
-    reset: 'إعادة الضبط',
-    remove: 'حذف الصنف من الطلب',
-    themeDark: 'الوضع الليلي',
-    themeLight: 'الوضع النهاري',
-    toggle: 'English',
-    footer: 'خامات المراتب وتصنيع السوست · مصر',
-    backTop: 'العودة للأعلى',
-    menu: 'فتح القائمة',
-    close: 'إغلاق القائمة',
-  },
-  en: {
-    nav: ['Home', 'Catalog', 'Build order', 'Contact'],
-    kicker: 'ORDER BY UNIT OF MEASURE',
-    title: 'Build your order, item by item',
-    subtitle: 'Products are classified by the unit they are sold in: roll, m³, tin, bolt, carton, kg/kilo and piece. Enter the quantity you need next to each item and it appears in the order summary.',
-    heroNote: 'Classification comes from the «اصناف المخزون» stock sheet — prices and internal figures are not published.',
-    unitsLabel: 'Units of measure',
-    allUnits: 'All units',
-    allGroups: 'All groups',
-    filterByUnit: 'Filter by unit of measure',
-    filterByGroup: 'Filter by product group',
-    searchPlaceholder: 'Search items… e.g. shasia 18×25, latex, clips',
-    count: (n: number) => `${n} items`,
-    products: 'items',
-    orderBy: 'Sold by',
-    approx: 'estimated',
-    approxTitle: 'Unit inferred from the same product family on the stock sheet; confirm with the team before supply',
-    fromSheet: 'stock sheet',
-    sheetLabel: (s: string) => `Written on the sheet: ${s}`,
-    qty: 'Quantity',
-    lineNote: 'Note for this item (size, colour, grade…)',
-    summary: 'Order summary',
-    summaryCount: (n: number) => `${n} items in order`,
-    empty: 'No items yet. Enter a quantity next to a product and it will show up here.',
-    emptyHint: 'You can order many items across many units in one order.',
-    unitTotals: 'Totals by unit',
-    contactTitle: 'Contact details',
-    required: 'required',
-    nameError: 'Please enter your name',
-    phoneError: 'Please enter a phone number we can reach you on',
-    name: 'Name',
-    company: 'Company / factory',
-    phone: 'Phone',
-    notes: 'General notes',
-    namePh: 'Your name',
-    companyPh: 'Company name',
-    phonePh: '+20 …',
-    notesPh: 'Delivery date, address, special specs…',
-    sendOrder: 'Submit order to our team',
-    sending: 'Submitting order…',
-    sentTitle: 'Order received',
-    sentBody: (ref: string) => `Your order was recorded as ${ref}. Our team will contact you to confirm specs, availability and prices.`,
-    fallbackTitle: 'Direct order inbox is not connected yet',
-    fallbackBody: 'Your order is ready and nothing was lost — send it to us on WhatsApp or by email using the buttons below.',
-    errorTitle: 'We could not submit the order',
-    errorBody: 'Please try again, or use WhatsApp / email. The order is still saved on this device.',
-    submitNote: 'When the order inbox is connected, this button submits directly to our team. Otherwise it prepares the same order for WhatsApp or email.',
-    newOrder: 'Start a new order',
-    referenceLabel: 'Order reference',
-    sendWa: 'Send order on WhatsApp',
-    sendMail: 'Send order by email',
-    copy: 'Copy order text',
-    copied: 'Copied',
-    copyFail: 'Could not copy — use WhatsApp or email',
-    clear: 'Clear order',
-    clearConfirm: 'Clear all quantities and notes?',
-    note: 'When the order inbox is connected, the order is submitted directly to our team with an order reference; otherwise the buttons open WhatsApp or email with a ready-made message listing every item with its quantity and unit. No customer data is stored on a server here, and final specs, availability and prices are confirmed with the team.',
-    sheetNote: 'Units come from the «اصناف المخزون» stock sheet (53 lines). Extended catalog items inherit the unit of their family and are marked «estimated». The sheet writes both «كجم» and «كيلو» for the same weight unit.',
-    noResults: 'No matching items. Try another keyword or change the filter.',
-    reset: 'Reset filters',
-    remove: 'Remove item from order',
-    themeDark: 'Dark mode',
-    themeLight: 'Light mode',
-    toggle: 'العربية',
-    footer: 'Mattress materials & spring manufacturing · Egypt',
-    backTop: 'Back to top',
-    menu: 'Open navigation',
-    close: 'Close navigation',
-  },
-} as const;
-
-const msgCopy = {
-  ar: {
-    heading: 'مرحبًا نايل بد، أرغب في طلب الأصناف التالية:',
-    reference: 'رقم الطلب',
-    note: 'ملاحظة',
-    name: 'الاسم',
-    company: 'الشركة',
-    phone: 'الهاتف',
-    notes: 'ملاحظات',
-    footer: 'من فضلكم تأكيد المواصفات النهائية والتوافر والسعر. شكرًا.',
-    subject: 'طلب أصناف — نايل بد',
-  },
-  en: {
-    heading: 'Hi Nile Bed, I would like to order the following items:',
-    reference: 'Order reference',
-    note: 'Note',
-    name: 'Name',
-    company: 'Company',
-    phone: 'Phone',
-    notes: 'Notes',
-    footer: 'Please confirm final specs, availability and prices. Thank you.',
-    subject: 'Product order — Nile Bed',
-  },
+type Lang='ar'|'en'; type Theme='light'|'dark'; type Step='browse'|'review'|'contact'|'success';
+type Line={qty:string;note:string}; type Contact={name:string;company:string;phone:string;notes:string};
+const KEY='nilebed-order-v1', WA='201090000676', EMAIL='info@nilebed.com';
+const copy={
+ ar:{home:'الرئيسية',catalog:'الكتالوج',order:'طلبك',contact:'تواصل',eyebrow:'طلب خامات نايل بد',title:'اطلب احتياجك بسهولة',intro:'اختار الخامات اللي محتاجها، حدّد الكمية، وراجع طلبك قبل ما تبعته. لو مش عارف اسم الصنف، ابحث بالاسم أو المقاس أو اسألنا مباشرة.',search:'دور على صنف أو مقاس… مثال: سوستة 2.4 أو شاسية 18×25',all:'كل الخامات',count:'صنف',none:'ملقيناش الصنف ده.',add:'أضف للطلب',added:'اتضاف',unit:'وحدة البيع',quantity:'الكمية المطلوبة',estimated:'تحتاج تأكيد',estimateHelp:'وحدة البيع دي تقديرية، وفريقنا هيأكدها معاك قبل التوريد.',less:'تقليل الكمية',more:'زيادة الكمية',cart:'طلبك الحالي',items:(n:number)=>n+' صنف',review:'راجع الطلب',empty:'لسه ما اخترتش أي خامات',emptyHint:'ابدأ باختيار صنف من الكتالوج، وتقدر تضيف أكتر من فئة في نفس الطلب.',choose:'كمّل اختيار الخامات',back:'رجوع',reviewTitle:'راجع الأصناف والكميات',reviewIntro:'اتأكد إن كل صنف والكمية المطلوبة صح. تقدر تعدّل أو تحذف أي صنف.',edit:'تعديل الاختيارات',remove:'حذف',lineNote:'ملاحظة للصنف (اختياري)',contactTitle:'بيانات التواصل',contactIntro:'هنستخدم البيانات دي عشان نراجع معاك المواصفات والتوافر والسعر.',name:'الاسم',company:'الشركة أو المصنع',phone:'رقم الموبايل',notes:'ملاحظات إضافية',namePh:'اكتب اسمك',companyPh:'اسم الشركة (اختياري)',phonePh:'01xxxxxxxxx',notesPh:'ميعاد أو مكان التوريد أو أي تفاصيل إضافية',nameError:'اكتب اسمك عشان نعرف نخاطبك.',phoneError:'اكتب رقم موبايل للتواصل.',send:'إرسال الطلب',sending:'جاري إرسال طلبك…',wa:'إرسال عبر واتساب',mail:'إرسال بالبريد',copy:'نسخ تفاصيل الطلب',copied:'اتنسخت التفاصيل',fallback:'طلبك جاهز للإرسال',fallbackBody:'الاستقبال المباشر غير متصل حالياً. اختار واتساب أو البريد لإرسال نفس تفاصيل الطلب.',error:'حصلت مشكلة أثناء الإرسال',errorBody:'طلبك لسه محفوظ على جهازك. جرّب تاني أو ابعته من واتساب.',success:'طلبك وصل بنجاح',successBody:(r:string)=>'استلمنا طلبك رقم '+r+'. فريق نايل بد هيراجع التفاصيل ويتواصل معاك لتأكيد المواصفات والتوافر والسعر.',reference:'رقم الطلب',newOrder:'ابدأ طلب جديد',summary:'ملخص الطلب',noPrice:'مفيش أسعار أو إجمالي تقديري هنا. السعر والتوافر بيتأكدوا مع الفريق.',direct:'محتاج مساعدة؟ كلمنا مباشرة',whatsapp:'واتساب',dark:'الوضع الليلي',light:'الوضع النهاري',language:'English',footer:'خامات المراتب وتصنيع السوست · مصر',clearConfirm:'تمسح كل الأصناف من الطلب؟',step1:'اختيار الخامات',step2:'مراجعة الطلب',step3:'بيانات التواصل',specs:'المواصفات'},
+ en:{home:'Home',catalog:'Catalog',order:'Your order',contact:'Contact',eyebrow:'Nile Bed material enquiry',title:'Order what you need, simply',intro:'Choose the materials you need, enter quantities, then review your order before sending. Search by product name or size, or contact our team if you need help.',search:'Search a product or size… e.g. Spring 2.4 or Shasia 18×25',all:'All materials',count:'items',none:'No matching products found.',add:'Add to order',added:'Added',unit:'Sold by',quantity:'Quantity',estimated:'To be confirmed',estimateHelp:'This unit is estimated. Our team will confirm it with you before supply.',less:'Decrease quantity',more:'Increase quantity',cart:'Your order',items:(n:number)=>n+' items',review:'Review order',empty:'You have not selected any materials yet',emptyHint:'Choose a product from the catalogue. You can add items from different categories to one order.',choose:'Continue choosing',back:'Back',reviewTitle:'Review items and quantities',reviewIntro:'Check each product and quantity. You can edit or remove any item.',edit:'Edit selection',remove:'Remove',lineNote:'Item note (optional)',contactTitle:'Contact details',contactIntro:'Our team will use these details to confirm specifications, availability and pricing.',name:'Name',company:'Company or factory',phone:'Mobile number',notes:'Additional notes',namePh:'Your name',companyPh:'Company name (optional)',phonePh:'+20…',notesPh:'Delivery date, location or any extra details',nameError:'Please enter your name.',phoneError:'Please enter a mobile number.',send:'Send order',sending:'Sending your order…',wa:'Send via WhatsApp',mail:'Send by email',copy:'Copy order details',copied:'Details copied',fallback:'Your order is ready to send',fallbackBody:'Direct order reception is not connected right now. Choose WhatsApp or email to send the same order details.',error:'Something went wrong',errorBody:'Your order is still saved on this device. Try again or send it using WhatsApp.',success:'Your order was received',successBody:(r:string)=>'We received order '+r+'. The Nile Bed team will review it and contact you to confirm specifications, availability and pricing.',reference:'Order reference',newOrder:'Start a new order',summary:'Order summary',noPrice:'No prices or estimated total are shown here. The team will confirm pricing and availability.',direct:'Need help? Contact us directly',whatsapp:'WhatsApp',dark:'Dark mode',light:'Light mode',language:'العربية',footer:'Mattress materials & spring manufacturing · Egypt',clearConfirm:'Remove all items from this order?',step1:'Choose materials',step2:'Review order',step3:'Contact details',specs:'Specifications'}
 };
+const msg={ar:{head:'مرحبًا نايل بد، أرغب في طلب الخامات التالية:',ref:'رقم الطلب',name:'الاسم',company:'الشركة',phone:'الهاتف',notes:'ملاحظات',note:'ملاحظة',end:'برجاء تأكيد المواصفات النهائية والتوافر والسعر. شكرًا.',subject:'طلب خامات — نايل بد'},en:{head:'Hello Nile Bed, I would like to request the following materials:',ref:'Order reference',name:'Name',company:'Company',phone:'Phone',notes:'Notes',note:'Note',end:'Please confirm final specifications, availability and pricing. Thank you.',subject:'Material enquiry — Nile Bed'}};
+function refCode(){const d=new Date();return 'NB-'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'-'+Math.floor(Math.random()*65535).toString(16).toUpperCase().padStart(4,'0');}
+function val(v?:string){const n=Number(v);return Number.isFinite(n)&&n>0?n:0;}
+function qtyText(v:string){return v.replace(/[٠-٩]/g,d=>String(d.charCodeAt(0)-1632)).replace(/[۰-۹]/g,d=>String(d.charCodeAt(0)-1776)).replace(/[٫,،]/g,'.').replace(/[^\d.]/g,'');}
+function searchText(v:string){return v.toLowerCase().replace(/[٠-٩]/g,d=>String(d.charCodeAt(0)-1632)).replace(/[۰-۹]/g,d=>String(d.charCodeAt(0)-1776)).replace(/(\d)\s*[*xX×]\s*(\d)/g,'$1×$2').replace(/\s+/g,' ').trim();}
+function fmt(v:number){return String(Number(v.toFixed(3)));}
+function Logo(){return <span className="brand-logo is-auto">{/* eslint-disable-next-line @next/next/no-img-element */}<img className="logo-light" src="/logo-on-light.svg" alt="Nile Bed" width={454} height={270}/>{/* eslint-disable-next-line @next/next/no-img-element */}<img className="logo-alt" src="/logo-on-dark.svg" alt="" aria-hidden="true" width={454} height={270}/></span>;}
 
-function BrandLogo({ variant }: { variant: 'light' | 'dark' | 'auto' }) {
-  return (
-    <span className={`brand-logo is-${variant}`}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="logo-light" src="/logo-on-light.svg" alt="Nile Bed" width={454} height={270} decoding="async" />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="logo-alt" src="/logo-on-dark.svg" alt="" aria-hidden="true" width={454} height={270} decoding="async" />
-    </span>
-  );
-}
-
-/** Accept Arabic-Indic digits and Arabic/comma decimal separators, keep a plain number. */
-function cleanQty(raw: string): string {
-  const converted = raw
-    .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
-    .replace(/[\u06f0-\u06f9]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
-    .replace(/[٫,،]/g, '.')
-    .replace(/[^\d.]/g, '');
-  const parts = converted.split('.');
-  return parts.length > 1 ? `${parts[0]}.${parts.slice(1).join('')}` : converted;
-}
-
-function qtyValue(line: Line | undefined): number {
-  const n = Number(line?.qty);
-  return Number.isFinite(n) && n > 0 ? n : 0;
-}
-
-function fmtQty(n: number): string {
-  return String(Number(n.toFixed(3)));
-}
-
-function roundTo(v: number, step: number): number {
-  return Number((Math.round(v / step) * step).toFixed(3));
-}
-
-/** A short, human-readable order reference kept with the local draft. */
-function makeReference(): string {
-  const d = new Date();
-  const day = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
-  const suffix = Math.floor(Math.random() * 0xffff).toString(16).toUpperCase().padStart(4, '0');
-  return `NB-${day}-${suffix}`;
-}
-
-function normalizeSearch(value: string) {
-  return value
-    .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
-    .replace(/[\u06f0-\u06f9]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
-    .replace(/(\d)\s*[*xX×]\s*(\d)/g, '$1×$2')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .toLowerCase();
-}
-
-export default function OrderPage() {
-  const [lang, setLang] = useState<Lang>('ar');
-  const [theme, setTheme] = useState<Theme>('light');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [activeUnit, setActiveUnit] = useState<UnitId | 'all'>('all');
-  const [activeGroup, setActiveGroup] = useState<string>('all');
-  const [query, setQuery] = useState('');
-  const [order, setOrder] = useState<Record<string, Line>>({});
-  const [contact, setContact] = useState<Contact>({ name: '', company: '', phone: '', notes: '' });
-  const [loaded, setLoaded] = useState(false);
-  const [reference, setReference] = useState('');
-  const [copyState, setCopyState] = useState<'idle' | 'ok' | 'fail'>('idle');
-  const [submitState, setSubmitState] = useState<SubmitState>('idle');
-  const [showErrors, setShowErrors] = useState(false);
-
-  const t = copy[lang];
-  const m = msgCopy[lang];
-  const ar = lang === 'ar';
-
-  useEffect(() => {
-    document.documentElement.lang = lang;
-    document.documentElement.dir = ar ? 'rtl' : 'ltr';
-  }, [lang, ar]);
-
-  useEffect(() => {
-    setTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
-  }, []);
-
-  // Restore a saved order and honour /order?add=<item-id>&unit=<unit-id> links
-  // coming from the catalog cards.
-  useEffect(() => {
-    let savedOrder: Record<string, Line> = {};
-    let savedContact: Contact = { name: '', company: '', phone: '', notes: '' };
-    let savedReference = '';
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as { order?: Record<string, Line>; contact?: Partial<Contact>; reference?: string };
-        if (parsed?.order && typeof parsed.order === 'object') savedOrder = parsed.order;
-        if (parsed?.contact && typeof parsed.contact === 'object') savedContact = { ...savedContact, ...parsed.contact };
-        if (typeof parsed?.reference === 'string') savedReference = parsed.reference.slice(0, 40);
-      }
-    } catch { /* private mode / stale value — start empty */ }
-    if (!savedReference) savedReference = makeReference();
-
-    const params = new URLSearchParams(window.location.search);
-    const unitParam = params.get('unit');
-    if (unitParam && units.some((u) => u.id === unitParam)) setActiveUnit(unitParam as UnitId);
-    const add = params.get('add');
-    if (add && items.some((it) => it.id === add)) {
-      const existing = savedOrder[add];
-      savedOrder = { ...savedOrder, [add]: { qty: qtyValue(existing) > 0 ? existing.qty : '1', note: existing?.note ?? '' } };
-      window.setTimeout(() => {
-        document.getElementById(`product-${add}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 250);
-    }
-    setOrder(savedOrder);
-    setContact(savedContact);
-    setReference(savedReference);
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!loaded) return;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ order, contact, reference })); } catch { /* ignore */ }
-  }, [order, contact, reference, loaded]);
-
-  const toggleTheme = () => {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    document.documentElement.dataset.theme = next;
-    try { localStorage.setItem('nilebed-theme-v3', next); } catch { /* ignore */ }
-  };
-
-  const setLine = (id: string, patch: Partial<Line>) => {
-    setOrder((prev) => ({ ...prev, [id]: { qty: prev[id]?.qty ?? '', note: prev[id]?.note ?? '', ...patch } }));
-    setSubmitState((prev) => prev === 'sending' ? prev : 'idle');
-  };
-
-  const updateContact = (field: keyof Contact, value: string) => {
-    setContact((prev) => ({ ...prev, [field]: value }));
-    setShowErrors(false);
-    setSubmitState((prev) => prev === 'sending' ? prev : 'idle');
-  };
-
-  const stepQty = (id: string, direction: 1 | -1) => {
-    const def = unitById[unitOf(id).unit];
-    const current = qtyValue(order[id]);
-    const next = Math.max(0, Math.min(999999, roundTo(current + direction * def.step, def.step)));
-    setLine(id, { qty: next > 0 ? fmtQty(next) : '' });
-  };
-
-  const selected = useMemo(() => items.filter((it) => qtyValue(order[it.id]) > 0), [order]);
-  const selectedCount = selected.length;
-
-  const filtered = useMemo(() => {
-    const q = normalizeSearch(query);
-    return items.filter((it) => {
-      if (activeUnit !== 'all' && unitOf(it.id).unit !== activeUnit) return false;
-      if (activeGroup !== 'all' && it.group !== activeGroup) return false;
-      if (!q) return true;
-      const hay = normalizeSearch(`${it.ar.name} ${it.ar.desc} ${it.ar.specs.join(' ')} ${it.en.name} ${it.en.desc} ${it.en.specs.join(' ')}`);
-      return hay.includes(q);
-    });
-  }, [activeUnit, activeGroup, query]);
-
-  const sections = useMemo(
-    () => units
-      .map((u) => ({ unit: u, rows: filtered.filter((it) => unitOf(it.id).unit === u.id) }))
-      .filter((s) => s.rows.length > 0),
-    [filtered],
-  );
-
-  const unitCounts = useMemo(() => countByUnit(items.map((it) => it.id)), []);
-
-  const totalsByUnit = useMemo(() => {
-    const totals: Partial<Record<UnitId, number>> = {};
-    selected.forEach((it) => {
-      const u = unitOf(it.id).unit;
-      totals[u] = (totals[u] ?? 0) + qtyValue(order[it.id]);
-    });
-    return totals;
-  }, [selected, order]);
-
-  const labelOf = (it: CatalogItem) => {
-    const info = unitOf(it.id);
-    const def = unitById[info.unit];
-    return ar ? (info.sheetLabel ?? def.ar.short) : def.en.short;
-  };
-
-  const message = useMemo(() => {
-    const lines = selected.map((it, i) => {
-      const line = order[it.id];
-      const name = ar ? it.ar.name : it.en.name;
-      const base = `${i + 1}) ${name} — ${fmtQty(qtyValue(line))} ${labelOf(it)}`;
-      return line?.note ? `${base} (${m.note}: ${line.note})` : base;
-    });
-    const details = [
-      contact.name && `${m.name}: ${contact.name}`,
-      contact.company && `${m.company}: ${contact.company}`,
-      contact.phone && `${m.phone}: ${contact.phone}`,
-      contact.notes && `${m.notes}: ${contact.notes}`,
-    ].filter(Boolean) as string[];
-    const header = reference ? `${m.heading}\n${m.reference}: ${reference}` : m.heading;
-    return [header, lines.join('\n'), details.join('\n'), m.footer]
-      .filter(Boolean)
-      .join('\n\n');
-  }, [selected, order, contact, ar, m, reference]);
-
-  const waHref = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
-  const mailHref = `mailto:${EMAIL}?subject=${encodeURIComponent(m.subject)}&body=${encodeURIComponent(message)}`;
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(message);
-      setCopyState('ok');
-    } catch {
-      setCopyState('fail');
-    }
-    window.setTimeout(() => setCopyState('idle'), 2500);
-  };
-
-  const handleSubmit = async () => {
-    if (disabled || submitState === 'sending') return;
-    if (!contact.name.trim() || !contact.phone.trim()) {
-      setShowErrors(true);
-      setSubmitState('error');
-      return;
-    }
-    setShowErrors(false);
-    setSubmitState('sending');
-    try {
-      const res = await fetch('/api/order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          reference,
-          lang,
-          contact,
-          lines: selected.map((it) => ({ id: it.id, qty: qtyValue(order[it.id]), note: order[it.id]?.note ?? '' })),
-          message,
-        }),
-      });
-      const data = await res.json() as { ok?: boolean; mode?: string; reason?: string; reference?: string };
-      if (data?.ok && data.mode === 'submitted') {
-        if (data.reference) setReference(data.reference);
-        setSubmitState('submitted');
-      } else if (data?.reason === 'missing-contact') {
-        setShowErrors(true);
-        setSubmitState('error');
-      } else {
-        setSubmitState('fallback');
-      }
-    } catch {
-      setSubmitState('error');
-    }
-  };
-
-  const clearOrder = () => {
-    if (!window.confirm(t.clearConfirm)) return;
-    setOrder({});
-    setContact({ name: '', company: '', phone: '', notes: '' });
-    setReference(makeReference());
-    setSubmitState('idle');
-    setShowErrors(false);
-  };
-
-  const disabled = selectedCount === 0;
-
-  const statusTitle = submitState === 'submitted' ? t.sentTitle
-    : submitState === 'fallback' ? t.fallbackTitle
-    : t.errorTitle;
-  const statusBody = submitState === 'submitted' ? t.sentBody(reference)
-    : submitState === 'fallback' ? t.fallbackBody
-    : t.errorBody;
-
-  return (
-    <main className="nile order-page" dir={ar ? 'rtl' : 'ltr'} lang={lang}>
-      {/* ── Topbar ── */}
-      <header className="topbar order-topbar">
-        <a className="brand" href="/" aria-label={ar ? 'نايل بد — الرئيسية' : 'Nile Bed — home'}><BrandLogo variant="auto" /></a>
-        <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="Main navigation">
-          <a href="/">{t.nav[0]}</a>
-          <a href="/catalog">{t.nav[1]}</a>
-          <a href="/order" aria-current="page">{t.nav[2]}</a>
-          <a href="/#contact" onClick={() => setMenuOpen(false)}>{t.nav[3]}</a>
-        </nav>
-        <div className="nav-actions">
-          <button className="theme-switch" type="button" onClick={toggleTheme} aria-label={theme === 'dark' ? t.themeLight : t.themeDark} aria-pressed={theme === 'dark'}>
-            <Moon className="icon-moon" size={15} /><Sun className="icon-sun" size={15} /><span>{theme === 'dark' ? t.themeLight : t.themeDark}</span>
-          </button>
-          <button className="lang-switch" type="button" onClick={() => setLang(ar ? 'en' : 'ar')} aria-label={ar ? 'Switch to English' : 'التبديل إلى العربية'}>
-            <Globe2 size={15} />{t.toggle}
-          </button>
-          <a className="nav-cta" href={`https://wa.me/${WA_NUMBER}`} target="_blank" rel="noopener noreferrer">
-            {ar ? 'واتساب' : 'WhatsApp'} <ArrowUpRight size={15} />
-          </a>
-          <button className="menu-btn order-menu-btn" type="button" aria-expanded={menuOpen} aria-label={menuOpen ? t.close : t.menu} onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
-      </header>
-
-      {/* ── Hero + unit legend ── */}
-      <section className="ob-hero">
-        <div className="ob-hero-bg" />
-        <div className="ob-hero-inner">
-          <div className="ob-hero-copy">
-            <div className="eyebrow"><span className="eyebrow-line" />{t.kicker}</div>
-            <h1>{t.title}</h1>
-            <p>{t.subtitle}</p>
-            <div className="ob-hero-note"><Info size={14} />{t.heroNote}</div>
-          </div>
-          <div className="ob-legend">
-            <div className="ob-legend-head"><Ruler size={15} />{t.unitsLabel} · {units.length}</div>
-            <div className="ob-legend-grid">
-              {units.map((u) => (
-                <button key={u.id} type="button" className={activeUnit === u.id ? 'ob-legend-item active' : 'ob-legend-item'} onClick={() => setActiveUnit(activeUnit === u.id ? 'all' : u.id)}>
-                  <strong>{ar ? u.ar.short : u.en.short}</strong>
-                  <span>{unitCounts[u.id]} {t.products}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Filters ── */}
-      <section className="ob-filters">
-        <div className="ob-filters-inner">
-          <div className="ob-filters-top">
-            <div className="ob-search">
-              <Search size={16} />
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t.searchPlaceholder} aria-label={ar ? 'بحث' : 'Search'} />
-              {query && <button type="button" onClick={() => setQuery('')} aria-label="clear"><X size={14} /></button>}
-            </div>
-            <label className="ob-group-select">
-              <span>{t.filterByGroup}</span>
-              <select value={activeGroup} onChange={(e) => setActiveGroup(e.target.value)} aria-label={t.filterByGroup}>
-                <option value="all">{t.allGroups}</option>
-                {groups.map((g) => <option key={g.id} value={g.id}>{ar ? g.ar.title : g.en.title}</option>)}
-              </select>
-            </label>
-            <div className="ob-count"><Check size={13} />{t.count(filtered.length)}</div>
-          </div>
-          <div className="ob-unit-chips" role="tablist" aria-label={t.filterByUnit}>
-            <button role="tab" aria-selected={activeUnit === 'all'} className={activeUnit === 'all' ? 'ob-chip active' : 'ob-chip'} onClick={() => setActiveUnit('all')}>
-              {t.allUnits} <span>{items.length}</span>
-            </button>
-            {units.map((u) => (
-              <button key={u.id} role="tab" aria-selected={activeUnit === u.id} className={activeUnit === u.id ? 'ob-chip active' : 'ob-chip'} onClick={() => setActiveUnit(u.id)}>
-                {ar ? u.ar.label : u.en.label} <span>{unitCounts[u.id]}</span>
-              </button>
-            ))}
-          </div>
-          <div className="ob-sheet-note"><Info size={13} />{t.sheetNote}</div>
-        </div>
-      </section>
-
-      {/* ── Products + summary ── */}
-      <div className="ob-layout">
-        <section className="ob-products" aria-label={t.title}>
-          {filtered.length === 0 ? (
-            <div className="ob-no-results">
-              <Search size={22} />
-              <p>{t.noResults}</p>
-              <button type="button" onClick={() => { setQuery(''); setActiveGroup('all'); setActiveUnit('all'); }}>{t.reset}</button>
-            </div>
-          ) : sections.map((section, sIdx) => (
-            <div className="ob-unit-block" key={section.unit.id} id={`unit-${section.unit.id}`}>
-              <div className="ob-unit-head">
-                <span className="ob-unit-num">{String(units.indexOf(section.unit) + 1).padStart(2, '0')}</span>
-                <div className="ob-unit-head-copy">
-                  <h2>{ar ? section.unit.ar.label : section.unit.en.label}</h2>
-                  <p>{ar ? section.unit.ar.desc : section.unit.en.desc}</p>
-                  <small>{ar ? section.unit.ar.example : section.unit.en.example}</small>
-                </div>
-                <span className="ob-unit-count">{section.rows.length} {t.products}</span>
-              </div>
-              <div className="ob-rows">
-                {section.rows.map((it, idx) => {
-                  const info = unitOf(it.id);
-                  const def = unitById[info.unit];
-                  const line = order[it.id];
-                  const qty = qtyValue(line);
-                  const groupDef = groups.find((g) => g.id === it.group);
-                  const groupTitle = groupDef ? (ar ? groupDef.ar.title : groupDef.en.title) : '';
-                  return (
-                    <div id={`product-${it.id}`} key={it.id} className={qty > 0 ? 'ob-row selected' : 'ob-row'}>
-                      <div className="ob-row-main">
-                        <div className="ob-row-name">
-                          <span className="ob-row-index">{String(sIdx + 1).padStart(2, '0')}.{String(idx + 1).padStart(2, '0')}</span>
-                          <div>
-                            <h3>{ar ? it.ar.name : it.en.name}</h3>
-                            <span className="ob-row-group">{groupTitle}</span>
-                          </div>
-                        </div>
-                        <div className="ob-row-unit">
-                          <span className="ob-unit-badge">{t.orderBy} <strong>{ar ? def.ar.short : def.en.short}</strong></span>
-                          {info.source === 'family'
-                            ? <em className="ob-est" title={t.approxTitle}>{t.approx}</em>
-                            : <span className="ob-sheet" title={info.sheetLabel ? t.sheetLabel(info.sheetLabel) : t.fromSheet}>{t.fromSheet}</span>}
-                        </div>
-                        <div className="ob-qty" dir="ltr">
-                          <button type="button" onClick={() => stepQty(it.id, -1)} aria-label={`- ${def.step}`}><Minus size={14} /></button>
-                          <div className="ob-qty-field">
-                            <input
-                              type="text"
-                              inputMode="decimal"
-                              value={line?.qty ?? ''}
-                              placeholder="0"
-                              aria-label={`${t.qty} — ${ar ? it.ar.name : it.en.name} (${ar ? def.ar.short : def.en.short})`}
-                              onChange={(e) => setLine(it.id, { qty: cleanQty(e.target.value) })}
-                              onBlur={() => {
-                                const n = Math.min(999999, qtyValue(line));
-                                const rounded = def.decimal ? n : Math.round(n);
-                                setLine(it.id, { qty: rounded > 0 ? fmtQty(rounded) : '' });
-                              }}
-                            />
-                            <span>{ar ? def.ar.short : def.en.short}</span>
-                          </div>
-                          <button type="button" onClick={() => stepQty(it.id, 1)} aria-label={`+ ${def.step}`}><Plus size={14} /></button>
-                        </div>
-                      </div>
-                      {qty > 0 && (
-                        <div className="ob-row-note">
-                          <input
-                            value={line?.note ?? ''}
-                            placeholder={t.lineNote}
-                            aria-label={`${t.lineNote} — ${ar ? it.ar.name : it.en.name}`}
-                            onChange={(e) => setLine(it.id, { note: e.target.value })}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </section>
-
-        <aside className="ob-summary" aria-label={t.summary}>
-          <div className="ob-summary-inner">
-            <div className="ob-summary-head">
-              <ClipboardList size={17} />
-              <h2>{t.summary}</h2>
-              <span>{selectedCount}</span>
-            </div>
-            <p className="ob-summary-count">{t.summaryCount(selectedCount)}</p>
-
-            {disabled ? (
-              <div className="ob-empty"><PackageHint />{t.empty}<small>{t.emptyHint}</small></div>
-            ) : (
-              <>
-                <ul className="ob-lines">
-                  {selected.map((it) => (
-                    <li key={it.id}>
-                      <div className="ob-line-name">
-                        <strong>{ar ? it.ar.name : it.en.name}</strong>
-                        {order[it.id]?.note && <small>{m.note}: {order[it.id].note}</small>}
-                      </div>
-                      <span className="ob-line-qty">{fmtQty(qtyValue(order[it.id]))} {labelOf(it)}</span>
-                      <button type="button" onClick={() => setLine(it.id, { qty: '' })} aria-label={t.remove}><X size={13} /></button>
-                    </li>
-                  ))}
-                </ul>
-                <div className="ob-unit-totals">
-                  <span>{t.unitTotals}</span>
-                  <div>
-                    {units.filter((u) => (totalsByUnit[u.id] ?? 0) > 0).map((u) => (
-                      <em key={u.id}>{fmtQty(totalsByUnit[u.id] ?? 0)} {ar ? u.ar.short : u.en.short}</em>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            <form className="ob-contact" onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }}>
-              <h3>{t.contactTitle}</h3>
-              <label className={showErrors && !contact.name.trim() ? 'has-error' : ''}>
-                {t.name} <em>{t.required}</em>
-                <input value={contact.name} placeholder={t.namePh} onChange={(e) => updateContact('name', e.target.value)} />
-                {showErrors && !contact.name.trim() && <small className="ob-field-error">{t.nameError}</small>}
-              </label>
-              <label>{t.company}<input value={contact.company} placeholder={t.companyPh} onChange={(e) => updateContact('company', e.target.value)} /></label>
-              <label className={showErrors && !contact.phone.trim() ? 'has-error' : ''}>
-                {t.phone} <em>{t.required}</em>
-                <input type="tel" value={contact.phone} placeholder={t.phonePh} onChange={(e) => updateContact('phone', e.target.value)} />
-                {showErrors && !contact.phone.trim() && <small className="ob-field-error">{t.phoneError}</small>}
-              </label>
-              <label>{t.notes}<textarea rows={3} value={contact.notes} placeholder={t.notesPh} onChange={(e) => updateContact('notes', e.target.value)} /></label>
-            </form>
-
-            {submitState !== 'idle' && submitState !== 'sending' && (
-              <div className={`ob-status ob-status-${submitState}`} role="status" aria-live="polite">
-                <strong>{statusTitle}</strong>
-                <p>{statusBody}</p>
-                {reference && <span className="ob-ref">{t.referenceLabel}: {reference}</span>}
-                {submitState === 'submitted' && (
-                  <button type="button" onClick={clearOrder}>{t.newOrder}</button>
-                )}
-              </div>
-            )}
-
-            <div className="ob-actions">
-              <button className="ob-submit" type="button" onClick={handleSubmit} disabled={disabled || submitState === 'sending'}>
-                <Send size={15} />{submitState === 'sending' ? t.sending : t.sendOrder}<ArrowUpRight size={14} />
-              </button>
-              <small className="ob-submit-note">{t.submitNote}</small>
-              <a className={`ob-send ob-send-wa${disabled ? ' is-disabled' : ''}`} href={disabled ? undefined : waHref} target="_blank" rel="noopener noreferrer" aria-disabled={disabled} onClick={disabled ? (e) => e.preventDefault() : undefined}>
-                <Phone size={15} />{t.sendWa}<ArrowUpRight size={14} />
-              </a>
-              <a className={`ob-send ob-send-mail${disabled ? ' is-disabled' : ''}`} href={disabled ? undefined : mailHref} aria-disabled={disabled} onClick={disabled ? (e) => e.preventDefault() : undefined}>
-                <Mail size={15} />{t.sendMail}<ArrowUpRight size={14} />
-              </a>
-              <button className="ob-secondary" type="button" onClick={handleCopy} disabled={disabled}>
-                <Copy size={14} />{copyState === 'ok' ? t.copied : copyState === 'fail' ? t.copyFail : t.copy}
-              </button>
-              <button className="ob-clear" type="button" onClick={clearOrder} disabled={disabled}><Trash2 size={13} />{t.clear}</button>
-            </div>
-            <p className="ob-summary-note"><Info size={13} />{t.note}</p>
-            <div className="ob-direct">
-              <a href={`https://wa.me/${WA_NUMBER}`} target="_blank" rel="noopener noreferrer"><Phone size={13} />{ar ? 'واتساب: 010 90000676' : 'WhatsApp: 010 90000676'}</a>
-              <a href={`mailto:${EMAIL}`}><Mail size={13} />{EMAIL}</a>
-            </div>
-          </div>
-        </aside>
-      </div>
-
-      <footer className="footer">
-        <a className="brand footer-brand" href="/" aria-label="Nile Bed"><BrandLogo variant="dark" /></a>
-        <span>{t.footer}</span>
-        <a href="#top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>{t.backTop}</a>
-        <small>© {new Date().getFullYear()} NILE BED</small>
-      </footer>
-    </main>
-  );
-}
-
-function PackageHint() {
-  return <span className="ob-empty-icon"><Send size={18} /></span>;
+export default function OrderPage(){
+ const [lang,setLang]=useState<Lang>('ar'),[theme,setTheme]=useState<Theme>('light'),[step,setStep]=useState<Step>('browse');
+ const [query,setQuery]=useState(''),[group,setGroup]=useState('all'),[order,setOrder]=useState<Record<string,Line>>({});
+ const [contact,setContact]=useState<Contact>({name:'',company:'',phone:'',notes:''}),[reference,setReference]=useState(''),[loaded,setLoaded]=useState(false);
+ const [errors,setErrors]=useState(false),[sending,setSending]=useState(false),[status,setStatus]=useState<'idle'|'fallback'|'error'>('idle'),[copied,setCopied]=useState(false);
+ const ar=lang==='ar',t=copy[lang],m=msg[lang];
+ useEffect(()=>{document.documentElement.lang=lang;document.documentElement.dir=ar?'rtl':'ltr';},[lang,ar]);
+ useEffect(()=>{
+  setTheme(document.documentElement.dataset.theme==='dark'?'dark':'light');
+  let saved:{order?:Record<string,Line>;contact?:Partial<Contact>;reference?:string}={};
+  try{const raw=localStorage.getItem(KEY);if(raw)saved=JSON.parse(raw);}catch{/* Ignore invalid draft. */}
+  const restored:Record<string,Line>={};
+  Object.entries(saved.order||{}).forEach(([id,line])=>{if(items.some(i=>i.id===id)&&val(line?.qty)>0)restored[id]={qty:qtyText(String(line.qty)),note:String(line.note||'').slice(0,300)};});
+  const add=new URLSearchParams(window.location.search).get('add');if(add&&items.some(i=>i.id===add))restored[add]={qty:restored[add]?.qty||'1',note:restored[add]?.note||''};
+  setOrder(restored);setContact({name:saved.contact?.name||'',company:saved.contact?.company||'',phone:saved.contact?.phone||'',notes:saved.contact?.notes||''});setReference(saved.reference||refCode());setLoaded(true);
+ },[]);
+ useEffect(()=>{if(loaded){try{localStorage.setItem(KEY,JSON.stringify({order,contact,reference}));}catch{/* Storage may be unavailable. */}}},[order,contact,reference,loaded]);
+ const selected=useMemo(()=>items.filter(i=>val(order[i.id]?.qty)>0),[order]);
+ const filtered=useMemo(()=>{const q=searchText(query);return items.filter(i=>(group==='all'||i.group===group)&&(!q||searchText(i.ar.name+' '+i.ar.desc+' '+i.ar.specs.join(' ')+' '+i.en.name+' '+i.en.desc+' '+i.en.specs.join(' ')).includes(q)));},[query,group]);
+ const unitLabel=(item:CatalogItem)=>{const u=unitOf(item.id),d=unitById[u.unit];return ar?(u.sheetLabel||d.ar.short):d.en.short;};
+ const message=useMemo(()=>{
+  const lines=selected.map((i,n)=>{const base=(n+1)+'. '+(ar?i.ar.name:i.en.name)+' — '+fmt(val(order[i.id]?.qty))+' '+unitLabel(i);return order[i.id]?.note?base+' ('+m.note+': '+order[i.id].note+')':base;});
+  const details=[contact.name&&m.name+': '+contact.name,contact.company&&m.company+': '+contact.company,contact.phone&&m.phone+': '+contact.phone,contact.notes&&m.notes+': '+contact.notes].filter(Boolean);
+  return [m.head,m.ref+': '+reference,lines.join('\n'),details.join('\n'),m.end].filter(Boolean).join('\n\n');
+ },[selected,order,contact,ar,m,reference]);
+ const wa='https://wa.me/'+WA+'?text='+encodeURIComponent(message),mail='mailto:'+EMAIL+'?subject='+encodeURIComponent(m.subject)+'&body='+encodeURIComponent(message);
+ function setQty(id:string,raw:string){const d=unitById[unitOf(id).unit];let v=qtyText(raw).slice(0,12);if(Number(v)>999999)v='999999';if(!d.decimal&&v.includes('.'))v=String(Math.round(Number(v)));setOrder(p=>({...p,[id]:{qty:v,note:p[id]?.note||''}}));}
+ function bump(id:string,delta:number){const d=unitById[unitOf(id).unit],n=Math.max(0,Math.min(999999,val(order[id]?.qty)+delta*d.step));setQty(id,n?fmt(n):'');}
+ function setNote(id:string,note:string){setOrder(p=>({...p,[id]:{qty:p[id]?.qty||'',note:note.slice(0,300)}}));}
+ function remove(id:string){setOrder(p=>{const n={...p};delete n[id];return n;});}
+ function clear(){if(!window.confirm(t.clearConfirm))return;setOrder({});setContact({name:'',company:'',phone:'',notes:''});setReference(refCode());setStatus('idle');setStep('browse');}
+ async function copyDetails(){try{await navigator.clipboard.writeText(message);setCopied(true);window.setTimeout(()=>setCopied(false),2000);}catch{setCopied(false);}}
+ async function submit(){if(!selected.length||sending)return;if(!contact.name.trim()||!contact.phone.trim()){setErrors(true);return;}setErrors(false);setSending(true);try{const r=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reference,lang,contact,lines:selected.map(i=>({id:i.id,qty:val(order[i.id]?.qty),note:order[i.id]?.note||''})),message})});const d=await r.json() as {ok?:boolean;mode?:string;reference?:string};if(d.ok&&d.mode==='submitted'){setReference(d.reference||reference);setStep('success');setStatus('idle');}else setStatus('fallback');}catch{setStatus('error');}finally{setSending(false);}}
+ const steps=[t.step1,t.step2,t.step3],idx=step==='browse'?0:step==='review'?1:2;
+ return <main className="nile order-page order-redesign" dir={ar?'rtl':'ltr'} lang={lang}>
+  <header className="topbar order-topbar"><a className="brand" href="/" aria-label="Nile Bed"><Logo/></a><nav className="nav order-nav" aria-label="Main navigation"><a href="/">{t.home}</a><a href="/catalog">{t.catalog}</a><a href="/order" aria-current="page">{t.order}</a><a href="/#contact">{t.contact}</a></nav><div className="nav-actions">
+   <button className="theme-switch" type="button" onClick={()=>{const n=theme==='dark'?'light':'dark';setTheme(n);document.documentElement.dataset.theme=n;try{localStorage.setItem('nilebed-theme-v3',n);}catch{/* ignore */}}} aria-label={theme==='dark'?t.light:t.dark} aria-pressed={theme==='dark'}>{theme==='dark'?<Sun size={15}/>:<Moon size={15}/>}<span>{theme==='dark'?t.light:t.dark}</span></button>
+   <button className="lang-switch" type="button" onClick={()=>setLang(ar?'en':'ar')}><Globe2 size={15}/>{t.language}</button></div></header>
+  <section className="or-hero"><div className="or-hero-inner"><span className="or-eyebrow">{t.eyebrow}</span><h1>{t.title}</h1><p>{t.intro}</p><div className="or-help"><Phone size={15}/><span>{t.direct}</span><a href={'https://wa.me/'+WA} target="_blank" rel="noopener noreferrer">{t.whatsapp}<ArrowUpRight size={13}/></a></div></div></section>
+  {step!=='success'&&<div className="or-progress" aria-label={ar?'خطوات الطلب':'Order steps'}>{steps.map((s,i)=><div key={s} className={'or-progress-step'+(i<=idx?' is-active':'')+(i===idx?' is-current':'')}><span>{'0'+(i+1)}</span><strong>{s}</strong></div>)}</div>}
+  {step==='browse'&&<section className="or-main">
+   <div className="or-toolbar"><label className="or-search"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder={t.search} aria-label={t.search}/>{query&&<button type="button" onClick={()=>setQuery('')} aria-label="Clear search"><X size={16}/></button>}</label><span className="or-result-count">{filtered.length} {t.count}</span></div>
+   <div className="or-categories" aria-label={ar?'الفئات':'Categories'}><button type="button" className={group==='all'?'is-active':''} onClick={()=>setGroup('all')}>{t.all}<span>{items.length}</span></button>{groups.map(g=><button type="button" key={g.id} className={group===g.id?'is-active':''} onClick={()=>setGroup(g.id)}>{ar?g.ar.title:g.en.title}<span>{items.filter(i=>i.group===g.id).length}</span></button>)}</div>
+   <div className="or-product-list">{filtered.length===0?<div className="or-empty"><Search size={25}/><strong>{t.none}</strong><button type="button" onClick={()=>{setQuery('');setGroup('all');}}>{t.all}</button></div>:groups.filter(g=>group==='all'||g.id===group).map(g=>{const rows=filtered.filter(i=>i.group===g.id);if(!rows.length)return null;return <section className="or-product-group" key={g.id}><div className="or-group-heading"><div><span>{ar?g.ar.kicker:g.en.kicker}</span><h2>{ar?g.ar.title:g.en.title}</h2><p>{ar?g.ar.desc:g.en.desc}</p></div><small>{rows.length} {t.count}</small></div><div className="or-product-grid">{rows.map(item=>{const u=unitOf(item.id),d=unitById[u.unit],n=val(order[item.id]?.qty);return <article id={'product-'+item.id} key={item.id} className={'or-product-card'+(n?' is-selected':'')}><div className="or-product-top"><span className="or-unit">{t.unit}: <strong>{unitLabel(item)}</strong></span>{u.source==='family'&&<span className="or-estimated" title={t.estimateHelp}>{t.estimated}</span>}</div><h3>{ar?item.ar.name:item.en.name}</h3><p>{ar?item.ar.desc:item.en.desc}</p>{item.ar.specs.length>0&&<details className="or-specs"><summary>{t.specs}<ChevronDown size={14}/></summary><ul>{(ar?item.ar.specs:item.en.specs).map(s=><li key={s}>{s}</li>)}</ul></details>}<div className="or-card-actions">{n?<div className="or-quantity" dir="ltr"><button type="button" onClick={()=>bump(item.id,-1)} aria-label={t.less}><Minus size={15}/></button><input value={order[item.id]?.qty||''} inputMode="decimal" onChange={e=>setQty(item.id,e.target.value)} onBlur={()=>{const v=val(order[item.id]?.qty),q=d.decimal?v:Math.round(v);setQty(item.id,q?fmt(q):'');}} aria-label={t.quantity+' — '+(ar?item.ar.name:item.en.name)}/><button type="button" onClick={()=>bump(item.id,1)} aria-label={t.more}><Plus size={15}/></button></div>:<button className="or-add" type="button" onClick={()=>setQty(item.id,'1')}><Plus size={15}/>{t.add}</button>}{n>0&&<span className="or-added"><Check size={13}/>{t.added}</span>}</div></article>;})}</div></section>;})}</div>
+   <div className="or-mobile-cart" aria-live="polite"><div><ShoppingBag size={18}/><span>{t.cart}</span><strong>{t.items(selected.length)}</strong></div><button type="button" disabled={!selected.length} onClick={()=>setStep('review')}>{t.review}<ArrowLeft size={16}/></button></div>
+   <div className="or-desktop-cart"><ShoppingBag size={17}/><span>{t.cart}</span><strong>{t.items(selected.length)}</strong><button type="button" disabled={!selected.length} onClick={()=>setStep('review')}>{t.review}<ArrowLeft size={15}/></button></div>
+  </section>}
+  {step==='review'&&<section className="or-flow-panel"><div className="or-panel-heading"><div><span>02</span><h2>{t.reviewTitle}</h2><p>{t.reviewIntro}</p></div><button type="button" onClick={()=>setStep('browse')}><ArrowRight size={15}/>{t.edit}</button></div>
+   {selected.length===0?<div className="or-empty"><Package size={25}/><strong>{t.empty}</strong><button type="button" onClick={()=>setStep('browse')}>{t.choose}</button></div>:<div className="or-review-list">{selected.map(item=>{const u=unitOf(item.id),d=unitById[u.unit],g=groups.find(x=>x.id===item.group);return <article className="or-review-item" key={item.id}><div className="or-review-name"><strong>{ar?item.ar.name:item.en.name}</strong><small>{g?(ar?g.ar.title:g.en.title):''}</small></div><span className="or-review-unit">{fmt(val(order[item.id]?.qty))} {unitLabel(item)}</span><button type="button" onClick={()=>remove(item.id)} aria-label={t.remove}><Trash2 size={16}/></button><input className="or-review-note" value={order[item.id]?.note||''} onChange={e=>setNote(item.id,e.target.value)} placeholder={t.lineNote} aria-label={t.lineNote+' — '+(ar?item.ar.name:item.en.name)}/></article>;})}</div>}
+   <p className="or-no-price">{t.noPrice}</p><div className="or-flow-actions"><button className="or-primary" type="button" disabled={!selected.length} onClick={()=>setStep('contact')}>{t.contactTitle}<ArrowLeft size={16}/></button><button className="or-text-button" type="button" onClick={()=>setStep('browse')}>{t.back}</button></div></section>}
+  {step==='contact'&&<section className="or-flow-panel or-contact-panel"><div className="or-panel-heading"><div><span>03</span><h2>{t.contactTitle}</h2><p>{t.contactIntro}</p></div><button type="button" onClick={()=>setStep('review')}><ArrowRight size={15}/>{t.back}</button></div>
+   <div className="or-contact-summary"><ClipboardList size={17}/><strong>{t.summary}</strong><span>{t.items(selected.length)}</span><button type="button" onClick={()=>setStep('review')}>{t.edit}</button></div>
+   <form onSubmit={e=>{e.preventDefault();void submit();}}><div className="or-fields">
+    <label className={errors&&!contact.name.trim()?'has-error':''}>{t.name} <em>*</em><input autoComplete="name" value={contact.name} onChange={e=>{setContact(p=>({...p,name:e.target.value}));setErrors(false);}} placeholder={t.namePh}/>{errors&&!contact.name.trim()&&<small>{t.nameError}</small>}</label>
+    <label>{t.company}<input autoComplete="organization" value={contact.company} onChange={e=>setContact(p=>({...p,company:e.target.value}))} placeholder={t.companyPh}/></label>
+    <label className={errors&&!contact.phone.trim()?'has-error':''}>{t.phone} <em>*</em><input type="tel" autoComplete="tel" value={contact.phone} onChange={e=>{setContact(p=>({...p,phone:e.target.value}));setErrors(false);}} placeholder={t.phonePh}/>{errors&&!contact.phone.trim()&&<small>{t.phoneError}</small>}</label>
+    <label className="or-wide">{t.notes}<textarea rows={3} value={contact.notes} onChange={e=>setContact(p=>({...p,notes:e.target.value}))} placeholder={t.notesPh}/></label>
+   </div>
+   {status==='fallback'&&<div className="or-alert" role="status"><strong>{t.fallback}</strong><p>{t.fallbackBody}</p></div>}{status==='error'&&<div className="or-alert is-error" role="alert"><strong>{t.error}</strong><p>{t.errorBody}</p></div>}
+   <p className="or-no-price">{t.noPrice}</p><button className="or-primary or-submit" type="submit" disabled={sending||!selected.length}><Send size={16}/>{sending?t.sending:t.send}</button>
+   <div className="or-fallback-actions"><a href={wa} target="_blank" rel="noopener noreferrer"><Phone size={15}/>{t.wa}</a><a href={mail}><Mail size={15}/>{t.mail}</a><button type="button" onClick={()=>void copyDetails()}>{copied?<Check size={15}/>:<ClipboardList size={15}/>} {copied?t.copied:t.copy}</button></div></form></section>}
+  {step==='success'&&<section className="or-success-panel" role="status"><span><Check size={30}/></span><h2>{t.success}</h2><p>{t.successBody(reference)}</p><strong>{t.reference}: {reference}</strong><button className="or-primary" type="button" onClick={()=>{setOrder({});setContact({name:'',company:'',phone:'',notes:''});setReference(refCode());setStatus('idle');setStep('browse');}}>{t.newOrder}</button></section>}
+  <footer className="footer or-footer"><a className="brand footer-brand" href="/"><Logo/></a><span>{t.footer}</span><a href={'https://wa.me/'+WA} target="_blank" rel="noopener noreferrer">{t.direct}</a><small>© {new Date().getFullYear()} NILE BED</small></footer>
+ </main>;
 }
