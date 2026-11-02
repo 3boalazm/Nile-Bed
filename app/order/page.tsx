@@ -51,7 +51,7 @@ export default function OrderPage(){
  function setNote(id:string,note:string){setOrder(p=>({...p,[id]:{qty:p[id]?.qty||'',note:note.slice(0,300)}}));}
  function remove(id:string){setOrder(p=>{const n={...p};delete n[id];return n;});}
  function clear(){if(!window.confirm(t.clearConfirm))return;setOrder({});setContact({name:'',company:'',phone:'',notes:''});setReference(refCode());setStatus('idle');setStep('browse');}
- async function copy(){try{await navigator.clipboard.writeText(message);setCopied(true);window.setTimeout(()=>setCopied(false),2000);}catch{setCopied(false);}}
+ async function copyDetails(){try{await navigator.clipboard.writeText(message);setCopied(true);window.setTimeout(()=>setCopied(false),2000);}catch{setCopied(false);}}
  async function submit(){if(!selected.length||sending)return;if(!contact.name.trim()||!contact.phone.trim()){setErrors(true);return;}setErrors(false);setSending(true);try{const r=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reference,lang,contact,lines:selected.map(i=>({id:i.id,qty:val(order[i.id]?.qty),note:order[i.id]?.note||''})),message})});const d=await r.json() as {ok?:boolean;mode?:string;reference?:string};if(d.ok&&d.mode==='submitted'){setReference(d.reference||reference);setStep('success');setStatus('idle');}else setStatus('fallback');}catch{setStatus('error');}finally{setSending(false);}}
  const steps=[t.step1,t.step2,t.step3],idx=step==='browse'?0:step==='review'?1:2;
  return <main className="nile order-page order-redesign" dir={ar?'rtl':'ltr'} lang={lang}>
@@ -80,7 +80,7 @@ export default function OrderPage(){
    </div>
    {status==='fallback'&&<div className="or-alert" role="status"><strong>{t.fallback}</strong><p>{t.fallbackBody}</p></div>}{status==='error'&&<div className="or-alert is-error" role="alert"><strong>{t.error}</strong><p>{t.errorBody}</p></div>}
    <p className="or-no-price">{t.noPrice}</p><button className="or-primary or-submit" type="submit" disabled={sending||!selected.length}><Send size={16}/>{sending?t.sending:t.send}</button>
-   <div className="or-fallback-actions"><a href={wa} target="_blank" rel="noopener noreferrer"><Phone size={15}/>{t.wa}</a><a href={mail}><Mail size={15}/>{t.mail}</a><button type="button" onClick={()=>void copy()}>{copied?<Check size={15}/>:<ClipboardList size={15}/>} {copied?t.copied:t.copy}</button></div></form></section>}
+   <div className="or-fallback-actions"><a href={wa} target="_blank" rel="noopener noreferrer"><Phone size={15}/>{t.wa}</a><a href={mail}><Mail size={15}/>{t.mail}</a><button type="button" onClick={()=>void copyDetails()}>{copied?<Check size={15}/>:<ClipboardList size={15}/>} {copied?t.copied:t.copy}</button></div></form></section>}
   {step==='success'&&<section className="or-success-panel" role="status"><span><Check size={30}/></span><h2>{t.success}</h2><p>{t.successBody(reference)}</p><strong>{t.reference}: {reference}</strong><button className="or-primary" type="button" onClick={()=>{setOrder({});setContact({name:'',company:'',phone:'',notes:''});setReference(refCode());setStatus('idle');setStep('browse');}}>{t.newOrder}</button></section>}
   <footer className="footer or-footer"><a className="brand footer-brand" href="/"><Logo/></a><span>{t.footer}</span><a href={'https://wa.me/'+WA} target="_blank" rel="noopener noreferrer">{t.direct}</a><small>© {new Date().getFullYear()} NILE BED</small></footer>
  </main>;
