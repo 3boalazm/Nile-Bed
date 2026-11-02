@@ -78,6 +78,10 @@
   --nb-l-foam-4: #8d978e;
   --nb-l-foam-5: #7f8a80;
   --nb-l-foam-6: #e7e8e0;
+  --nb-l-success-bg: #eaf6ee;
+  --nb-l-warning: #8a5b1d;
+  --nb-l-warning-bg: #fff5e5;
+  --nb-l-danger-bg: #fff0ee;
   --nb-l-media: #f7f7f3;             /* product image beds stay light */
   --nb-l-on-media: #171b1b;          /* ink on those light beds */
   --nb-l-gallery-filter: saturate(.6);
@@ -144,6 +148,10 @@
   --nb-d-foam-4: #3d4941;
   --nb-d-foam-5: #354038;
   --nb-d-foam-6: #2e3831;
+  --nb-d-success-bg: #183526;
+  --nb-d-warning: #f1c27c;
+  --nb-d-warning-bg: #382c18;
+  --nb-d-danger-bg: #3c211e;
   --nb-d-media: #e9ebe5;             /* slightly dimmed light bed at night */
   --nb-d-on-media: #141816;
   --nb-d-gallery-filter: saturate(.55) brightness(.85);
@@ -216,6 +224,36 @@
 
   /* Global legacy alias (used by globals.css) */
   --page-bg: var(--nb-bg);
+
+  /* ── Compatibility roles ──────────────────────────────────────────────
+     These names were introduced by the guided /order UX (PR #12/#13).
+     They are aliases of THIS palette, so there is still exactly one switch. */
+  --nb-brand: var(--nb-hot);
+  --nb-brand-hover: var(--nb-hot-hover);
+  --nb-brand-soft: var(--nb-hot-soft);
+  --nb-ink-muted: var(--nb-muted);
+  --nb-ink-subtle: var(--nb-subtle);
+  --nb-line: var(--nb-border);
+  --nb-line-strong: var(--nb-border-2);
+  --nb-surface-raised: var(--nb-surface);
+  --nb-surface-soft: var(--nb-surface-2);
+  --nb-surface-inverse: var(--nb-inverse);
+  --nb-text-on-inverse: var(--nb-on-inverse);
+  --nb-success-bg: var(--nb-l-success-bg);
+  --nb-warning: var(--nb-l-warning);
+  --nb-warning-bg: var(--nb-l-warning-bg);
+  --nb-danger-bg: var(--nb-l-danger-bg);
+
+  /* Static primitives — no palette switch needed. */
+  --nb-radius-sm: 6px;
+  --nb-radius-md: 10px;
+  --nb-radius-lg: 16px;
+  --nb-space-1: 4px; --nb-space-2: 8px; --nb-space-3: 12px;
+  --nb-space-4: 16px; --nb-space-5: 20px; --nb-space-6: 24px;
+  --nb-space-8: 32px; --nb-space-10: 40px;
+  --nb-font-body: 'Manrope', 'DM Sans', sans-serif;
+  --nb-font-ar: 'Cairo', sans-serif;
+  --nb-font-display: 'Fraunces', 'Cairo', serif;
 }
 
 /* ─────────────────────── THE ONE SWITCH — DARK PALETTE ─────────────────────── */
@@ -285,6 +323,10 @@ html[data-theme='dark'] {
   --nb-media: var(--nb-d-media);
   --nb-on-media: var(--nb-d-on-media);
   --nb-gallery-filter: var(--nb-d-gallery-filter);
+  --nb-success-bg: var(--nb-d-success-bg);
+  --nb-warning: var(--nb-d-warning);
+  --nb-warning-bg: var(--nb-d-warning-bg);
+  --nb-danger-bg: var(--nb-d-danger-bg);
 }
 
 /* Respect the OS preference only when the theme script has not run yet. */
@@ -339,5 +381,9 @@ html[data-theme='dark'] {
     --nb-media: var(--nb-d-media);
     --nb-on-media: var(--nb-d-on-media);
     --nb-gallery-filter: var(--nb-d-gallery-filter);
+    --nb-success-bg: var(--nb-d-success-bg);
+    --nb-warning: var(--nb-d-warning);
+    --nb-warning-bg: var(--nb-d-warning-bg);
+    --nb-danger-bg: var(--nb-d-danger-bg);
   }
 }

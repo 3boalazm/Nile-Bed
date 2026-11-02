@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'مراجعة الطلب وتحديد الكميات | Nile Bed نايل بد',
-  description: 'راجع الأصناف اللي اخترتها من الكتالوج وحدّد كمية كل صنف بوحدة قياسه (رول، م³، صفيحة، توب، كرتونة، كجم/كيلو، عدد)، ثم أرسل الطلب عبر واتساب أو البريد. Review your picked Nile Bed items and set a quantity for each one.',
+  title: 'اختيار خامات المراتب وتكوين الطلب | Nile Bed نايل بد',
+  description: 'اختر خامات المراتب التي تحتاجها من كتالوج نايل بد، ثم راجع اختياراتك وحدد الكميات قبل إرسال طلبك. Choose mattress materials, review your selection, set quantities and send your Nile Bed enquiry.',
   alternates: { canonical: '/order' },
   openGraph: {
-    title: 'مراجعة الطلب وتحديد الكميات | نايل بد',
-    description: 'فقط الأصناف اللي اخترتها من الكتالوج تظهر هنا، ومعاها تحديد الكمية بوحدة القياس.',
+    title: 'اختيار خامات المراتب وتكوين الطلب | نايل بد',
+    description: 'اختر الخامات أولاً ثم حدد الكميات في مراجعة الطلب.',
   },
 };
 

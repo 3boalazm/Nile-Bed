@@ -10,7 +10,8 @@ import { items } from './data';
 
 export const STORAGE_KEY = 'nilebed-order-v1';
 
-export type Line = { qty: string; note: string };
+/** `selected` keeps the draft compatible with the guided /order review step. */
+export type Line = { selected: boolean; qty: string; note: string };
 export type Contact = { name: string; company: string; phone: string; notes: string };
 export type Draft = {
   order: Record<string, Line>;
@@ -22,7 +23,7 @@ export const emptyContact: Contact = { name: '', company: '', phone: '', notes: 
 const validIds = new Set(items.map((it) => it.id));
 
 export function emptyLine(): Line {
-  return { qty: '', note: '' };
+  return { selected: true, qty: '', note: '' };
 }
 
 /** A short, human-readable order reference kept with the local draft. */
@@ -41,6 +42,9 @@ function asLine(value: unknown): Line | null {
   if (!value || typeof value !== 'object') return null;
   const v = value as Record<string, unknown>;
   return {
+    // Presence of a line always means the item is selected; writing the flag
+    // explicitly keeps older drafts readable by the guided /order review step.
+    selected: true,
     qty: typeof v.qty === 'string' ? v.qty.slice(0, 24) : '',
     note: typeof v.note === 'string' ? v.note.slice(0, 300) : '',
   };
