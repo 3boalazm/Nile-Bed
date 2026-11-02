@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'تكوين الطلب حسب وحدة القياس | Nile Bed نايل بد',
-  description: 'كوّن طلبك من خامات المراتب صنفًا بصنف: الأصناف مصنّفة حسب وحدة القياس (رول، م³، صفيحة، توب، كرتونة، كجم/كيلو، عدد) مع تحديد الكمية المطلوبة لكل صنف، ثم أرسل الطلب عبر واتساب أو البريد. Build your Nile Bed order by unit of measure and quantity per item.',
+  title: 'اختيار خامات المراتب وتكوين الطلب | Nile Bed نايل بد',
+  description: 'اختر خامات المراتب التي تحتاجها من كتالوج نايل بد، ثم راجع اختياراتك وحدد الكميات قبل إرسال طلبك. Choose mattress materials, review your selection, set quantities and send your Nile Bed enquiry.',
   alternates: { canonical: '/order' },
   openGraph: {
-    title: 'تكوين الطلب حسب وحدة القياس | نايل بد',
-    description: 'حدد الكمية المطلوبة من كل صنف بوحدته: رول، م³، صفيحة، توب، كرتونة، كجم/كيلو أو عدد.',
+    title: 'اختيار خامات المراتب وتكوين الطلب | نايل بد',
+    description: 'اختر الخامات أولاً ثم حدد الكميات في مراجعة الطلب.',
   },
 };
 

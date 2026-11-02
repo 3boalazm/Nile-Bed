@@ -15,7 +15,7 @@ styles/design-tokens.css defines semantic palette roles, typography, spacing, ra
 - Focus rings use the theme-aware focus token.
 - Status, danger and warning states have paired foreground/background tokens.
 - Floating action uses high-contrast white-on-inverse and white-on-brand combinations.
-- Manual contrast spot-check targets: body text >= 4.5:1, large text >= 3:1, controls/focus boundaries >= 3:1. Automated browser contrast and full-page visual QA are still required before production approval.
+- Computed palette checks: white text on the light primary (#c94326) is 4.87:1; white text on the dark primary (#b94729) is 5.26:1. Focus, body, muted and status pairs use theme-specific foreground/background tokens. A full automated scan of every legacy component is still required before production approval.
 
 ## Scope and safeguards
 No catalog records, product identifiers, group identifiers, unit definitions, order API, webhook payload, WhatsApp destination, or email destination are changed.
