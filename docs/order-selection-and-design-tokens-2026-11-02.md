@@ -1,5 +1,16 @@
 # Nile Bed — selection-first order flow and design tokens (2026-11-02)
 
+> **Consolidation note (same day):** the parallel branch for the two-step order
+> task merged `main` into itself. The guided `/order` flow described below is
+> **kept as-is**; the catalog now feeds it through `app/catalog/draft.ts` with an
+> explicit `selected: true` flag and a viewport-fixed review bar. The two token
+> files were merged into one: `styles/design-tokens.css` was removed after its
+> roles, spacing, radii and fonts were migrated into `styles/tokens.css`, which
+> is now the single palette source with one `html[data-theme='dark']` switch and
+> an automated 46-pair WCAG gate. See `docs/design-tokens-2026-11-02.md` and
+> `docs/two-step-order-2026-11-02.md`. The contrast figures quoted below refer
+> to the earlier PR #13 palette and are superseded by the computed gate.
+
 ## Customer journey update
 - Catalog cards add products to a preliminary selection only; no quantity input or implicit quantity is created.
 - A persistent floating order action stays anchored to the viewport while browsing and shows the selected-product count.

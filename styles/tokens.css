@@ -1,0 +1,389 @@
+/* ==========================================================================
+   NILE BED — DESIGN TOKENS (single source of truth)
+   --------------------------------------------------------------------------
+   Two complete palettes live here: `--nb-l-*` (LIGHT) and `--nb-d-*` (DARK).
+   Semantic tokens (`--nb-*`) point at one of them. Switching the theme is one
+   attribute on <html>: data-theme="dark". Every colour used anywhere on the
+   site resolves through a semantic token (or a legacy alias of one), so the
+   whole site switches together — no per-component hard-coded colours left.
+
+   Paired contrast (WCAG 2.1) is verified in docs/design-tokens-2026-11-02.md.
+   All body-text pairs are >= 4.5:1 in BOTH palettes; large/UI pairs >= 3:1.
+
+   Do NOT hard-code a colour in a component again — add a token here.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* ───────────────────────── LIGHT PALETTE ───────────────────────── */
+  --nb-l-bg: #f3f1eb;
+  --nb-l-surface: #faf9f5;
+  --nb-l-surface-2: #ecece5;
+  --nb-l-surface-3: #e8e8e1;
+  --nb-l-field: #f7f7f2;
+  --nb-l-ink: #171b1b;
+  --nb-l-text: #343b36;
+  --nb-l-muted: #5f6762;
+  --nb-l-subtle: #666e69;
+  --nb-l-border: #d9d9d1;
+  --nb-l-border-2: #c9cdc5;
+  --nb-l-inverse: #171c19;
+  --nb-l-inverse-2: #222a28;
+  --nb-l-on-inverse: #f4f4ef;
+  --nb-l-on-inverse-muted: #b0b7b0;
+  --nb-l-accent: #bb7149;             /* copper — brand */
+  --nb-l-accent-strong: #8c593f;      /* copper as TEXT on light */
+  --nb-l-accent-hover: #d18a62;
+  --nb-l-accent-soft: #f9ebe6;
+  --nb-l-accent-light: #dc9971;
+  --nb-l-on-accent: #171b1b;          /* dark ink on copper: 4.61:1 */
+  --nb-l-on-accent-strong: #ffffff;   /* white on deep copper: 5.81:1 */
+  --nb-l-hot: #c94326;                /* coral CTA: white text 4.87:1 */
+  --nb-l-hot-hover: #bd3d21;          /* white text 5.45:1 */
+  --nb-l-hot-strong: #bd3d21;         /* coral as TEXT on light: 4.83:1 */
+  --nb-l-hot-text: #e7a48d;           /* coral as TEXT on dark bands */
+  --nb-l-on-hot: #ffffff;
+  --nb-l-hot-soft: #fff5f1;
+  --nb-l-success: #2b754a;             /* 4.96:1 on light bg */
+  --nb-l-danger: #b4472c;
+  --nb-l-whatsapp: #25d366;
+  --nb-l-on-whatsapp: #10261a;        /* dark ink on green: 8.06:1 */
+  --nb-l-focus: #8c593f;
+  --nb-l-shadow: 0 18px 54px rgba(20, 27, 22, .08);
+  --nb-l-shadow-strong: 0 20px 56px rgba(20, 27, 22, .16);
+  --nb-l-inverse-line: rgba(255, 255, 255, .16);
+  --nb-l-inverse-line-2: rgba(255, 255, 255, .09);
+  --nb-l-grid: rgba(75, 86, 78, .1);
+  --nb-l-ring: rgba(80, 91, 83, .27);
+  --nb-l-art-1: #d4d8d2;
+  --nb-l-art-2: #d7d6cf;
+  --nb-l-art-3: #d7d9d2;
+  --nb-l-art-4: #d6d9d2;
+  --nb-l-art-5: #303838;
+  --nb-l-metal-1: #727c76;
+  --nb-l-metal-2: #a5aaa2;
+  --nb-l-metal-3: #8e9891;
+  --nb-l-metal-4: #626d66;
+  --nb-l-metal-5: #535e57;
+  --nb-l-metal-6: #59645d;
+  --nb-l-metal-7: #89928a;
+  --nb-l-metal-shadow: rgba(45, 52, 46, .25);
+  --nb-l-metal-shadow-soft: rgba(38, 46, 41, .5);
+  --nb-l-metal-shadow-light: rgba(45, 52, 46, .2);
+  --nb-l-metal-highlight: rgba(255, 255, 255, .8);
+  --nb-l-foam-1: #f0efe8;
+  --nb-l-foam-2: #cfd3ca;
+  --nb-l-foam-3: #9aa59b;
+  --nb-l-foam-4: #8d978e;
+  --nb-l-foam-5: #7f8a80;
+  --nb-l-foam-6: #e7e8e0;
+  --nb-l-success-bg: #eaf6ee;
+  --nb-l-warning: #8a5b1d;
+  --nb-l-warning-bg: #fff5e5;
+  --nb-l-danger-bg: #fff0ee;
+  --nb-l-media: #f7f7f3;             /* product image beds stay light */
+  --nb-l-on-media: #171b1b;          /* ink on those light beds */
+  --nb-l-gallery-filter: saturate(.6);
+
+  /* ───────────────────────── DARK PALETTE ───────────────────────── */
+  --nb-d-bg: #0f1312;
+  --nb-d-surface: #171c19;
+  --nb-d-surface-2: #1d2420;
+  --nb-d-surface-3: #242c28;
+  --nb-d-field: #111715;
+  --nb-d-ink: #f4f4ef;
+  --nb-d-text: #d8dbd6;
+  --nb-d-muted: #aab2ab;
+  --nb-d-subtle: #949b93;
+  --nb-d-border: #303833;
+  --nb-d-border-2: #3d4741;
+  --nb-d-inverse: #090c0b;
+  --nb-d-inverse-2: #121815;
+  --nb-d-on-inverse: #f4f4ef;
+  --nb-d-on-inverse-muted: #b0b7b0;
+  --nb-d-accent: #e0a179;             /* lighter copper for dark surfaces */
+  --nb-d-accent-strong: #e0a179;      /* 8.50:1 on dark bg */
+  --nb-d-accent-hover: #eeae87;
+  --nb-d-accent-soft: #33221c;
+  --nb-d-accent-light: #f0b48d;
+  --nb-d-on-accent: #171b1b;          /* dark ink on light copper: 7.89:1 */
+  --nb-d-on-accent-strong: #171b1b;   /* dark ink on light copper: 7.89:1 */
+  --nb-d-hot: #ff8a63;                /* brighter coral on dark bg */
+  --nb-d-hot-hover: #ff9b75;
+  --nb-d-hot-strong: #ff9168;         /* coral as TEXT on dark bg: 8.47:1 */
+  --nb-d-hot-text: #ff9168;
+  --nb-d-on-hot: #171b1b;             /* dark ink on bright coral: 7.50:1 */
+  --nb-d-hot-soft: #33221c;
+  --nb-d-success: #7bb77a;
+  --nb-d-danger: #f0a08a;
+  --nb-d-whatsapp: #25d366;
+  --nb-d-on-whatsapp: #10261a;
+  --nb-d-focus: #e0a179;
+  --nb-d-shadow: 0 18px 54px rgba(0, 0, 0, .35);
+  --nb-d-shadow-strong: 0 20px 56px rgba(0, 0, 0, .55);
+  --nb-d-inverse-line: rgba(255, 255, 255, .16);
+  --nb-d-inverse-line-2: rgba(255, 255, 255, .09);
+  --nb-d-grid: rgba(200, 214, 204, .08);
+  --nb-d-ring: rgba(200, 214, 204, .18);
+  --nb-d-art-1: #1c2422;
+  --nb-d-art-2: #1e2624;
+  --nb-d-art-3: #1a2220;
+  --nb-d-art-4: #1b2321;
+  --nb-d-art-5: #0b0f0e;
+  --nb-d-metal-1: #9da69f;
+  --nb-d-metal-2: #c3cac2;
+  --nb-d-metal-3: #b0b9b2;
+  --nb-d-metal-4: #8b948d;
+  --nb-d-metal-5: #79827b;
+  --nb-d-metal-6: #8d978f;
+  --nb-d-metal-7: #a9b3ab;
+  --nb-d-metal-shadow: rgba(0, 0, 0, .5);
+  --nb-d-metal-shadow-soft: rgba(0, 0, 0, .65);
+  --nb-d-metal-shadow-light: rgba(0, 0, 0, .35);
+  --nb-d-metal-highlight: rgba(255, 255, 255, .3);
+  --nb-d-foam-1: #2a332e;
+  --nb-d-foam-2: #39443c;
+  --nb-d-foam-3: #4c5a51;
+  --nb-d-foam-4: #3d4941;
+  --nb-d-foam-5: #354038;
+  --nb-d-foam-6: #2e3831;
+  --nb-d-success-bg: #183526;
+  --nb-d-warning: #f1c27c;
+  --nb-d-warning-bg: #382c18;
+  --nb-d-danger-bg: #3c211e;
+  --nb-d-media: #e9ebe5;             /* slightly dimmed light bed at night */
+  --nb-d-on-media: #141816;
+  --nb-d-gallery-filter: saturate(.55) brightness(.85);
+
+  /* ─────────────────── SEMANTIC TOKENS — LIGHT (default) ─────────────────── */
+  --nb-bg: var(--nb-l-bg);
+  --nb-surface: var(--nb-l-surface);
+  --nb-surface-2: var(--nb-l-surface-2);
+  --nb-surface-3: var(--nb-l-surface-3);
+  --nb-field: var(--nb-l-field);
+  --nb-ink: var(--nb-l-ink);
+  --nb-text: var(--nb-l-text);
+  --nb-muted: var(--nb-l-muted);
+  --nb-subtle: var(--nb-l-subtle);
+  --nb-border: var(--nb-l-border);
+  --nb-border-2: var(--nb-l-border-2);
+  --nb-inverse: var(--nb-l-inverse);
+  --nb-inverse-2: var(--nb-l-inverse-2);
+  --nb-on-inverse: var(--nb-l-on-inverse);
+  --nb-on-inverse-muted: var(--nb-l-on-inverse-muted);
+  --nb-accent: var(--nb-l-accent);
+  --nb-accent-strong: var(--nb-l-accent-strong);
+  --nb-accent-hover: var(--nb-l-accent-hover);
+  --nb-accent-soft: var(--nb-l-accent-soft);
+  --nb-accent-light: var(--nb-l-accent-light);
+  --nb-on-accent: var(--nb-l-on-accent);
+  --nb-on-accent-strong: var(--nb-l-on-accent-strong);
+  --nb-hot: var(--nb-l-hot);
+  --nb-hot-hover: var(--nb-l-hot-hover);
+  --nb-hot-strong: var(--nb-l-hot-strong);
+  --nb-hot-text: var(--nb-l-hot-text);
+  --nb-on-hot: var(--nb-l-on-hot);
+  --nb-hot-soft: var(--nb-l-hot-soft);
+  --nb-success: var(--nb-l-success);
+  --nb-danger: var(--nb-l-danger);
+  --nb-whatsapp: var(--nb-l-whatsapp);
+  --nb-on-whatsapp: var(--nb-l-on-whatsapp);
+  --nb-focus: var(--nb-l-focus);
+  --nb-shadow: var(--nb-l-shadow);
+  --nb-shadow-strong: var(--nb-l-shadow-strong);
+  --nb-inverse-line: var(--nb-l-inverse-line);
+  --nb-inverse-line-2: var(--nb-l-inverse-line-2);
+  --nb-grid: var(--nb-l-grid);
+  --nb-ring: var(--nb-l-ring);
+  --nb-art-1: var(--nb-l-art-1);
+  --nb-art-2: var(--nb-l-art-2);
+  --nb-art-3: var(--nb-l-art-3);
+  --nb-art-4: var(--nb-l-art-4);
+  --nb-art-5: var(--nb-l-art-5);
+  --nb-metal-1: var(--nb-l-metal-1);
+  --nb-metal-2: var(--nb-l-metal-2);
+  --nb-metal-3: var(--nb-l-metal-3);
+  --nb-metal-4: var(--nb-l-metal-4);
+  --nb-metal-5: var(--nb-l-metal-5);
+  --nb-metal-6: var(--nb-l-metal-6);
+  --nb-metal-7: var(--nb-l-metal-7);
+  --nb-metal-shadow: var(--nb-l-metal-shadow);
+  --nb-metal-shadow-soft: var(--nb-l-metal-shadow-soft);
+  --nb-metal-shadow-light: var(--nb-l-metal-shadow-light);
+  --nb-metal-highlight: var(--nb-l-metal-highlight);
+  --nb-foam-1: var(--nb-l-foam-1);
+  --nb-foam-2: var(--nb-l-foam-2);
+  --nb-foam-3: var(--nb-l-foam-3);
+  --nb-foam-4: var(--nb-l-foam-4);
+  --nb-foam-5: var(--nb-l-foam-5);
+  --nb-foam-6: var(--nb-l-foam-6);
+  --nb-media: var(--nb-l-media);
+  --nb-on-media: var(--nb-l-on-media);
+  --nb-gallery-filter: var(--nb-l-gallery-filter);
+
+  /* Global legacy alias (used by globals.css) */
+  --page-bg: var(--nb-bg);
+
+  /* ── Compatibility roles ──────────────────────────────────────────────
+     These names were introduced by the guided /order UX (PR #12/#13).
+     They are aliases of THIS palette, so there is still exactly one switch. */
+  --nb-brand: var(--nb-hot);
+  --nb-brand-hover: var(--nb-hot-hover);
+  --nb-brand-soft: var(--nb-hot-soft);
+  --nb-ink-muted: var(--nb-muted);
+  --nb-ink-subtle: var(--nb-subtle);
+  --nb-line: var(--nb-border);
+  --nb-line-strong: var(--nb-border-2);
+  --nb-surface-raised: var(--nb-surface);
+  --nb-surface-soft: var(--nb-surface-2);
+  --nb-surface-inverse: var(--nb-inverse);
+  --nb-text-on-inverse: var(--nb-on-inverse);
+  --nb-success-bg: var(--nb-l-success-bg);
+  --nb-warning: var(--nb-l-warning);
+  --nb-warning-bg: var(--nb-l-warning-bg);
+  --nb-danger-bg: var(--nb-l-danger-bg);
+
+  /* Static primitives — no palette switch needed. */
+  --nb-radius-sm: 6px;
+  --nb-radius-md: 10px;
+  --nb-radius-lg: 16px;
+  --nb-space-1: 4px; --nb-space-2: 8px; --nb-space-3: 12px;
+  --nb-space-4: 16px; --nb-space-5: 20px; --nb-space-6: 24px;
+  --nb-space-8: 32px; --nb-space-10: 40px;
+  --nb-font-body: 'Manrope', 'DM Sans', sans-serif;
+  --nb-font-ar: 'Cairo', sans-serif;
+  --nb-font-display: 'Fraunces', 'Cairo', serif;
+}
+
+/* ─────────────────────── THE ONE SWITCH — DARK PALETTE ─────────────────────── */
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --nb-bg: var(--nb-d-bg);
+  --nb-surface: var(--nb-d-surface);
+  --nb-surface-2: var(--nb-d-surface-2);
+  --nb-surface-3: var(--nb-d-surface-3);
+  --nb-field: var(--nb-d-field);
+  --nb-ink: var(--nb-d-ink);
+  --nb-text: var(--nb-d-text);
+  --nb-muted: var(--nb-d-muted);
+  --nb-subtle: var(--nb-d-subtle);
+  --nb-border: var(--nb-d-border);
+  --nb-border-2: var(--nb-d-border-2);
+  --nb-inverse: var(--nb-d-inverse);
+  --nb-inverse-2: var(--nb-d-inverse-2);
+  --nb-on-inverse: var(--nb-d-on-inverse);
+  --nb-on-inverse-muted: var(--nb-d-on-inverse-muted);
+  --nb-accent: var(--nb-d-accent);
+  --nb-accent-strong: var(--nb-d-accent-strong);
+  --nb-accent-hover: var(--nb-d-accent-hover);
+  --nb-accent-soft: var(--nb-d-accent-soft);
+  --nb-accent-light: var(--nb-d-accent-light);
+  --nb-on-accent: var(--nb-d-on-accent);
+  --nb-on-accent-strong: var(--nb-d-on-accent-strong);
+  --nb-hot: var(--nb-d-hot);
+  --nb-hot-hover: var(--nb-d-hot-hover);
+  --nb-hot-strong: var(--nb-d-hot-strong);
+  --nb-hot-text: var(--nb-d-hot-text);
+  --nb-on-hot: var(--nb-d-on-hot);
+  --nb-hot-soft: var(--nb-d-hot-soft);
+  --nb-success: var(--nb-d-success);
+  --nb-danger: var(--nb-d-danger);
+  --nb-whatsapp: var(--nb-d-whatsapp);
+  --nb-on-whatsapp: var(--nb-d-on-whatsapp);
+  --nb-focus: var(--nb-d-focus);
+  --nb-shadow: var(--nb-d-shadow);
+  --nb-shadow-strong: var(--nb-d-shadow-strong);
+  --nb-inverse-line: var(--nb-d-inverse-line);
+  --nb-inverse-line-2: var(--nb-d-inverse-line-2);
+  --nb-grid: var(--nb-d-grid);
+  --nb-ring: var(--nb-d-ring);
+  --nb-art-1: var(--nb-d-art-1);
+  --nb-art-2: var(--nb-d-art-2);
+  --nb-art-3: var(--nb-d-art-3);
+  --nb-art-4: var(--nb-d-art-4);
+  --nb-art-5: var(--nb-d-art-5);
+  --nb-metal-1: var(--nb-d-metal-1);
+  --nb-metal-2: var(--nb-d-metal-2);
+  --nb-metal-3: var(--nb-d-metal-3);
+  --nb-metal-4: var(--nb-d-metal-4);
+  --nb-metal-5: var(--nb-d-metal-5);
+  --nb-metal-6: var(--nb-d-metal-6);
+  --nb-metal-7: var(--nb-d-metal-7);
+  --nb-metal-shadow: var(--nb-d-metal-shadow);
+  --nb-metal-shadow-soft: var(--nb-d-metal-shadow-soft);
+  --nb-metal-shadow-light: var(--nb-d-metal-shadow-light);
+  --nb-metal-highlight: var(--nb-d-metal-highlight);
+  --nb-foam-1: var(--nb-d-foam-1);
+  --nb-foam-2: var(--nb-d-foam-2);
+  --nb-foam-3: var(--nb-d-foam-3);
+  --nb-foam-4: var(--nb-d-foam-4);
+  --nb-foam-5: var(--nb-d-foam-5);
+  --nb-foam-6: var(--nb-d-foam-6);
+  --nb-media: var(--nb-d-media);
+  --nb-on-media: var(--nb-d-on-media);
+  --nb-gallery-filter: var(--nb-d-gallery-filter);
+  --nb-success-bg: var(--nb-d-success-bg);
+  --nb-warning: var(--nb-d-warning);
+  --nb-warning-bg: var(--nb-d-warning-bg);
+  --nb-danger-bg: var(--nb-d-danger-bg);
+}
+
+/* Respect the OS preference only when the theme script has not run yet. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --nb-bg: var(--nb-d-bg);
+    --nb-surface: var(--nb-d-surface);
+    --nb-surface-2: var(--nb-d-surface-2);
+    --nb-surface-3: var(--nb-d-surface-3);
+    --nb-field: var(--nb-d-field);
+    --nb-ink: var(--nb-d-ink);
+    --nb-text: var(--nb-d-text);
+    --nb-muted: var(--nb-d-muted);
+    --nb-subtle: var(--nb-d-subtle);
+    --nb-border: var(--nb-d-border);
+    --nb-border-2: var(--nb-d-border-2);
+    --nb-inverse: var(--nb-d-inverse);
+    --nb-inverse-2: var(--nb-d-inverse-2);
+    --nb-accent: var(--nb-d-accent);
+    --nb-accent-strong: var(--nb-d-accent-strong);
+    --nb-accent-hover: var(--nb-d-accent-hover);
+    --nb-accent-soft: var(--nb-d-accent-soft);
+    --nb-accent-light: var(--nb-d-accent-light);
+    --nb-on-accent: var(--nb-d-on-accent);
+    --nb-on-accent-strong: var(--nb-d-on-accent-strong);
+  --nb-on-accent-strong: var(--nb-d-on-accent-strong);
+    --nb-hot: var(--nb-d-hot);
+    --nb-hot-hover: var(--nb-d-hot-hover);
+    --nb-hot-strong: var(--nb-d-hot-strong);
+    --nb-hot-text: var(--nb-d-hot-text);
+    --nb-on-hot: var(--nb-d-on-hot);
+    --nb-hot-soft: var(--nb-d-hot-soft);
+    --nb-success: var(--nb-d-success);
+    --nb-danger: var(--nb-d-danger);
+    --nb-whatsapp: var(--nb-d-whatsapp);
+    --nb-on-whatsapp: var(--nb-d-on-whatsapp);
+    --nb-focus: var(--nb-d-focus);
+    --nb-shadow: var(--nb-d-shadow);
+    --nb-shadow-strong: var(--nb-d-shadow-strong);
+    --nb-art-1: var(--nb-d-art-1);
+    --nb-art-2: var(--nb-d-art-2);
+    --nb-art-3: var(--nb-d-art-3);
+    --nb-art-4: var(--nb-d-art-4);
+    --nb-art-5: var(--nb-d-art-5);
+    --nb-foam-1: var(--nb-d-foam-1);
+    --nb-foam-2: var(--nb-d-foam-2);
+    --nb-foam-3: var(--nb-d-foam-3);
+    --nb-foam-4: var(--nb-d-foam-4);
+    --nb-foam-5: var(--nb-d-foam-5);
+    --nb-foam-6: var(--nb-d-foam-6);
+    --nb-media: var(--nb-d-media);
+    --nb-on-media: var(--nb-d-on-media);
+    --nb-gallery-filter: var(--nb-d-gallery-filter);
+    --nb-success-bg: var(--nb-d-success-bg);
+    --nb-warning: var(--nb-d-warning);
+    --nb-warning-bg: var(--nb-d-warning-bg);
+    --nb-danger-bg: var(--nb-d-danger-bg);
+  }
+}

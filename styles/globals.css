@@ -1,10 +1,16 @@
-:root { color-scheme: light; --page-bg: #f3f1eb; }
-html[data-theme='dark'] { color-scheme: dark; --page-bg: #0f1312; }
+/* Global baseline — all colours come from styles/tokens.css. */
+:root { color-scheme: light; }
+html[data-theme='dark'] { color-scheme: dark; }
+
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 24px; background: var(--page-bg); }
-body { margin: 0; background: var(--page-bg); }
-button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
-button { cursor: pointer; }
-a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #bb7149; outline-offset: 5px; }
-::selection { background: #bb7149; color: #fff; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+html, body { padding: 0; margin: 0; }
+body { background: var(--page-bg); color: var(--nb-ink); }
+html { scroll-behavior: smooth; }
+
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--nb-focus); outline-offset: 3px; }
+::selection { background: var(--nb-accent-soft); color: var(--nb-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

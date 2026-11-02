@@ -62,7 +62,7 @@ Home/Catalog → Order → Search or choose material family → Add item → Set
 - [ ] Verify integer-only units round to whole values; kg/m³ accept decimals.
 - [ ] Verify 23 inferred units show the confirmation note.
 - [ ] Reload and verify draft and contact details restore.
-- [ ] Verify /order?add=<valid-id> adds one unit without losing existing draft.
+- [ ] Verify /order?add=<valid-id> adds the item to the preliminary selection without losing existing draft. **Superseded by PR #13:** it no longer assigns a default quantity of one; quantities are entered in the review step.
 - [ ] Review/back navigation preserves all values.
 - [ ] Submit with missing name/phone and verify inline errors.
 - [ ] Test webhook success, unconfigured fallback, upstream failure and offline behavior.

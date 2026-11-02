@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, Search, Filter, Phone, Mail, Globe2, Menu, X, Moon, Sun, Check, Package, Layers3, Boxes, Scissors, Link2, Sparkles, Wrench, ShieldCheck, Info, ClipboardList, Ruler } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUpRight, Search, Filter, Phone, Mail, Globe2, Menu, X, Moon, Sun, Check, Package, Layers3, Boxes, Scissors, Link2, Sparkles, Wrench, ShieldCheck, Info, ClipboardList, Ruler, ShoppingBag } from 'lucide-react';
 import { groups, items } from './data';
 import { countByUnit, unitById, unitOf, units, type UnitId } from './units';
+import { STORAGE_KEY, pickedIds, readDraft, togglePicked, writeDraft } from './draft';
 import './catalog.css';
 
 type Lang = 'ar' | 'en';
@@ -11,7 +12,7 @@ type Theme = 'light' | 'dark';
 
 const ui = {
   ar: {
-    nav: ['الرئيسية', 'الكتالوج', 'تكوين الطلب', 'تواصل'],
+    nav: ['الرئيسية', 'الكتالوج', 'مراجعة الطلب', 'تواصل'],
     title: 'كتالوج خامات نايل بد',
     subtitle: 'كل الأصناف في مكان واحد — سوست وفريم وسلك، شاسيهات مجمّعة، بوكيت رول ومفروش جاهز، ميموري ولاتكس وخام مراتب، لباد وفازلين وميلتون وبلاستيك، خيوط وتيب، لوازم تجميع، وغراء وعدد. الصور والرسوم توضيحية أُعدّت لتمثيل أنواع الخامات، وليست صورًا فعلية لمنتجات نايل بد أو لمخزونها. المواصفات النهائية تُؤكَّد مع الفريق.',
     disclaimer: 'الصور والرسوم توضيحية معدّة لتمثيل فئات الخامات، وليست صورًا فعلية من مصنع نايل بد أو لمخزونها الحالي. نورّد الخامات ونصنّع السوست فقط، ولا نصنّع مراتب جاهزة. محتاج قماش أو إسفنج؟ نوجّهك لشريك من شركائنا لتشتري بسعر مميز.',
@@ -20,14 +21,23 @@ const ui = {
     count: (n: number) => `${n} صنف`,
     enquire: 'استفسر عبر واتساب',
     emailEnquire: 'راسلنا بالبريد',
-    buildOrder: 'كوّن طلبك',
+    buildOrder: 'راجع الطلب',
     addToOrder: 'أضف للطلب',
+    added: 'تمت الإضافة',
+    removeFromOrder: 'إزالة من الطلب',
+    reviewOrder: 'راجع الطلب',
+    currentOrder: 'طلبك الحالي',
+    itemsWord: 'صنف',
+    floatHint: 'اختيار أولي — الكميات بتتحدد في الخطوة الجاية',
+    initialNote: 'دا اختيار أولي بس: الزرار بيضيف الصنف لقائمة طلبك من غير ما يحدد كمية أو ينقلك لصفحة تانية. كمّل اختيار الأصناف اللي تعجبك، وبعدين اضغط «راجع الطلب» عشان تحدد الكميات في الخطوة الجاية.',
+    step1: 'الاختيار الأولي من الكتالوج',
+    step2: 'مراجعة الطلب وتحديد الكميات',
     filterByUnit: 'تصفية حسب وحدة القياس',
     allUnits: 'كل الوحدات',
     orderBy: 'يُطلب بـ',
     approx: 'تقديري',
     approxTitle: 'وحدة القياس مستنتجة من نفس فئة الصنف في الجرد، وتُؤكَّد مع الفريق قبل التوريد',
-    unitsNote: 'التصنيف حسب وحدة القياس مأخوذ من جرد المخزون: رول، م³، صفيحة، توب، كرتونة، كجم/كيلو، عدد. اكتب الكمية المطلوبة من كل صنف في صفحة تكوين الطلب.',
+    unitsNote: 'التصنيف حسب وحدة القياس مأخوذ من جرد المخزون: رول، م³، صفيحة، توب، كرتونة، كجم/كيلو، عدد. هنا تختار الأصناف اختيارًا أوليًا فقط؛ تحديد الكميات بيتم في الخطوة الجاية «راجع الطلب».',
     specs: 'المواصفات',
     available: 'متوفر حسب الطلب',
     illustrative: 'صورة توضيحية',
@@ -40,7 +50,7 @@ const ui = {
     themeLight: 'الوضع النهاري',
   },
   en: {
-    nav: ['Home', 'Catalog', 'Build order', 'Contact'],
+    nav: ['Home', 'Catalog', 'Review order', 'Contact'],
     title: 'Nile Bed Catalog',
     subtitle: 'Every category in one place — springs, frames and wire, assembled shasia units, pocket rolls and ready-spread pocket, memory, latex and mattress cores, felt, non-woven, Melton and plastic, threads and tape, assembly fasteners, glue and tools. Product illustrations are for category reference only; they are not photos of Nile Bed or confirmed stock. Final specs are confirmed with the team.',
     disclaimer: 'Product illustrations show representative material types only; they are not photos of Nile Bed, actual products or current stock. We supply materials and make springs only; we do not make finished mattresses. Need fabric or sponge? We refer you to one of our partners so you can buy at a special price.',
@@ -49,14 +59,23 @@ const ui = {
     count: (n: number) => `${n} items`,
     enquire: 'Enquire on WhatsApp',
     emailEnquire: 'Email us',
-    buildOrder: 'Build an order',
+    buildOrder: 'Review order',
     addToOrder: 'Add to order',
+    added: 'Added',
+    removeFromOrder: 'Remove from order',
+    reviewOrder: 'Review order',
+    currentOrder: 'Your current order',
+    itemsWord: 'items',
+    floatHint: 'Initial selection — quantities are set in the next step',
+    initialNote: 'This is an initial selection only: the button adds the item to your order list without setting a quantity or navigating away. Pick everything you like, then press “Review order” to set quantities in the next step.',
+    step1: 'Initial selection from the catalog',
+    step2: 'Review order & set quantities',
     filterByUnit: 'Filter by unit of measure',
     allUnits: 'All units',
     orderBy: 'Sold by',
     approx: 'estimated',
     approxTitle: 'Unit inferred from the same product family on the stock sheet; confirm with the team before supply',
-    unitsNote: 'Units come from the stock sheet: roll, m³, tin, bolt, carton, kg/kilo and piece. Enter the quantity you need for each item on the order builder page.',
+    unitsNote: 'Units come from the stock sheet: roll, m³, tin, bolt, carton, kg/kilo and piece. This page is for the initial selection only; quantities are set in the next step, “Review order”.',
     specs: 'Specs',
     available: 'Available on order',
     illustrative: 'Illustrative image',
@@ -99,6 +118,10 @@ export default function CatalogPage() {
   const [activeUnit, setActiveUnit] = useState<UnitId | 'all'>('all');
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  // Preliminary selection only. A picked item has an EMPTY quantity until the
+  // visitor sets it on /order — nothing here navigates or assigns a number.
+  const [selection, setSelection] = useState<string[]>([]);
+  const [lastAction, setLastAction] = useState('');
   const unitCounts = useMemo(() => countByUnit(items.map((it) => it.id)), []);
 
   const t = ui[lang];
@@ -113,6 +136,28 @@ export default function CatalogPage() {
     const saved = document.documentElement.dataset.theme as Theme | undefined;
     setTheme(saved === 'dark' ? 'dark' : 'light');
   }, []);
+
+  // Read the shared draft on mount and keep in sync if another tab changes it.
+  useEffect(() => {
+    setSelection(pickedIds(readDraft()));
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY) setSelection(pickedIds(readDraft()));
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  const toggleSelection = (id: string) => {
+    const draft = readDraft();
+    const wasPicked = Object.prototype.hasOwnProperty.call(draft.order, id);
+    const next = togglePicked(draft, id);
+    writeDraft(next);
+    setSelection(pickedIds(next));
+    const name = ar ? items.find((it) => it.id === id)?.ar.name : items.find((it) => it.id === id)?.en.name;
+    setLastAction(wasPicked
+      ? (ar ? `اتشال من الطلب: ${name}` : `Removed from order: ${name}`)
+      : (ar ? `اتضاف للطلب: ${name} — الكمية في الخطوة الجاية` : `Added to order: ${name} — quantity in the next step`));
+  };
 
   const toggleTheme = () => {
     const next: Theme = theme === 'dark' ? 'light' : 'dark';
@@ -154,8 +199,11 @@ export default function CatalogPage() {
   const waNumber = '201090000676';
   const email = 'info@nilebed.com';
 
+  const picked = new Set(selection);
+
   return (
-    <main className="nile catalog-page" dir={ar ? 'rtl' : 'ltr'} lang={lang}>
+    <>
+    <main className="nile catalog-page has-floating-order" dir={ar ? 'rtl' : 'ltr'} lang={lang}>
       {/* Topbar — same as home but with catalog link */}
       <header className="topbar catalog-topbar">
         <a className="brand" href="/" aria-label={ar ? 'نايل بد — الرئيسية' : 'Nile Bed — home'}>
@@ -186,7 +234,7 @@ export default function CatalogPage() {
         <div className="catalog-hero-bg" />
         <div className="catalog-hero-inner">
           <div className="catalog-hero-copy">
-            <div className="eyebrow" style={{ color: 'var(--copper-light)' }}><span className="eyebrow-line" />{ar ? 'الكتالوج الكامل · مصر' : 'FULL CATALOG · EGYPT'}</div>
+            <div className="eyebrow" style={{ color: 'var(--nb-accent-strong)' }}><span className="eyebrow-line" />{ar ? 'الكتالوج الكامل · مصر' : 'FULL CATALOG · EGYPT'}</div>
             <h1>{t.title}</h1>
             <p>{t.subtitle}</p>
             <div className="catalog-hero-badges">
@@ -200,6 +248,11 @@ export default function CatalogPage() {
               <a className="button button-glass" href={`mailto:${email}`}><Mail size={16} />{t.emailEnquire}</a>
             </div>
             <div className="catalog-disclaimer"><Info size={14} />{t.disclaimer}</div>
+            <div className="nb-steps" aria-label={ar ? 'خطوات الطلب' : 'Order steps'}>
+              <span className="nb-step is-current"><b>1</b>{t.step1}</span>
+              <span className="nb-step-arrow">{ar ? <ArrowLeft size={12} /> : <ArrowRight size={12} />}</span>
+              <span className="nb-step"><b>2</b>{t.step2}</span>
+            </div>
           </div>
           <div className="catalog-hero-stats">
             <div className="stat-card">
@@ -267,6 +320,7 @@ export default function CatalogPage() {
             ))}
           </div>
           <div className="units-note"><Info size={13} />{t.unitsNote}</div>
+          <div className="nb-initial-note"><Info size={14} /><span><strong>{ar ? 'اختيار أولي' : 'Initial selection'}:</strong> {t.initialNote}</span></div>
           <div className="contact-note"><Info size={13} />{t.contactNote}</div>
         </div>
       </section>
@@ -324,7 +378,16 @@ export default function CatalogPage() {
                           <div className="card-unit-row">
                             <span className="card-unit">{t.orderBy} <strong>{unitLabel}</strong></span>
                             {unitInfo.source === 'family' && <em className="card-unit-est" title={t.approxTitle}>{t.approx}</em>}
-                            <a className="card-add" href={`/order?add=${it.id}`}><ClipboardList size={12} />{t.addToOrder}</a>
+                            <button
+                              type="button"
+                              className={picked.has(it.id) ? 'card-add is-picked' : 'card-add'}
+                              aria-pressed={picked.has(it.id)}
+                              title={picked.has(it.id) ? t.removeFromOrder : t.addToOrder}
+                              onClick={() => toggleSelection(it.id)}
+                            >
+                              {picked.has(it.id) ? <Check size={12} /> : <ClipboardList size={12} />}
+                              {picked.has(it.id) ? t.added : t.addToOrder}
+                            </button>
                           </div>
                           <p>{desc}</p>
                           <ul className="specs">
@@ -373,5 +436,24 @@ export default function CatalogPage() {
         <small>© {new Date().getFullYear()} NILE BED</small>
       </footer>
     </main>
+
+    {/* Always-on-screen, fixed review control — deliberately NOT at the page end. */}
+    <div className="nb-float" dir={ar ? 'rtl' : 'ltr'}>
+      <div className="nb-float-inner">
+        <div className="nb-float-count">
+          <ShoppingBag size={19} />
+          <div>
+            <span className="nb-float-label">{t.currentOrder} <strong>{selection.length}</strong> {t.itemsWord}</span>
+            <span className="nb-float-hint">{t.floatHint}</span>
+          </div>
+        </div>
+        <a className="nb-float-cta" href="/order">
+          <span>{t.reviewOrder}</span>
+          {ar ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+        </a>
+      </div>
+      <span className="nb-sr-only" aria-live="polite">{lastAction}</span>
+    </div>
+    </>
   );
 }

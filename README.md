@@ -9,7 +9,8 @@ Bilingual Arabic/English public website for Nile Bed — a wholesaler of mattres
 - **Official brand artwork in both variants** (see below), used in the header, the footer, and the "established" stamp.
 - Sections: product-led hero, business scope (manufactures springs · supplies materials · does **not** make finished mattresses), featured catalog, supply process, partner network, quality, contact and a preview enquiry form, footer.
 - **Catalog:** 69 items in 8 groups — springs/frames/wire, assembled shasia units, pocket rolls and ready-spread pocket, memory/latex/mattress cores, felt & fabrics, threads & tapes, assembly fasteners, and glue & tools. See `docs/inventory-2026-10-19.md`.
-- **Unit-of-measure classification & order builder (`/order`):** every catalog item carries the unit it is sold in (roll, m³, tin, bolt, carton, kg/kilo, piece), taken from the owner's stock sheet. The catalog can be filtered by unit, and the order builder groups all 69 items by unit so a customer enters a quantity per item; the resulting order summary is submitted through `POST /api/order` (optional webhook → Google Sheet) or sent as a ready-made WhatsApp/email message when no webhook is configured. No database, no prices. See `docs/product-units-and-order-2026-11-02.md` and `docs/order-submission-2026-11-02.md`.
+- **Two-step ordering (`/catalog` → `/order`):** every catalog item carries the unit it is sold in (roll, m³, tin, bolt, carton, kg/kilo, piece), taken from the owner's stock sheet. **Step 1** is an *initial selection* in the catalog: the "Add to order" button records the item with an **empty quantity**, never navigates away and never assigns a quantity; a **fixed floating "Review order" bar** is visible on screen at all times, with explicit «اختيار أولي» / "quantities are set in the next step" copy. **Step 2** is the guided `/order` flow (browse → review → contact → success): its **review step shows only the picked items**, quantities are mandatory for every picked item, and its own floating review bar stays on screen while browsing. Both pages share the `nilebed-order-v1` draft (with an explicit `selected` flag). Orders go through `POST /api/order` (optional webhook → Google Sheet) or a ready-made WhatsApp/email message when no webhook is configured. No database, no prices. See `docs/two-step-order-2026-11-02.md`, `docs/product-units-and-order-2026-11-02.md` and `docs/order-submission-2026-11-02.md`.
+- **One site-wide design-token system:** `styles/tokens.css` holds a complete custom **light palette** (`--nb-l-*`), **dark palette** (`--nb-d-*`) and 88 semantic roles; `html[data-theme='dark']` is the single switch. It also absorbs the role names, spacing, radii and fonts that `styles/design-tokens.css` introduced on `main` — there is one token file, not two. All legacy token families are aliases of it, and all component colours (including the rebuilt `/order` page) resolve through tokens, so the whole site switches together. `scripts/check-design-tokens.mjs` gates 46 WCAG foreground/background pairs in both palettes. See `docs/design-tokens-2026-11-02.md`.
 - Metadata for search and sharing: canonical URL, Open Graph/Twitter card with a 1200×630 image (`public/og.png`), Organization JSON-LD, `manifest.webmanifest`, favicon and Apple touch icon, `robots.txt` and `sitemap.xml`.
 
 ## Brand assets
@@ -24,7 +25,7 @@ Bilingual Arabic/English public website for Nile Bed — a wholesaler of mattres
 
 Both logo files stay mounted where the theme can change; CSS (`.brand-logo.is-light`, `.is-dark`, `.is-auto`) decides which one is visible, so there is no flash or layout shift when the theme or language changes. The header and footer sit on dark bands and always use the dark-surface logo.
 
-Base theme colours live in `styles/nilebed.css`; the shared editorial refinement tokens and responsive home/catalog treatments live in `styles/audit-refinement.css` and support both light and dark modes.
+**All colours come from `styles/tokens.css`** (the light and dark palettes and their semantic tokens). `styles/nilebed.css` and `styles/audit-refinement.css` keep only legacy token *aliases* pointing at them; `styles/contrast.css` fixes the paired foreground colours on filled buttons in the catalog, home and `/order`; `styles/order-float.css` styles the floating review control. No component hard-codes a colour. The theme button in each header toggles `data-theme` on `<html>`, applied before first paint by the inline script.
 
 Typography: Arabic headings (H1–H6) use the self-hosted **KO Sans** family in `public/Fonts` — all seven supplied weights (100–700) are registered in `styles/ko-sans-headings.css` and applied to every heading level on both the home and catalog pages. English/LTR headings keep Fraunces + Cormorant Garamond, Arabic body copy uses Cairo, and UI text uses Manrope/DM Sans.
 
@@ -37,7 +38,7 @@ npm ci
 npm run dev
 ```
 
-Checks: `npm run typecheck` and `npm run build`.
+Checks: `npm run typecheck`, `npm run build`, and `npm run check:contrast` (WCAG gate for both palettes — fails the build pipeline if a palette edit drops any pair below 4.5:1).
 
 ## Deploying on Vercel
 
@@ -45,7 +46,7 @@ Checks: `npm run typecheck` and `npm run build`.
 2. Framework preset: **Next.js**. `vercel.json` already pins `framework`, `installCommand` (`npm ci`) and `buildCommand` (`npm run build`). Leave the output directory at the framework default.
 3. Node.js version: 22.x (declared in `package.json` → `engines`).
 4. Optional: set `NEXT_PUBLIC_SITE_URL` to the full production origin (for example `https://www.nilebed.com`, no trailing slash) so canonical URLs, `sitemap.xml`, `robots.txt` and JSON-LD use the final domain. Without it, Vercel's `VERCEL_PROJECT_PRODUCTION_URL` is used; local builds fall back to `http://localhost:3000`.
-5. No secrets, environment variables, or external services are required to build. The home-page enquiry form is intentionally disabled and does not submit or store anything. The `/order` builder keeps quantities in the visitor's `localStorage` only. With no configuration it prepares a WhatsApp/email order message. Optionally set `ORDER_WEBHOOK_URL` (a Google Apps Script Web App or any HTTPS JSON webhook) to have `POST /api/order` submit orders directly into a Google Sheet; `GET /api/order` reports whether it is connected. See `docs/order-submission-2026-11-02.md`. Direct contact stays at `info@nilebed.com` / WhatsApp `+20 10 90000676`.
+5. No secrets, environment variables, or external services are required to build. The home-page enquiry form is intentionally disabled and does not submit or store anything. The two-step order flow keeps the picked items, quantities and notes in the visitor's `localStorage` (`nilebed-order-v1`) only, shared between `/catalog` and `/order`. With no configuration it prepares a WhatsApp/email order message. Optionally set `ORDER_WEBHOOK_URL` (a Google Apps Script Web App or any HTTPS JSON webhook) to have `POST /api/order` submit orders directly into a Google Sheet; `GET /api/order` reports whether it is connected. See `docs/order-submission-2026-11-02.md`. Direct contact stays at `info@nilebed.com` / WhatsApp `+20 10 90000676`.
 
 Pushing to the production branch connected in Vercel triggers the deployment.
 
