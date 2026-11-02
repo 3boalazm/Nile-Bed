@@ -1201,3 +1201,6 @@ html[data-theme='dark'] .home-page .hero-visual { background: #f1f0ec; }
 }
 .preview-links { display: inline-flex; align-items: center; gap: 9px; }
 .preview-source { color: #707872; font-size: 8px; text-decoration: underline; text-underline-offset: 2px; }
+
+/* Shared semantic token bridge. */
+.nile{--paper:var(--nb-surface);--white:var(--nb-surface-raised);--panel:var(--nb-surface-soft);--card:var(--nb-surface-raised);--card-soft:var(--nb-surface-soft);--field:var(--nb-surface-raised);--inverse:var(--nb-surface-inverse);--inverse-2:var(--nb-surface-inverse);--ink:var(--nb-ink);--t-strong:var(--nb-ink);--t-1:var(--nb-ink-muted);--t-2:var(--nb-ink-muted);--t-3:var(--nb-ink-subtle);--t-4:var(--nb-ink-subtle);--line:var(--nb-line);--line-2:var(--nb-line-strong);--line-3:var(--nb-line);--copper:var(--nb-brand);--copper-btn:var(--nb-brand);--copper-hi:var(--nb-brand-hover);}
