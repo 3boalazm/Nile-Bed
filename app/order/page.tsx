@@ -2,30 +2,41 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
-  ArrowUpRight, Check, ClipboardList, Copy, Globe2, Info, Mail, Menu, Minus, Moon,
-  Phone, Plus, Ruler, Search, Send, Sun, Trash2, X,
+  ArrowLeft, ArrowRight, ArrowUpRight, Check, ClipboardList, Copy, Globe2, Info, Mail, Menu, Minus, Moon,
+  Phone, Plus, Ruler, Search, Send, ShoppingBag, Sun, Trash2, X,
 } from 'lucide-react';
 import { groups, items, type CatalogItem } from '../catalog/data';
 import { countByUnit, unitById, unitOf, units, type UnitId } from '../catalog/units';
+import {
+  STORAGE_KEY, emptyContact, makeReference, pickWithoutQuantity, readDraft, writeDraft,
+  type Contact, type Line,
+} from '../catalog/draft';
 import './order.css';
 
 type Lang = 'ar' | 'en';
 type Theme = 'light' | 'dark';
-type Line = { qty: string; note: string };
-type Contact = { name: string; company: string; phone: string; notes: string };
 type SubmitState = 'idle' | 'sending' | 'submitted' | 'fallback' | 'error';
 
-const STORAGE_KEY = 'nilebed-order-v1';
 const WA_NUMBER = '201090000676';
 const EMAIL = 'info@nilebed.com';
 
 const copy = {
   ar: {
-    nav: ['الرئيسية', 'الكتالوج', 'تكوين الطلب', 'تواصل'],
-    kicker: 'الطلب حسب وحدة القياس',
-    title: 'كوّن طلبك.. صنف بصنف',
-    subtitle: 'الأصناف متصنّفة حسب وحدة القياس اللي بتتباع بيها: رول، م³، صفيحة، توب، كرتونة، كجم/كيلو وعدد. اكتب الكمية اللي عايزها قدام كل صنف، وهيظهر كل شيء في ملخص الطلب.',
-    heroNote: 'التصنيف مأخوذ من جرد «اصناف المخزون» — الأسعار والأرقام الداخلية غير معروضة.',
+    nav: ['الرئيسية', 'الكتالوج', 'مراجعة الطلب', 'تواصل'],
+    kicker: 'الخطوة ٢ · مراجعة الطلب وتحديد الكميات',
+    title: 'راجع طلبك وحدّد الكميات',
+    subtitle: 'هنا ظاهر بس الأصناف اللي اخترتها من الكتالوج — مش الكتالوج كله. اكتب الكمية المطلوبة قدام كل صنف حسب وحدة قياسه (رول، م³، صفيحة، توب، كرتونة، كجم/كيلو، عدد)، وملخص الطلب بيتحدّث تلقائي.',
+    heroNote: 'الاختيار من الكتالوج اختيار أولي من غير كميات؛ الكمية بتتحدد هنا بس. وحدات القياس من جرد «اصناف المخزون» — الأسعار والأرقام الداخلية غير معروضة.',
+    step1: 'الاختيار الأولي من الكتالوج',
+    step2: 'مراجعة الطلب وتحديد الكميات',
+    addMore: 'أضف أصناف من الكتالوج',
+    currentOrder: 'طلبك الحالي',
+    quantitiesSet: (done: number, total: number) => `${done} من ${total} صنف كميتها محددة`,
+    qtyRequired: 'الكمية مطلوبة',
+    missingQty: (n: number) => `فيه ${n} صنف لسه من غير كمية. حدّد كمية كل صنف قبل إرسال الطلب.`,
+    pickedEmpty: 'لسه مختارتش أي صنف من الكتالوج.',
+    pickedEmptyHint: 'ارجع للكتالوج واختار الأصناف اللي تعجبك (اختيار أولي)، وبعدين ارجع هنا تحدد الكميات.',
+    pickedOnly: 'الأصناف المختارة فقط',
     unitsLabel: 'وحدات القياس',
     allUnits: 'كل الوحدات',
     allGroups: 'كل الفئات',
@@ -42,8 +53,8 @@ const copy = {
     qty: 'الكمية',
     lineNote: 'ملاحظة على الصنف (مقاس، لون، درجة…)',
     summary: 'ملخص الطلب',
-    summaryCount: (n: number) => `${n} صنف في الطلب`,
-    empty: 'لسه مضفتش أي صنف. اكتب الكمية قدام الصنف وهيظهر هنا.',
+    summaryCount: (n: number, total: number) => `${n} من ${total} صنف محدد الكمية`,
+    empty: 'لسه محددتش أي كمية. اكتب الكمية قدام صنف من الأصناف المختارة وهيظهر هنا.',
     emptyHint: 'تقدر تطلب أكتر من صنف من أكتر من وحدة قياس في نفس الأوردر.',
     unitTotals: 'إجمالي حسب الوحدة',
     contactTitle: 'بيانات التواصل',
@@ -80,7 +91,7 @@ const copy = {
     sheetNote: 'وحدات القياس من جرد «اصناف المخزون» (٥٣ بندًا). الأصناف الموسّعة في الكتالوج وحدتها مستنتجة من نفس الفئة ومعلّمة بـ «تقديري». «كجم» و«كيلو» في الجرد هما نفس الوحدة.',
     noResults: 'لا توجد أصناف مطابقة. جرّب كلمة تانية أو غيّر الفلتر.',
     reset: 'إعادة الضبط',
-    remove: 'حذف الصنف من الطلب',
+    remove: 'حذف الصنف من الاختيار',
     themeDark: 'الوضع الليلي',
     themeLight: 'الوضع النهاري',
     toggle: 'English',
@@ -90,11 +101,21 @@ const copy = {
     close: 'إغلاق القائمة',
   },
   en: {
-    nav: ['Home', 'Catalog', 'Build order', 'Contact'],
-    kicker: 'ORDER BY UNIT OF MEASURE',
-    title: 'Build your order, item by item',
-    subtitle: 'Products are classified by the unit they are sold in: roll, m³, tin, bolt, carton, kg/kilo and piece. Enter the quantity you need next to each item and it appears in the order summary.',
-    heroNote: 'Classification comes from the «اصناف المخزون» stock sheet — prices and internal figures are not published.',
+    nav: ['Home', 'Catalog', 'Review order', 'Contact'],
+    kicker: 'STEP 2 · REVIEW ORDER & SET QUANTITIES',
+    title: 'Review your order & set quantities',
+    subtitle: 'Only the items you picked in the catalog appear here — not the whole catalog. Enter a quantity next to each item in its own unit (roll, m³, tin, bolt, carton, kg/kilo, piece) and the order summary updates automatically.',
+    heroNote: 'Picking in the catalog is an initial selection with no quantities; quantities are set here only. Units come from the «اصناف المخزون» stock sheet — prices and internal figures are not published.',
+    step1: 'Initial selection from the catalog',
+    step2: 'Review order & set quantities',
+    addMore: 'Add items from the catalog',
+    currentOrder: 'Your current order',
+    quantitiesSet: (done: number, total: number) => `${done} of ${total} items have a quantity`,
+    qtyRequired: 'Quantity required',
+    missingQty: (n: number) => `${n} item(s) still have no quantity. Set a quantity for every picked item before sending the order.`,
+    pickedEmpty: 'You have not picked any items from the catalog yet.',
+    pickedEmptyHint: 'Go back to the catalog, pick the items you like (initial selection), then come back here to set their quantities.',
+    pickedOnly: 'Picked items only',
     unitsLabel: 'Units of measure',
     allUnits: 'All units',
     allGroups: 'All groups',
@@ -111,8 +132,8 @@ const copy = {
     qty: 'Quantity',
     lineNote: 'Note for this item (size, colour, grade…)',
     summary: 'Order summary',
-    summaryCount: (n: number) => `${n} items in order`,
-    empty: 'No items yet. Enter a quantity next to a product and it will show up here.',
+    summaryCount: (n: number, total: number) => `${n} of ${total} items have a quantity`,
+    empty: 'No quantities yet. Enter a quantity next to one of the picked items and it will show up here.',
     emptyHint: 'You can order many items across many units in one order.',
     unitTotals: 'Totals by unit',
     contactTitle: 'Contact details',
@@ -149,7 +170,7 @@ const copy = {
     sheetNote: 'Units come from the «اصناف المخزون» stock sheet (53 lines). Extended catalog items inherit the unit of their family and are marked «estimated». The sheet writes both «كجم» and «كيلو» for the same weight unit.',
     noResults: 'No matching items. Try another keyword or change the filter.',
     reset: 'Reset filters',
-    remove: 'Remove item from order',
+    remove: 'Remove item from selection',
     themeDark: 'Dark mode',
     themeLight: 'Light mode',
     toggle: 'العربية',
@@ -220,14 +241,6 @@ function roundTo(v: number, step: number): number {
   return Number((Math.round(v / step) * step).toFixed(3));
 }
 
-/** A short, human-readable order reference kept with the local draft. */
-function makeReference(): string {
-  const d = new Date();
-  const day = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
-  const suffix = Math.floor(Math.random() * 0xffff).toString(16).toUpperCase().padStart(4, '0');
-  return `NB-${day}-${suffix}`;
-}
-
 function normalizeSearch(value: string) {
   return value
     .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
@@ -246,7 +259,7 @@ export default function OrderPage() {
   const [activeGroup, setActiveGroup] = useState<string>('all');
   const [query, setQuery] = useState('');
   const [order, setOrder] = useState<Record<string, Line>>({});
-  const [contact, setContact] = useState<Contact>({ name: '', company: '', phone: '', notes: '' });
+  const [contact, setContact] = useState<Contact>({ ...emptyContact });
   const [loaded, setLoaded] = useState(false);
   const [reference, setReference] = useState('');
   const [copyState, setCopyState] = useState<'idle' | 'ok' | 'fail'>('idle');
@@ -266,43 +279,36 @@ export default function OrderPage() {
     setTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
   }, []);
 
-  // Restore a saved order and honour /order?add=<item-id>&unit=<unit-id> links
-  // coming from the catalog cards.
+  // Restore the shared draft. `?add=` is kept only as a backwards-compatible
+  // deep link: it records the item with an EMPTY quantity — no auto-quantity,
+  // no auto-scroll, no navigation away from the selection step.
   useEffect(() => {
-    let savedOrder: Record<string, Line> = {};
-    let savedContact: Contact = { name: '', company: '', phone: '', notes: '' };
-    let savedReference = '';
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as { order?: Record<string, Line>; contact?: Partial<Contact>; reference?: string };
-        if (parsed?.order && typeof parsed.order === 'object') savedOrder = parsed.order;
-        if (parsed?.contact && typeof parsed.contact === 'object') savedContact = { ...savedContact, ...parsed.contact };
-        if (typeof parsed?.reference === 'string') savedReference = parsed.reference.slice(0, 40);
-      }
-    } catch { /* private mode / stale value — start empty */ }
-    if (!savedReference) savedReference = makeReference();
-
+    const draft = readDraft();
     const params = new URLSearchParams(window.location.search);
     const unitParam = params.get('unit');
     if (unitParam && units.some((u) => u.id === unitParam)) setActiveUnit(unitParam as UnitId);
     const add = params.get('add');
-    if (add && items.some((it) => it.id === add)) {
-      const existing = savedOrder[add];
-      savedOrder = { ...savedOrder, [add]: { qty: qtyValue(existing) > 0 ? existing.qty : '1', note: existing?.note ?? '' } };
-      window.setTimeout(() => {
-        document.getElementById(`product-${add}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 250);
-    }
-    setOrder(savedOrder);
-    setContact(savedContact);
-    setReference(savedReference);
+    const next = add ? pickWithoutQuantity(draft, add) : draft;
+    writeDraft(next);
+    setOrder(next.order);
+    setContact(next.contact);
+    setReference(next.reference);
     setLoaded(true);
+
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== STORAGE_KEY || !e.newValue) return;
+      const synced = readDraft();
+      setOrder(synced.order);
+      setContact(synced.contact);
+      setReference(synced.reference);
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
   useEffect(() => {
     if (!loaded) return;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ order, contact, reference })); } catch { /* ignore */ }
+    writeDraft({ order, contact, reference });
   }, [order, contact, reference, loaded]);
 
   const toggleTheme = () => {
@@ -314,6 +320,16 @@ export default function OrderPage() {
 
   const setLine = (id: string, patch: Partial<Line>) => {
     setOrder((prev) => ({ ...prev, [id]: { qty: prev[id]?.qty ?? '', note: prev[id]?.note ?? '', ...patch } }));
+    setSubmitState((prev) => prev === 'sending' ? prev : 'idle');
+  };
+
+  /** Remove the item entirely from the preliminary selection. */
+  const removeLine = (id: string) => {
+    setOrder((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
     setSubmitState((prev) => prev === 'sending' ? prev : 'idle');
   };
 
@@ -330,19 +346,25 @@ export default function OrderPage() {
     setLine(id, { qty: next > 0 ? fmtQty(next) : '' });
   };
 
-  const selected = useMemo(() => items.filter((it) => qtyValue(order[it.id]) > 0), [order]);
+  // Only items the visitor picked in the catalog are ever rendered here.
+  const picked = useMemo(
+    () => items.filter((it) => Object.prototype.hasOwnProperty.call(order, it.id)),
+    [order],
+  );
+  const selected = useMemo(() => picked.filter((it) => qtyValue(order[it.id]) > 0), [picked, order]);
   const selectedCount = selected.length;
+  const missingQty = useMemo(() => picked.filter((it) => qtyValue(order[it.id]) <= 0), [picked, order]);
 
   const filtered = useMemo(() => {
     const q = normalizeSearch(query);
-    return items.filter((it) => {
+    return picked.filter((it) => {
       if (activeUnit !== 'all' && unitOf(it.id).unit !== activeUnit) return false;
       if (activeGroup !== 'all' && it.group !== activeGroup) return false;
       if (!q) return true;
       const hay = normalizeSearch(`${it.ar.name} ${it.ar.desc} ${it.ar.specs.join(' ')} ${it.en.name} ${it.en.desc} ${it.en.specs.join(' ')}`);
       return hay.includes(q);
     });
-  }, [activeUnit, activeGroup, query]);
+  }, [picked, activeUnit, activeGroup, query]);
 
   const sections = useMemo(
     () => units
@@ -351,7 +373,8 @@ export default function OrderPage() {
     [filtered],
   );
 
-  const unitCounts = useMemo(() => countByUnit(items.map((it) => it.id)), []);
+  // Counts describe the picked items, not the whole catalog.
+  const unitCounts = useMemo(() => countByUnit(picked.map((it) => it.id)), [picked]);
 
   const totalsByUnit = useMemo(() => {
     const totals: Partial<Record<UnitId, number>> = {};
@@ -439,13 +462,14 @@ export default function OrderPage() {
   const clearOrder = () => {
     if (!window.confirm(t.clearConfirm)) return;
     setOrder({});
-    setContact({ name: '', company: '', phone: '', notes: '' });
+    setContact({ ...emptyContact });
     setReference(makeReference());
     setSubmitState('idle');
     setShowErrors(false);
   };
 
-  const disabled = selectedCount === 0;
+  // No order can be sent until every picked item has a quantity.
+  const disabled = selectedCount === 0 || missingQty.length > 0;
 
   const statusTitle = submitState === 'submitted' ? t.sentTitle
     : submitState === 'fallback' ? t.fallbackTitle
@@ -455,7 +479,8 @@ export default function OrderPage() {
     : t.errorBody;
 
   return (
-    <main className="nile order-page" dir={ar ? 'rtl' : 'ltr'} lang={lang}>
+    <>
+    <main className="nile order-page has-floating-order" dir={ar ? 'rtl' : 'ltr'} lang={lang}>
       {/* ── Topbar ── */}
       <header className="topbar order-topbar">
         <a className="brand" href="/" aria-label={ar ? 'نايل بد — الرئيسية' : 'Nile Bed — home'}><BrandLogo variant="auto" /></a>
@@ -490,6 +515,14 @@ export default function OrderPage() {
             <h1>{t.title}</h1>
             <p>{t.subtitle}</p>
             <div className="ob-hero-note"><Info size={14} />{t.heroNote}</div>
+            <div className="nb-steps" aria-label={ar ? 'خطوات الطلب' : 'Order steps'}>
+              <a className="nb-step" href="/catalog"><b>1</b>{t.step1}</a>
+              <span className="nb-step-arrow">{ar ? <ArrowLeft size={12} /> : <ArrowRight size={12} />}</span>
+              <span className="nb-step is-current"><b>2</b>{t.step2}</span>
+            </div>
+            <a className="ob-back-link" href="/catalog">
+              {ar ? <ArrowRight size={13} /> : <ArrowLeft size={13} />}{t.addMore}
+            </a>
           </div>
           <div className="ob-legend">
             <div className="ob-legend-head"><Ruler size={15} />{t.unitsLabel} · {units.length}</div>
@@ -505,9 +538,11 @@ export default function OrderPage() {
         </div>
       </section>
 
-      {/* ── Filters ── */}
+      {/* ── Filters (only meaningful when something is picked) ── */}
+      {picked.length > 0 && (
       <section className="ob-filters">
         <div className="ob-filters-inner">
+          <div className="ob-picked-note"><Check size={13} />{t.pickedOnly} · {t.count(picked.length)}</div>
           <div className="ob-filters-top">
             <div className="ob-search">
               <Search size={16} />
@@ -525,7 +560,7 @@ export default function OrderPage() {
           </div>
           <div className="ob-unit-chips" role="tablist" aria-label={t.filterByUnit}>
             <button role="tab" aria-selected={activeUnit === 'all'} className={activeUnit === 'all' ? 'ob-chip active' : 'ob-chip'} onClick={() => setActiveUnit('all')}>
-              {t.allUnits} <span>{items.length}</span>
+              {t.allUnits} <span>{picked.length}</span>
             </button>
             {units.map((u) => (
               <button key={u.id} role="tab" aria-selected={activeUnit === u.id} className={activeUnit === u.id ? 'ob-chip active' : 'ob-chip'} onClick={() => setActiveUnit(u.id)}>
@@ -536,11 +571,19 @@ export default function OrderPage() {
           <div className="ob-sheet-note"><Info size={13} />{t.sheetNote}</div>
         </div>
       </section>
+      )}
 
       {/* ── Products + summary ── */}
       <div className="ob-layout">
         <section className="ob-products" aria-label={t.title}>
-          {filtered.length === 0 ? (
+          {picked.length === 0 ? (
+            <div className="ob-picked-empty">
+              <ShoppingBag size={30} />
+              <h2>{t.pickedEmpty}</h2>
+              <p>{t.pickedEmptyHint}</p>
+              <a href="/catalog"><ClipboardList size={15} />{t.addMore}</a>
+            </div>
+          ) : filtered.length === 0 ? (
             <div className="ob-no-results">
               <Search size={22} />
               <p>{t.noResults}</p>
@@ -566,7 +609,7 @@ export default function OrderPage() {
                   const groupDef = groups.find((g) => g.id === it.group);
                   const groupTitle = groupDef ? (ar ? groupDef.ar.title : groupDef.en.title) : '';
                   return (
-                    <div id={`product-${it.id}`} key={it.id} className={qty > 0 ? 'ob-row selected' : 'ob-row'}>
+                    <div id={`product-${it.id}`} key={it.id} className={qty > 0 ? 'ob-row selected' : 'ob-row needs-qty'}>
                       <div className="ob-row-main">
                         <div className="ob-row-name">
                           <span className="ob-row-index">{String(sIdx + 1).padStart(2, '0')}.{String(idx + 1).padStart(2, '0')}</span>
@@ -580,6 +623,8 @@ export default function OrderPage() {
                           {info.source === 'family'
                             ? <em className="ob-est" title={t.approxTitle}>{t.approx}</em>
                             : <span className="ob-sheet" title={info.sheetLabel ? t.sheetLabel(info.sheetLabel) : t.fromSheet}>{t.fromSheet}</span>}
+                          {qty === 0 && <em className="ob-qty-required">{t.qtyRequired}</em>}
+                          <button type="button" className="ob-row-remove" onClick={() => removeLine(it.id)} aria-label={`${t.remove} — ${ar ? it.ar.name : it.en.name}`} title={t.remove}><X size={12} /></button>
                         </div>
                         <div className="ob-qty" dir="ltr">
                           <button type="button" onClick={() => stepQty(it.id, -1)} aria-label={`- ${def.step}`}><Minus size={14} /></button>
@@ -627,9 +672,13 @@ export default function OrderPage() {
               <h2>{t.summary}</h2>
               <span>{selectedCount}</span>
             </div>
-            <p className="ob-summary-count">{t.summaryCount(selectedCount)}</p>
+            <p className="ob-summary-count">{t.summaryCount(selectedCount, picked.length)}</p>
 
-            {disabled ? (
+            {missingQty.length > 0 && (
+              <div className="ob-warning" role="status"><Info size={14} />{t.missingQty(missingQty.length)}</div>
+            )}
+
+            {selectedCount === 0 ? (
               <div className="ob-empty"><PackageHint />{t.empty}<small>{t.emptyHint}</small></div>
             ) : (
               <>
@@ -641,7 +690,7 @@ export default function OrderPage() {
                         {order[it.id]?.note && <small>{m.note}: {order[it.id].note}</small>}
                       </div>
                       <span className="ob-line-qty">{fmtQty(qtyValue(order[it.id]))} {labelOf(it)}</span>
-                      <button type="button" onClick={() => setLine(it.id, { qty: '' })} aria-label={t.remove}><X size={13} /></button>
+                      <button type="button" onClick={() => removeLine(it.id)} aria-label={t.remove}><X size={13} /></button>
                     </li>
                   ))}
                 </ul>
@@ -694,10 +743,10 @@ export default function OrderPage() {
               <a className={`ob-send ob-send-mail${disabled ? ' is-disabled' : ''}`} href={disabled ? undefined : mailHref} aria-disabled={disabled} onClick={disabled ? (e) => e.preventDefault() : undefined}>
                 <Mail size={15} />{t.sendMail}<ArrowUpRight size={14} />
               </a>
-              <button className="ob-secondary" type="button" onClick={handleCopy} disabled={disabled}>
+              <button className="ob-secondary" type="button" onClick={handleCopy} disabled={selectedCount === 0}>
                 <Copy size={14} />{copyState === 'ok' ? t.copied : copyState === 'fail' ? t.copyFail : t.copy}
               </button>
-              <button className="ob-clear" type="button" onClick={clearOrder} disabled={disabled}><Trash2 size={13} />{t.clear}</button>
+              <button className="ob-clear" type="button" onClick={clearOrder} disabled={picked.length === 0}><Trash2 size={13} />{t.clear}</button>
             </div>
             <p className="ob-summary-note"><Info size={13} />{t.note}</p>
             <div className="ob-direct">
@@ -715,6 +764,24 @@ export default function OrderPage() {
         <small>© {new Date().getFullYear()} NILE BED</small>
       </footer>
     </main>
+
+    {/* Persistent floating control for the second step, matching step 1. */}
+    <div className="nb-float" dir={ar ? 'rtl' : 'ltr'}>
+      <div className="nb-float-inner">
+        <div className="nb-float-count">
+          <ShoppingBag size={19} />
+          <div>
+            <span className="nb-float-label">{t.currentOrder} <strong>{picked.length}</strong> {t.products}</span>
+            <span className="nb-float-hint">{t.quantitiesSet(selectedCount, picked.length)}</span>
+          </div>
+        </div>
+        <a className="nb-float-cta" href="/catalog">
+          <span>{t.addMore}</span>
+          {ar ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
+        </a>
+      </div>
+    </div>
+    </>
   );
 }
 

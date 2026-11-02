@@ -1,0 +1,77 @@
+/* ==========================================================================
+   CONTRAST GUARD — paired foregrounds for filled accent surfaces.
+   --------------------------------------------------------------------------
+   Every filled button/badge keeps its WCAG-AA text pair in BOTH palettes:
+     --nb-hot             -> --nb-on-hot            (4.87:1 light / 7.50:1 dark)
+     --nb-accent-strong   -> --nb-on-accent-strong (5.81:1 light / 7.89:1 dark)
+     --nb-whatsapp        -> --nb-on-whatsapp      (8.06:1 in both)
+   Loaded LAST so it wins over older `!important` declarations.
+   ========================================================================== */
+
+/* Coral / copper filled controls */
+.home-clean .hc-btn-dark:hover,
+.home-clean .hc-btn-primary:hover,
+.home-page .button-copper,
+.home-page .button-copper:hover,
+.home-page .import-section .opportunity-feature .button,
+.home-page .import-section .opportunity-feature .button:hover,
+.nile .nav-cta:hover,
+.nile .product-info > a:hover,
+.nile .preview-foot a:hover,
+.catalog-page .unit-chip.active,
+.catalog-page .unit-chip.active span,
+.catalog-page .media-badge,
+.order-page .ob-summary-head > span,
+.order-page .ob-submit,
+.order-page .ob-send-mail:hover,
+.order-page .ob-send-mail:hover:not(.is-disabled) {
+  color: var(--nb-on-hot) !important;
+}
+.order-page .ob-submit:hover:not(:disabled) {
+  background: var(--nb-hot);
+  color: var(--nb-on-hot) !important;
+}
+
+/* Deep-copper filled controls (audit accent) */
+.home-clean .hc-btn-primary,
+.home-clean .hc-cta:hover,
+.catalog-page .nav-cta:hover,
+.home-clean .hc-featured-foot a:hover {
+  color: var(--nb-on-accent-strong) !important;
+}
+
+/* WhatsApp green — dark ink, never white */
+.catalog-page .btn-wa,
+.catalog-page .btn-wa:hover,
+.order-page .ob-send-wa,
+.order-page .ob-send-wa:hover,
+.nile .btn-wa,
+.nile .btn-wa:hover {
+  color: var(--nb-on-whatsapp) !important;
+}
+
+/* Bands that stay dark in BOTH palettes need the permanently light coral,
+   not --nb-hot-strong (which is dark in light mode for light backgrounds). */
+.home-clean .hc-card-dark .hc-card-num,
+.home-clean .hc-card-dark .hc-card-icon,
+.home-clean .hc-partner-card-dark .hc-partner-kicker,
+.home-clean .hc-partner-card-dark .hc-partner-icon,
+.home-clean .hc-production .hc-kicker-light > span,
+.home-clean .hc-trust .hc-kicker-light > span,
+.home-clean .hc-trust-stamp span,
+.home-page .production-points span,
+.home-page .production-points svg,
+.home-page .quality-stamp,
+.home-page .section-label.light,
+.home-page .hero-visual-number span,
+.home-page .hero-visual-bottom b {
+  color: var(--nb-hot-text) !important;
+}
+
+/* Catalog hero disclaimer used dark-band text tokens on a palette-adaptive
+   (light in light mode) hero — give it the paired adaptive tokens. */
+.catalog-page .catalog-disclaimer { color: var(--nb-muted); border-top-color: var(--nb-border); }
+.catalog-page .catalog-disclaimer svg { color: var(--nb-accent-strong); }
+
+/* Focus ring and selection always use the palette's focus colour. */
+:focus-visible { outline-color: var(--nb-focus); }

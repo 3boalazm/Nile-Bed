@@ -1,11 +1,14 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+import '@/styles/tokens.css';
 import '@/styles/globals.css';
 import '@/styles/nilebed.css';
 import '@/styles/nilebed-refresh.css';
 import '@/styles/home-clean.css';
 import '@/styles/ko-sans-headings.css';
 import '@/styles/audit-refinement.css';
+import '@/styles/order-float.css';
+import '@/styles/contrast.css';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000');
 
@@ -37,6 +40,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  // Metadata must be literal colours (CSS vars are not resolved here); these
+  // mirror --nb-l-bg / --nb-d-bg in styles/tokens.css — keep them in sync.
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#f3f1eb' },
     { media: '(prefers-color-scheme: dark)', color: '#0f1312' },

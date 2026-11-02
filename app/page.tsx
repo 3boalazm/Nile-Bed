@@ -18,8 +18,8 @@ const copy = {
     intro:
       'Made-in-Egypt springs, carefully sourced materials, and a trusted partner network for fabric & sponge. One coordinated supply route — built around your production.',
     explore: 'Explore the catalog',
-    buildOrder: 'Build an order',
-    orderHint: 'Need to state a quantity for each product? Items are classified by unit of measure in the order builder.',
+    buildOrder: 'Review order',
+    orderHint: 'Pick items in the catalog as an initial selection, then set each item’s quantity in “Review order”.',
     quote: 'Talk to our team',
     note: 'One coordinated route. Flexible specs. Confirmed before supply.',
     heroStatLabel: 'catalog items',
@@ -102,8 +102,8 @@ const copy = {
     intro:
       'سوست نصنعها في مصر، وخامات نختارها بعناية، وشركاء نوصّلك بيهم للقماش والإسفنج. طريق توريد واحد — مبني على احتياج مصنعك.',
     explore: 'استكشف الكتالوج',
-    buildOrder: 'كوّن طلبك',
-    orderHint: 'عايز تحدد كمية كل صنف؟ الأصناف متصنّفة حسب وحدة القياس في صفحة تكوين الطلب.',
+    buildOrder: 'راجع الطلب',
+    orderHint: 'اختار الأصناف من الكتالوج كاختيار أولي، وبعدين في «راجع الطلب» حدّد كمية كل صنف حسب وحدة قياسه.',
     quote: 'تواصل مع فريقنا',
     note: 'مسار واحد. اختيارات مرنة. تُؤكّد قبل التوريد.',
     heroStatLabel: 'صنف في الكتالوج',
