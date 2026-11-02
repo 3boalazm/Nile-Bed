@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+import '@/styles/design-tokens.css';
 import '@/styles/globals.css';
 import '@/styles/nilebed.css';
 import '@/styles/nilebed-refresh.css';
