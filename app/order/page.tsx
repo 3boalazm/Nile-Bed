@@ -13,6 +13,7 @@ type Lang = 'ar' | 'en';
 type Theme = 'light' | 'dark';
 type Line = { qty: string; note: string };
 type Contact = { name: string; company: string; phone: string; notes: string };
+type SubmitState = 'idle' | 'sending' | 'submitted' | 'fallback' | 'error';
 
 const STORAGE_KEY = 'nilebed-order-v1';
 const WA_NUMBER = '201090000676';
@@ -45,7 +46,10 @@ const copy = {
     empty: 'لسه مضفتش أي صنف. اكتب الكمية قدام الصنف وهيظهر هنا.',
     emptyHint: 'تقدر تطلب أكتر من صنف من أكتر من وحدة قياس في نفس الأوردر.',
     unitTotals: 'إجمالي حسب الوحدة',
-    contactTitle: 'بيانات التواصل (اختياري)',
+    contactTitle: 'بيانات التواصل',
+    required: 'مطلوب',
+    nameError: 'اكتب الاسم من فضلك',
+    phoneError: 'اكتب رقم هاتف نتواصل معاك عليه',
     name: 'الاسم',
     company: 'الشركة / المصنع',
     phone: 'رقم الهاتف',
@@ -54,6 +58,17 @@ const copy = {
     companyPh: 'اسم الشركة',
     phonePh: '01xxxxxxxxx',
     notesPh: 'ميعاد التوريد، عنوان التسليم، مواصفات خاصة…',
+    sendOrder: 'إرسال الطلب للفريق',
+    sending: 'جاري إرسال الطلب…',
+    sentTitle: 'تم استلام الطلب',
+    sentBody: (ref: string) => `طلبك اتسجّل برقم ${ref}. الفريق هيواصل معاك لتأكيد المواصفات والتوافر والسعر.`,
+    fallbackTitle: 'الاستقبال المباشر مش متفعّل دلوقتي',
+    fallbackBody: 'الطلب جاهز ومفيش حاجة ضاعت — ابعته لينا عبر واتساب أو البريد بالزرار تحت.',
+    errorTitle: 'ما قدرناش نبعت الطلب',
+    errorBody: 'جرّب تاني، أو استخدم واتساب / البريد. الطلب لسه محفوظ عندك على الجهاز.',
+    submitNote: 'لما استقبال الأوردرات يكون متوصّل، الزرار بيبعت الطلب مباشرة لفريقنا. ولو مش متوصّل، بيجهّز نفس الطلب على واتساب أو البريد.',
+    newOrder: 'ابدأ طلب جديد',
+    referenceLabel: 'رقم الطلب',
     sendWa: 'إرسال الطلب عبر واتساب',
     sendMail: 'إرسال الطلب بالبريد',
     copy: 'نسخ نص الطلب',
@@ -61,7 +76,7 @@ const copy = {
     copyFail: 'تعذّر النسخ — استخدم واتساب أو البريد',
     clear: 'تفريغ الطلب',
     clearConfirm: 'تفريغ كل الكميات والملاحظات؟',
-    note: 'الموقع لا يرسل ولا يخزّن الطلب. الأزرار بتفتح واتساب أو البريد برسالة جاهزة فيها كل صنف وكميته ووحدته. المواصفات النهائية والتوافر والسعر تُؤكَّد مع الفريق.',
+    note: 'لما استقبال الأوردرات يكون متفعّل، الطلب بيتبعت مباشرة للفريق مع رقم طلب؛ غير كده الأزرار بتفتح واتساب أو البريد برسالة جاهزة فيها كل صنف وكميته ووحدته. الموقع مش بيخزّن بياناتك على سيرفر، والمواصفات والتوافر والسعر تُؤكَّد مع الفريق.',
     sheetNote: 'وحدات القياس من جرد «اصناف المخزون» (٥٣ بندًا). الأصناف الموسّعة في الكتالوج وحدتها مستنتجة من نفس الفئة ومعلّمة بـ «تقديري». «كجم» و«كيلو» في الجرد هما نفس الوحدة.',
     noResults: 'لا توجد أصناف مطابقة. جرّب كلمة تانية أو غيّر الفلتر.',
     reset: 'إعادة الضبط',
@@ -100,7 +115,10 @@ const copy = {
     empty: 'No items yet. Enter a quantity next to a product and it will show up here.',
     emptyHint: 'You can order many items across many units in one order.',
     unitTotals: 'Totals by unit',
-    contactTitle: 'Contact details (optional)',
+    contactTitle: 'Contact details',
+    required: 'required',
+    nameError: 'Please enter your name',
+    phoneError: 'Please enter a phone number we can reach you on',
     name: 'Name',
     company: 'Company / factory',
     phone: 'Phone',
@@ -109,6 +127,17 @@ const copy = {
     companyPh: 'Company name',
     phonePh: '+20 …',
     notesPh: 'Delivery date, address, special specs…',
+    sendOrder: 'Submit order to our team',
+    sending: 'Submitting order…',
+    sentTitle: 'Order received',
+    sentBody: (ref: string) => `Your order was recorded as ${ref}. Our team will contact you to confirm specs, availability and prices.`,
+    fallbackTitle: 'Direct order inbox is not connected yet',
+    fallbackBody: 'Your order is ready and nothing was lost — send it to us on WhatsApp or by email using the buttons below.',
+    errorTitle: 'We could not submit the order',
+    errorBody: 'Please try again, or use WhatsApp / email. The order is still saved on this device.',
+    submitNote: 'When the order inbox is connected, this button submits directly to our team. Otherwise it prepares the same order for WhatsApp or email.',
+    newOrder: 'Start a new order',
+    referenceLabel: 'Order reference',
     sendWa: 'Send order on WhatsApp',
     sendMail: 'Send order by email',
     copy: 'Copy order text',
@@ -116,7 +145,7 @@ const copy = {
     copyFail: 'Could not copy — use WhatsApp or email',
     clear: 'Clear order',
     clearConfirm: 'Clear all quantities and notes?',
-    note: 'This site does not send or store orders. The buttons open WhatsApp or email with a ready-made message listing every item with its quantity and unit. Final specs, availability and prices are confirmed with the team.',
+    note: 'When the order inbox is connected, the order is submitted directly to our team with an order reference; otherwise the buttons open WhatsApp or email with a ready-made message listing every item with its quantity and unit. No customer data is stored on a server here, and final specs, availability and prices are confirmed with the team.',
     sheetNote: 'Units come from the «اصناف المخزون» stock sheet (53 lines). Extended catalog items inherit the unit of their family and are marked «estimated». The sheet writes both «كجم» and «كيلو» for the same weight unit.',
     noResults: 'No matching items. Try another keyword or change the filter.',
     reset: 'Reset filters',
@@ -134,6 +163,7 @@ const copy = {
 const msgCopy = {
   ar: {
     heading: 'مرحبًا نايل بد، أرغب في طلب الأصناف التالية:',
+    reference: 'رقم الطلب',
     note: 'ملاحظة',
     name: 'الاسم',
     company: 'الشركة',
@@ -144,6 +174,7 @@ const msgCopy = {
   },
   en: {
     heading: 'Hi Nile Bed, I would like to order the following items:',
+    reference: 'Order reference',
     note: 'Note',
     name: 'Name',
     company: 'Company',
@@ -189,6 +220,14 @@ function roundTo(v: number, step: number): number {
   return Number((Math.round(v / step) * step).toFixed(3));
 }
 
+/** A short, human-readable order reference kept with the local draft. */
+function makeReference(): string {
+  const d = new Date();
+  const day = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const suffix = Math.floor(Math.random() * 0xffff).toString(16).toUpperCase().padStart(4, '0');
+  return `NB-${day}-${suffix}`;
+}
+
 function normalizeSearch(value: string) {
   return value
     .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
@@ -209,7 +248,10 @@ export default function OrderPage() {
   const [order, setOrder] = useState<Record<string, Line>>({});
   const [contact, setContact] = useState<Contact>({ name: '', company: '', phone: '', notes: '' });
   const [loaded, setLoaded] = useState(false);
+  const [reference, setReference] = useState('');
   const [copyState, setCopyState] = useState<'idle' | 'ok' | 'fail'>('idle');
+  const [submitState, setSubmitState] = useState<SubmitState>('idle');
+  const [showErrors, setShowErrors] = useState(false);
 
   const t = copy[lang];
   const m = msgCopy[lang];
@@ -229,14 +271,17 @@ export default function OrderPage() {
   useEffect(() => {
     let savedOrder: Record<string, Line> = {};
     let savedContact: Contact = { name: '', company: '', phone: '', notes: '' };
+    let savedReference = '';
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        const parsed = JSON.parse(raw) as { order?: Record<string, Line>; contact?: Partial<Contact> };
+        const parsed = JSON.parse(raw) as { order?: Record<string, Line>; contact?: Partial<Contact>; reference?: string };
         if (parsed?.order && typeof parsed.order === 'object') savedOrder = parsed.order;
         if (parsed?.contact && typeof parsed.contact === 'object') savedContact = { ...savedContact, ...parsed.contact };
+        if (typeof parsed?.reference === 'string') savedReference = parsed.reference.slice(0, 40);
       }
     } catch { /* private mode / stale value — start empty */ }
+    if (!savedReference) savedReference = makeReference();
 
     const params = new URLSearchParams(window.location.search);
     const unitParam = params.get('unit');
@@ -251,13 +296,14 @@ export default function OrderPage() {
     }
     setOrder(savedOrder);
     setContact(savedContact);
+    setReference(savedReference);
     setLoaded(true);
   }, []);
 
   useEffect(() => {
     if (!loaded) return;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ order, contact })); } catch { /* ignore */ }
-  }, [order, contact, loaded]);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ order, contact, reference })); } catch { /* ignore */ }
+  }, [order, contact, reference, loaded]);
 
   const toggleTheme = () => {
     const next: Theme = theme === 'dark' ? 'light' : 'dark';
@@ -268,6 +314,13 @@ export default function OrderPage() {
 
   const setLine = (id: string, patch: Partial<Line>) => {
     setOrder((prev) => ({ ...prev, [id]: { qty: prev[id]?.qty ?? '', note: prev[id]?.note ?? '', ...patch } }));
+    setSubmitState((prev) => prev === 'sending' ? prev : 'idle');
+  };
+
+  const updateContact = (field: keyof Contact, value: string) => {
+    setContact((prev) => ({ ...prev, [field]: value }));
+    setShowErrors(false);
+    setSubmitState((prev) => prev === 'sending' ? prev : 'idle');
   };
 
   const stepQty = (id: string, direction: 1 | -1) => {
@@ -328,10 +381,11 @@ export default function OrderPage() {
       contact.phone && `${m.phone}: ${contact.phone}`,
       contact.notes && `${m.notes}: ${contact.notes}`,
     ].filter(Boolean) as string[];
-    return [m.heading, lines.join('\n'), details.join('\n'), m.footer]
+    const header = reference ? `${m.heading}\n${m.reference}: ${reference}` : m.heading;
+    return [header, lines.join('\n'), details.join('\n'), m.footer]
       .filter(Boolean)
       .join('\n\n');
-  }, [selected, order, contact, ar, m]);
+  }, [selected, order, contact, ar, m, reference]);
 
   const waHref = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
   const mailHref = `mailto:${EMAIL}?subject=${encodeURIComponent(m.subject)}&body=${encodeURIComponent(message)}`;
@@ -346,13 +400,59 @@ export default function OrderPage() {
     window.setTimeout(() => setCopyState('idle'), 2500);
   };
 
+  const handleSubmit = async () => {
+    if (disabled || submitState === 'sending') return;
+    if (!contact.name.trim() || !contact.phone.trim()) {
+      setShowErrors(true);
+      setSubmitState('error');
+      return;
+    }
+    setShowErrors(false);
+    setSubmitState('sending');
+    try {
+      const res = await fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reference,
+          lang,
+          contact,
+          lines: selected.map((it) => ({ id: it.id, qty: qtyValue(order[it.id]), note: order[it.id]?.note ?? '' })),
+          message,
+        }),
+      });
+      const data = await res.json() as { ok?: boolean; mode?: string; reason?: string; reference?: string };
+      if (data?.ok && data.mode === 'submitted') {
+        if (data.reference) setReference(data.reference);
+        setSubmitState('submitted');
+      } else if (data?.reason === 'missing-contact') {
+        setShowErrors(true);
+        setSubmitState('error');
+      } else {
+        setSubmitState('fallback');
+      }
+    } catch {
+      setSubmitState('error');
+    }
+  };
+
   const clearOrder = () => {
     if (!window.confirm(t.clearConfirm)) return;
     setOrder({});
     setContact({ name: '', company: '', phone: '', notes: '' });
+    setReference(makeReference());
+    setSubmitState('idle');
+    setShowErrors(false);
   };
 
   const disabled = selectedCount === 0;
+
+  const statusTitle = submitState === 'submitted' ? t.sentTitle
+    : submitState === 'fallback' ? t.fallbackTitle
+    : t.errorTitle;
+  const statusBody = submitState === 'submitted' ? t.sentBody(reference)
+    : submitState === 'fallback' ? t.fallbackBody
+    : t.errorBody;
 
   return (
     <main className="nile order-page" dir={ar ? 'rtl' : 'ltr'} lang={lang}>
@@ -556,15 +656,38 @@ export default function OrderPage() {
               </>
             )}
 
-            <div className="ob-contact">
+            <form className="ob-contact" onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }}>
               <h3>{t.contactTitle}</h3>
-              <label>{t.name}<input value={contact.name} placeholder={t.namePh} onChange={(e) => setContact({ ...contact, name: e.target.value })} /></label>
-              <label>{t.company}<input value={contact.company} placeholder={t.companyPh} onChange={(e) => setContact({ ...contact, company: e.target.value })} /></label>
-              <label>{t.phone}<input type="tel" value={contact.phone} placeholder={t.phonePh} onChange={(e) => setContact({ ...contact, phone: e.target.value })} /></label>
-              <label>{t.notes}<textarea rows={3} value={contact.notes} placeholder={t.notesPh} onChange={(e) => setContact({ ...contact, notes: e.target.value })} /></label>
-            </div>
+              <label className={showErrors && !contact.name.trim() ? 'has-error' : ''}>
+                {t.name} <em>{t.required}</em>
+                <input value={contact.name} placeholder={t.namePh} onChange={(e) => updateContact('name', e.target.value)} />
+                {showErrors && !contact.name.trim() && <small className="ob-field-error">{t.nameError}</small>}
+              </label>
+              <label>{t.company}<input value={contact.company} placeholder={t.companyPh} onChange={(e) => updateContact('company', e.target.value)} /></label>
+              <label className={showErrors && !contact.phone.trim() ? 'has-error' : ''}>
+                {t.phone} <em>{t.required}</em>
+                <input type="tel" value={contact.phone} placeholder={t.phonePh} onChange={(e) => updateContact('phone', e.target.value)} />
+                {showErrors && !contact.phone.trim() && <small className="ob-field-error">{t.phoneError}</small>}
+              </label>
+              <label>{t.notes}<textarea rows={3} value={contact.notes} placeholder={t.notesPh} onChange={(e) => updateContact('notes', e.target.value)} /></label>
+            </form>
+
+            {submitState !== 'idle' && submitState !== 'sending' && (
+              <div className={`ob-status ob-status-${submitState}`} role="status" aria-live="polite">
+                <strong>{statusTitle}</strong>
+                <p>{statusBody}</p>
+                {reference && <span className="ob-ref">{t.referenceLabel}: {reference}</span>}
+                {submitState === 'submitted' && (
+                  <button type="button" onClick={clearOrder}>{t.newOrder}</button>
+                )}
+              </div>
+            )}
 
             <div className="ob-actions">
+              <button className="ob-submit" type="button" onClick={handleSubmit} disabled={disabled || submitState === 'sending'}>
+                <Send size={15} />{submitState === 'sending' ? t.sending : t.sendOrder}<ArrowUpRight size={14} />
+              </button>
+              <small className="ob-submit-note">{t.submitNote}</small>
               <a className={`ob-send ob-send-wa${disabled ? ' is-disabled' : ''}`} href={disabled ? undefined : waHref} target="_blank" rel="noopener noreferrer" aria-disabled={disabled} onClick={disabled ? (e) => e.preventDefault() : undefined}>
                 <Phone size={15} />{t.sendWa}<ArrowUpRight size={14} />
               </a>

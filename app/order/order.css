@@ -135,7 +135,25 @@ html[data-theme='dark'] .ob-summary { box-shadow: 0 12px 36px rgba(0,0,0,.35); }
 .ob-contact input, .ob-contact textarea { display: block; width: 100%; margin-top: 5px; border: 1px solid var(--line-2); background: var(--field); color: var(--ink); font-size: 11px; padding: 9px 10px; outline: 0; resize: vertical; }
 .ob-contact input:focus, .ob-contact textarea:focus { border-color: var(--copper-mid); }
 .ob-contact input::placeholder, .ob-contact textarea::placeholder { color: var(--t-placeholder); font-size: 9.5px; }
+.ob-contact label em { font-style: normal; font-size: 8px; color: var(--copper-muted); margin-inline-start: 4px; }
+.ob-contact label.has-error input { border-color: #b4472c; background: rgba(180,71,44,.06); }
+.ob-field-error { display: block; margin-top: 4px; font-size: 8.5px; color: #b4472c; }
+
+.ob-status { margin-top: 14px; padding: 12px 13px; border: 1px solid var(--line-2); background: var(--card); }
+.ob-status strong { display: block; font-size: 11px; font-weight: 700; color: var(--ink); }
+.ob-status p { font-size: 9px; line-height: 1.75; color: var(--t-2); margin: 6px 0 0; }
+.ob-status .ob-ref { display: inline-block; margin-top: 8px; padding: 4px 7px; background: var(--white); border: 1px solid var(--line); font-size: 9px; font-weight: 700; color: var(--t-1); direction: ltr; }
+.ob-status button { display: inline-block; margin-top: 10px; border: 0; background: var(--inverse); color: var(--od); padding: 8px 12px; font-size: 9px; font-weight: 700; }
+.ob-status-submitted { border-color: #7bb77a; background: rgba(123,183,122,.12); }
+.ob-status-fallback { border-color: var(--copper-line); background: rgba(187,113,73,.1); }
+.ob-status-error { border-color: #b4472c; background: rgba(180,71,44,.09); }
+
 .ob-actions { display: grid; gap: 8px; margin-top: 16px; }
+.ob-submit { min-height: 46px; display: flex; align-items: center; gap: 9px; padding: 0 12px; border: 0; background: var(--copper); color: #fff; font-size: 10px; font-weight: 700; transition: .2s; }
+.ob-submit svg:last-child { margin-inline-start: auto; }
+.ob-submit:hover:not(:disabled) { background: var(--copper-bright); }
+.ob-submit:disabled { opacity: .5; cursor: not-allowed; }
+.ob-submit-note { display: block; font-size: 8px; line-height: 1.65; color: var(--t-4); margin-top: -2px; }
 .ob-send { min-height: 42px; display: flex; align-items: center; gap: 9px; padding: 0 12px; font-size: 10px; font-weight: 700; transition: .2s; }
 .ob-send svg:last-child { margin-inline-start: auto; }
 .ob-send-wa { background: #25D366; color: #fff; }
