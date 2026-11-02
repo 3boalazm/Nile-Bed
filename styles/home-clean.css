@@ -1074,3 +1074,24 @@ html[data-theme='dark'] .home-clean .hc-form textarea { background: #1a201d; bor
   .catalog-page .search-wrap { min-height: 48px; }
   .catalog-page .chip { min-height: 40px; }
 }
+
+/* ── Order-builder hint inside the contact block ─────────────────────────── */
+.home-clean .hc-contact-head .hc-order-hint {
+  max-width: 620px;
+  margin: 18px 0 0;
+  align-items: flex-start;
+  line-height: 1.8;
+  font-size: 11px;
+}
+.home-clean .hc-order-hint svg { margin-top: 3px; }
+.home-clean .hc-order-hint a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  color: #e95431;
+  border-bottom: 1px solid currentColor;
+  white-space: nowrap;
+}
+.home-clean .hc-order-hint a:hover { color: #bb7149; }
+html[data-theme='dark'] .home-clean .hc-contact-head .hc-order-hint { color: #a9b0aa; border-top-color: #2b332e; }

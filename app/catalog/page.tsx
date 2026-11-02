@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, Search, Filter, Phone, Mail, Globe2, Menu, X, Moon, Sun, Check, Package, Layers3, Boxes, Scissors, Link2, Sparkles, Wrench, ShieldCheck, Info } from 'lucide-react';
+import { ArrowUpRight, Search, Filter, Phone, Mail, Globe2, Menu, X, Moon, Sun, Check, Package, Layers3, Boxes, Scissors, Link2, Sparkles, Wrench, ShieldCheck, Info, ClipboardList, Ruler } from 'lucide-react';
 import { groups, items } from './data';
+import { countByUnit, unitById, unitOf, units, type UnitId } from './units';
 import './catalog.css';
 
 type Lang = 'ar' | 'en';
@@ -10,7 +11,7 @@ type Theme = 'light' | 'dark';
 
 const ui = {
   ar: {
-    nav: ['الرئيسية', 'الكتالوج', 'تواصل'],
+    nav: ['الرئيسية', 'الكتالوج', 'تكوين الطلب', 'تواصل'],
     title: 'كتالوج خامات نايل بد',
     subtitle: 'كل الأصناف في مكان واحد — سوست وفريم وسلك، شاسيهات مجمّعة، بوكيت رول ومفروش جاهز، ميموري ولاتكس وخام مراتب، لباد وفازلين وميلتون وبلاستيك، خيوط وتيب، لوازم تجميع، وغراء وعدد. الصور والرسوم توضيحية أُعدّت لتمثيل أنواع الخامات، وليست صورًا فعلية لمنتجات نايل بد أو لمخزونها. المواصفات النهائية تُؤكَّد مع الفريق.',
     disclaimer: 'الصور والرسوم توضيحية معدّة لتمثيل فئات الخامات، وليست صورًا فعلية من مصنع نايل بد أو لمخزونها الحالي. نورّد الخامات ونصنّع السوست فقط، ولا نصنّع مراتب جاهزة. محتاج قماش أو إسفنج؟ نوجّهك لشريك من شركائنا لتشتري بسعر مميز.',
@@ -19,6 +20,14 @@ const ui = {
     count: (n: number) => `${n} صنف`,
     enquire: 'استفسر عبر واتساب',
     emailEnquire: 'راسلنا بالبريد',
+    buildOrder: 'كوّن طلبك',
+    addToOrder: 'أضف للطلب',
+    filterByUnit: 'تصفية حسب وحدة القياس',
+    allUnits: 'كل الوحدات',
+    orderBy: 'يُطلب بـ',
+    approx: 'تقديري',
+    approxTitle: 'وحدة القياس مستنتجة من نفس فئة الصنف في الجرد، وتُؤكَّد مع الفريق قبل التوريد',
+    unitsNote: 'التصنيف حسب وحدة القياس مأخوذ من جرد المخزون: رول، م³، صفيحة، توب، كرتونة، كجم/كيلو، عدد. اكتب الكمية المطلوبة من كل صنف في صفحة تكوين الطلب.',
     specs: 'المواصفات',
     available: 'متوفر حسب الطلب',
     illustrative: 'صورة توضيحية',
@@ -31,7 +40,7 @@ const ui = {
     themeLight: 'الوضع النهاري',
   },
   en: {
-    nav: ['Home', 'Catalog', 'Contact'],
+    nav: ['Home', 'Catalog', 'Build order', 'Contact'],
     title: 'Nile Bed Catalog',
     subtitle: 'Every category in one place — springs, frames and wire, assembled shasia units, pocket rolls and ready-spread pocket, memory, latex and mattress cores, felt, non-woven, Melton and plastic, threads and tape, assembly fasteners, glue and tools. Product illustrations are for category reference only; they are not photos of Nile Bed or confirmed stock. Final specs are confirmed with the team.',
     disclaimer: 'Product illustrations show representative material types only; they are not photos of Nile Bed, actual products or current stock. We supply materials and make springs only; we do not make finished mattresses. Need fabric or sponge? We refer you to one of our partners so you can buy at a special price.',
@@ -40,6 +49,14 @@ const ui = {
     count: (n: number) => `${n} items`,
     enquire: 'Enquire on WhatsApp',
     emailEnquire: 'Email us',
+    buildOrder: 'Build an order',
+    addToOrder: 'Add to order',
+    filterByUnit: 'Filter by unit of measure',
+    allUnits: 'All units',
+    orderBy: 'Sold by',
+    approx: 'estimated',
+    approxTitle: 'Unit inferred from the same product family on the stock sheet; confirm with the team before supply',
+    unitsNote: 'Units come from the stock sheet: roll, m³, tin, bolt, carton, kg/kilo and piece. Enter the quantity you need for each item on the order builder page.',
     specs: 'Specs',
     available: 'Available on order',
     illustrative: 'Illustrative image',
@@ -79,8 +96,10 @@ export default function CatalogPage() {
   const [lang, setLang] = useState<Lang>('ar');
   const [theme, setTheme] = useState<Theme>('light');
   const [activeGroup, setActiveGroup] = useState<string>('all');
+  const [activeUnit, setActiveUnit] = useState<UnitId | 'all'>('all');
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const unitCounts = useMemo(() => countByUnit(items.map((it) => it.id)), []);
 
   const t = ui[lang];
   const ar = lang === 'ar';
@@ -117,17 +136,18 @@ export default function CatalogPage() {
     return items.filter((it) => {
       const byGroup = activeGroup === 'all' || it.group === activeGroup;
       if (!byGroup) return false;
+      if (activeUnit !== 'all' && unitOf(it.id).unit !== activeUnit) return false;
       if (!q) return true;
       const hay = normalizeSearch(`${it.ar.name} ${it.ar.desc} ${it.ar.specs.join(' ')} ${it.en.name} ${it.en.desc} ${it.en.specs.join(' ')}`);
       return hay.includes(q);
     });
-  }, [activeGroup, query]);
+  }, [activeGroup, activeUnit, query]);
 
   const groupedForDisplay = useMemo(() => {
-    if (activeGroup !== 'all' || query) return [{ id: 'results', items: filtered }];
+    if (activeGroup !== 'all' || activeUnit !== 'all' || query) return [{ id: 'results', items: filtered }];
     // show grouped by group id in order of groups definition
     return groups.map((g) => ({ id: g.id, items: items.filter((it) => it.group === g.id) }));
-  }, [activeGroup, query, filtered]);
+  }, [activeGroup, activeUnit, query, filtered]);
 
   const countBy = (groupId: string) => items.filter((it) => it.group === groupId).length;
 
@@ -144,7 +164,8 @@ export default function CatalogPage() {
         <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="Main navigation">
           <a href="/">{t.nav[0]}</a>
           <a href="/catalog" aria-current="page">{t.nav[1]}</a>
-          <a href="/#contact" onClick={() => setMenuOpen(false)}>{t.nav[2]}</a>
+          <a href="/order">{t.nav[2]}</a>
+          <a href="/#contact" onClick={() => setMenuOpen(false)}>{t.nav[3]}</a>
         </nav>
         <div className="nav-actions">
           <button className="theme-switch" type="button" onClick={toggleTheme} aria-label={theme === 'dark' ? t.themeLight : t.themeDark} aria-pressed={theme === 'dark'}>
@@ -174,7 +195,8 @@ export default function CatalogPage() {
               <span><Check size={14} />{ar ? 'فريم ورول سلك 1.3' : 'Frame & 1.3 mm wire roll'}</span>
             </div>
             <div className="catalog-hero-cta">
-              <a className="button button-copper" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer"><Phone size={16} />{t.enquire}</a>
+              <a className="button button-copper" href="/order"><ClipboardList size={16} />{t.buildOrder}</a>
+              <a className="button button-glass" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer"><Phone size={16} />{t.enquire}</a>
               <a className="button button-glass" href={`mailto:${email}`}><Mail size={16} />{t.emailEnquire}</a>
             </div>
             <div className="catalog-disclaimer"><Info size={14} />{t.disclaimer}</div>
@@ -233,6 +255,18 @@ export default function CatalogPage() {
               );
             })}
           </div>
+          <div className="unit-chips" role="tablist" aria-label={t.filterByUnit}>
+            <span className="unit-chips-label"><Ruler size={13} />{t.filterByUnit}</span>
+            <button role="tab" aria-selected={activeUnit === 'all'} className={activeUnit === 'all' ? 'unit-chip active' : 'unit-chip'} onClick={() => setActiveUnit('all')}>
+              {t.allUnits} <span>{items.length}</span>
+            </button>
+            {units.map((u) => (
+              <button key={u.id} role="tab" aria-selected={activeUnit === u.id} className={activeUnit === u.id ? 'unit-chip active' : 'unit-chip'} onClick={() => setActiveUnit(u.id)}>
+                {ar ? u.ar.label : u.en.label} <span>{unitCounts[u.id]}</span>
+              </button>
+            ))}
+          </div>
+          <div className="units-note"><Info size={13} />{t.unitsNote}</div>
           <div className="contact-note"><Info size={13} />{t.contactNote}</div>
         </div>
       </section>
@@ -243,7 +277,7 @@ export default function CatalogPage() {
           <div className="no-results">
             <Search size={22} />
             <p>{t.noResults}</p>
-            <button className="button button-copper" type="button" onClick={() => { setQuery(''); setActiveGroup('all'); }}>{ar ? 'إعادة ضبط' : 'Reset filters'}</button>
+            <button className="button button-copper" type="button" onClick={() => { setQuery(''); setActiveGroup('all'); setActiveUnit('all'); }}>{ar ? 'إعادة ضبط' : 'Reset filters'}</button>
           </div>
         ) : (
           groupedForDisplay.map((section) => {
@@ -274,6 +308,9 @@ export default function CatalogPage() {
                     const desc = ar ? it.ar.desc : it.en.desc;
                     const specs = ar ? it.ar.specs : it.en.specs;
                     const badge = ar ? it.ar.badge : it.en.badge;
+                    const unitInfo = unitOf(it.id);
+                    const unitDef = unitById[unitInfo.unit];
+                    const unitLabel = ar ? unitDef.ar.short : unitDef.en.short;
                     const waText = encodeURIComponent(ar ? `مرحبا نايل بد، أستفسر عن: ${it.ar.name} — ${it.ar.specs.join('، ')}` : `Hi Nile Bed, enquiry about: ${it.en.name} — ${it.en.specs.join(', ')}`);
                     return (
                       <article key={it.id} className={`catalog-card ${it.highlight ? 'highlight' : ''}`}>
@@ -284,6 +321,11 @@ export default function CatalogPage() {
                         </div>
                         <div className="card-body">
                           <div className="card-title-row"><h3>{name}</h3>{badge && <span className="product-badge">{badge}</span>}</div>
+                          <div className="card-unit-row">
+                            <span className="card-unit">{t.orderBy} <strong>{unitLabel}</strong></span>
+                            {unitInfo.source === 'family' && <em className="card-unit-est" title={t.approxTitle}>{t.approx}</em>}
+                            <a className="card-add" href={`/order?add=${it.id}`}><ClipboardList size={12} />{t.addToOrder}</a>
+                          </div>
                           <p>{desc}</p>
                           <ul className="specs">
                             {specs.map((s) => (
@@ -317,7 +359,8 @@ export default function CatalogPage() {
             <p>{ar ? 'السوست نصنعها، والخامات نورّدها. لا نبيع مراتب جاهزة. ولو محتاج قماش أو إسفنج، نوجّهك إلى الشريك المناسب من شركائنا لتشتري بسعر مميز. كل المواصفات والأسعار تُؤكَّد مباشرة مع الفريق.' : 'We make springs, we supply materials. No finished mattresses. Need fabric or foam? We point you to one of our partners so you can buy at a special price. All specs and prices are confirmed directly with the team.'}</p>
           </div>
           <div className="cta-actions">
-            <a className="button button-copper" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer">{t.enquire} <ArrowUpRight size={16} /></a>
+            <a className="button button-copper" href="/order"><ClipboardList size={16} />{t.buildOrder} <ArrowUpRight size={16} /></a>
+            <a className="button button-glass" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer">{t.enquire} <ArrowUpRight size={16} /></a>
             <a className="button button-glass" href={`mailto:${email}`}>{t.emailEnquire} <Mail size={16} /></a>
           </div>
         </div>

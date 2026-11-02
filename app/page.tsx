@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, ArrowRight, Menu, X, Globe2, Layers3, BadgeCheck, Mail, Phone, CircleHelp, Check, Moon, Sun, Network, Sparkles, Package, Truck } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Menu, X, Globe2, Layers3, BadgeCheck, Mail, Phone, CircleHelp, Check, Moon, Sun, Network, Sparkles, Package, Truck, ClipboardList } from 'lucide-react';
 import { items } from './catalog/data';
 
 type Lang = 'ar' | 'en';
@@ -18,6 +18,8 @@ const copy = {
     intro:
       'Made-in-Egypt springs, carefully sourced materials, and a trusted partner network for fabric & sponge. One coordinated supply route — built around your production.',
     explore: 'Explore the catalog',
+    buildOrder: 'Build an order',
+    orderHint: 'Need to state a quantity for each product? Items are classified by unit of measure in the order builder.',
     quote: 'Talk to our team',
     note: 'One coordinated route. Flexible specs. Confirmed before supply.',
     heroStatLabel: 'catalog items',
@@ -100,6 +102,8 @@ const copy = {
     intro:
       'سوست نصنعها في مصر، وخامات نختارها بعناية، وشركاء نوصّلك بيهم للقماش والإسفنج. طريق توريد واحد — مبني على احتياج مصنعك.',
     explore: 'استكشف الكتالوج',
+    buildOrder: 'كوّن طلبك',
+    orderHint: 'عايز تحدد كمية كل صنف؟ الأصناف متصنّفة حسب وحدة القياس في صفحة تكوين الطلب.',
     quote: 'تواصل مع فريقنا',
     note: 'مسار واحد. اختيارات مرنة. تُؤكّد قبل التوريد.',
     heroStatLabel: 'صنف في الكتالوج',
@@ -269,6 +273,7 @@ export default function Home() {
         <nav className={menuOpen ? 'hc-nav open' : 'hc-nav'} aria-label="Main navigation">
           <a href="#scope" onClick={() => setMenuOpen(false)}>{t.nav[1]}</a>
           <a href="#catalog" onClick={() => setMenuOpen(false)}>{t.nav[0]}</a>
+          <a href="/order">{t.buildOrder}</a>
           <a href="#partners" onClick={() => setMenuOpen(false)}>{t.nav[2]}</a>
           <a href="#contact" onClick={() => setMenuOpen(false)}>{t.nav[3]}</a>
         </nav>
@@ -315,6 +320,9 @@ export default function Home() {
             <div className="hc-hero-actions">
               <a className="hc-btn hc-btn-primary" href="#catalog">
                 {t.explore} <ArrowUpRight size={16} />
+              </a>
+              <a className="hc-btn hc-btn-ghost" href="/order">
+                {t.buildOrder} <ArrowUpRight size={16} />
               </a>
               <a className="hc-btn hc-btn-ghost" href="#contact">
                 {t.quote} <ArrowUpRight size={16} />
@@ -408,6 +416,7 @@ export default function Home() {
           <a className="hc-btn hc-btn-primary hc-btn-lg" href="/catalog">
             {t.viewCatalog} <span className="hc-btn-sub">{t.viewCatalogSub}</span> <ArrowUpRight size={17} />
           </a>
+          <a className="hc-btn hc-btn-ghost" href="/order">{t.buildOrder} <ClipboardList size={16} /></a>
           <a className="hc-btn hc-btn-ghost" href="#contact">{t.quote} <ArrowUpRight size={17} /></a>
         </div>
         <div className="hc-hint"><CircleHelp size={15} />{t.talkHint}</div>
@@ -506,6 +515,11 @@ export default function Home() {
                 {ar ? ['صفحة Nile Bed', 'حساب Nile Bed', 'تحديثات عاطف طه'][i] : ['Business page', 'Profile', 'Atef Taha updates'][i]} <ArrowUpRight size={13} />
               </a>
             ))}
+          </div>
+
+          <div className="hc-hint hc-order-hint">
+            <ClipboardList size={15} />
+            <span>{t.orderHint} <a href="/order">{t.buildOrder} <ArrowUpRight size={13} /></a></span>
           </div>
         </div>
 
