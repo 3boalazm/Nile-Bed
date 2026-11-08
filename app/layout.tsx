@@ -5,10 +5,12 @@ import '@/styles/globals.css';
 import '@/styles/nilebed.css';
 import '@/styles/nilebed-refresh.css';
 import '@/styles/home-clean.css';
-import '@/styles/next.css';
 import '@/styles/ko-sans-headings.css';
 import '@/styles/audit-refinement.css';
 import '@/styles/order-float.css';
+/* next.css is the live design layer: loaded after all legacy sheets so a stale
+   rule cannot resurrect itself on a rebuilt page. contrast.css stays last. */
+import '@/styles/next.css';
 import '@/styles/contrast.css';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000');

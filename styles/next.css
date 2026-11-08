@@ -1002,105 +1002,80 @@ html[dir='rtl'] .nx-node-core { transform: translate(50%, -50%); }
 .catalog-page .nb-step.is-current b { background: var(--nx-cta); color: var(--nx-on-cta); }
 .catalog-page .nb-step-arrow { color: var(--nx-ink-faint); }
 
-/* Filters: ONE compact sticky bar. It used to be ~300px of stacked notes and
-   chips, which covered the product grid while scrolling. */
+/* Filters — a normal in-flow panel, deliberately NOT pinned.
+   Three separate legacy sheets were re-pinning it (`.catalog-filters{position:sticky}`,
+   `top:72px` from audit-refinement, plus a translucent backdrop), which is why the
+   bar travelled down the viewport and let product cards show through it.
+   Every property that could re-pin or tint it is declared here explicitly. */
 .catalog-page .catalog-filters {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  padding-block: 10px 8px;
+  position: relative;
+  inset-block-start: auto;
+  top: auto;
+  z-index: 1;
+  color: var(--nx-ink);
+  padding-block: 12px 10px;
   border-bottom: 1px solid var(--nx-hairline);
-  background: color-mix(in srgb, var(--nx-paper) 94%, transparent);
-  backdrop-filter: blur(18px) saturate(1.2);
+  background: var(--nx-paper);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
-.catalog-page .filters-top { gap: 10px; }
-.catalog-page .chips { margin-top: 9px; gap: 6px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
-.catalog-page .chips::-webkit-scrollbar { height: 4px; }
-.catalog-page .chips::-webkit-scrollbar-thumb { background: var(--nx-hairline-strong); border-radius: 99px; }
-.catalog-page .chip { flex: 0 0 auto; }
-.catalog-page .unit-chips { margin-top: 8px; padding-top: 8px; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
-.catalog-page .unit-chip { flex: 0 0 auto; }
-.filters-more { margin-top: 8px; }
-.filters-more-toggle {
+
+.catalog-page .filters-top { display: flex; align-items: center; gap: 10px; }
+.catalog-page .filters-toggle {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 5px 11px;
-  border: 1px solid var(--nx-hairline);
-  border-radius: var(--nx-r-pill);
-  background: transparent;
-  color: var(--nx-ink-mute);
-  font-size: 10.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: color var(--nx-fast), border-color var(--nx-fast);
-}
-.filters-more-toggle:hover { color: var(--nx-ink); border-color: var(--nx-hairline-strong); }
-.filters-more-toggle svg:last-child { transition: transform var(--nx-fast); }
-.filters-more-toggle svg.is-open { transform: rotate(180deg); }
-.filters-more-body {
-  display: grid;
-  gap: 8px;
-  margin-top: 8px;
-  padding: 12px 14px;
-  border: 1px solid var(--nx-hairline);
-  border-radius: var(--nx-r-sm);
-  background: var(--nx-paper-raised);
-}
-.filters-more-body p { color: var(--nx-ink-mute); font-size: 11px; line-height: 1.75; }
-.filters-more-body p:first-child { color: var(--nx-ink-soft); }
-.catalog-page .filters-inner { width: var(--nx-page); max-width: var(--nx-max); margin-inline: auto; padding: 0; }
-.catalog-page .search-wrap {
-  flex: 1;
+  flex: 0 0 auto;
   min-height: 46px;
   padding-inline: 16px;
   border: 1px solid var(--nx-hairline);
   border-radius: var(--nx-r-pill);
   background: var(--nx-paper-raised);
-}
-.catalog-page .search-wrap:focus-within { border-color: var(--nx-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--nx-accent) 15%, transparent); }
-.catalog-page .search-wrap input { font-size: 13px; color: var(--nx-ink); }
-.catalog-page .search-wrap input::placeholder { color: var(--nx-ink-faint); font-size: 11.5px; }
-.catalog-page .count-badge {
-  border: 1px solid var(--nx-hairline);
-  border-radius: var(--nx-r-pill);
-  background: var(--nx-paper-raised);
-  font-size: 11px;
   color: var(--nx-ink-soft);
-  padding: 11px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color var(--nx-fast), color var(--nx-fast), background var(--nx-fast);
 }
-.catalog-page .chip {
-  min-height: 34px;
-  padding-inline: 14px;
+.catalog-page .filters-toggle:hover { border-color: var(--nx-ink); color: var(--nx-ink); }
+.catalog-page .filters-toggle.is-open { background: var(--nx-band); border-color: var(--nx-band); color: var(--nx-on-band); }
+.catalog-page .filters-toggle svg:last-child { transition: transform var(--nx-fast); }
+.catalog-page .filters-toggle.is-open svg:last-child { transform: rotate(180deg); }
+
+/* Chips WRAP instead of scrolling sideways: a hidden horizontal scroller on a
+   pinned bar is what produced the stray scrollbar under the filters. */
+.catalog-page .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  overflow: visible;
+}
+.catalog-page .chip { flex: 0 0 auto; }
+
+.catalog-page .filters-more-body {
+  display: grid;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 14px;
   border: 1px solid var(--nx-hairline);
-  border-radius: var(--nx-r-pill);
+  border-radius: var(--nx-r-md);
   background: var(--nx-paper-raised);
-  color: var(--nx-ink-soft);
-  font-size: 11.5px;
 }
-.catalog-page .chip span:last-child { background: var(--nx-paper-sunken); color: var(--nx-ink-mute); border-radius: var(--nx-r-pill); }
-.catalog-page .chip:hover { border-color: var(--nx-ink); color: var(--nx-ink); }
-.catalog-page .chip.active { background: var(--nx-band); border-color: var(--nx-band); color: var(--nx-on-band); }
-.catalog-page .chip.active span:last-child { background: color-mix(in srgb, var(--nx-on-band) 16%, transparent); color: var(--nx-on-band); }
-.catalog-page .chip.active .chip-icon { color: var(--nx-on-band-accent); }
-.catalog-page .chip.active .chip-icon { color: var(--nx-on-band-accent); }
-.catalog-page .chip-icon { color: var(--nx-accent-ink); }
-.catalog-page .unit-chips { border-top-color: var(--nx-hairline); }
-.catalog-page .unit-chips-label { color: var(--nx-ink-mute); font-size: 10px; }
-.catalog-page .unit-chip {
-  min-height: 30px;
-  border: 1px solid var(--nx-hairline);
-  border-radius: var(--nx-r-pill);
-  background: transparent;
-  color: var(--nx-ink-mute);
-  font-size: 10.5px;
+.catalog-page .unit-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: visible;
 }
-.catalog-page .unit-chip.active { background: var(--nx-accent-wash); border-color: color-mix(in srgb, var(--nx-accent) 45%, transparent); color: var(--nx-accent-ink); }
-.catalog-page .unit-chip.active span { background: var(--nx-paper-raised); color: var(--nx-accent-ink); }
-.catalog-page .nb-initial-note,
-.catalog-page .units-note,
-.catalog-page .contact-note { border-color: var(--nx-hairline); color: var(--nx-ink-mute); font-size: 10.5px; border-radius: var(--nx-r-sm); }
-.catalog-page .nb-initial-note { padding: 11px 13px; border: 1px dashed var(--nx-hairline-strong); margin-top: 12px; }
+.catalog-page .unit-chip { flex: 0 0 auto; }
+.catalog-page .filters-notes { display: grid; gap: 7px; padding-top: 12px; border-top: 1px solid var(--nx-hairline); }
+.catalog-page .filters-notes p { color: var(--nx-ink-mute); font-size: 11px; line-height: 1.75; }
+.catalog-page .filters-notes p:first-child { color: var(--nx-ink-soft); }
 
 /* Body: hairline rows and floating cards instead of the old grid */
 .catalog-page .catalog-body { width: var(--nx-page); max-width: var(--nx-max); margin-inline: auto; padding: clamp(28px, 4vw, 46px) 0 clamp(48px, 6vw, 76px); background: transparent; }
@@ -1327,7 +1302,7 @@ html[dir='rtl'] .nx-node-core { transform: translate(50%, -50%); }
 /* Anchor targets must clear the sticky chrome + filter bar */
 .nx [id] { scroll-margin-top: 96px; }
 .nx-catalog-intro [id],
-.catalog-page .group-block { scroll-margin-top: 150px; }
+.catalog-page .group-block { scroll-margin-top: 24px; }
 
 /* The catalog hero places the plate inside .nx-wrap, so it must not shrink twice */
 .nx-page-head .nx-hero-plate { width: 100%; }
