@@ -504,6 +504,36 @@
   line-height: 1.8;
 }
 
+/* Live "what is still missing" readout above the per-unit totals. */
+.order-redesign .or-summary-status {
+  display: grid;
+  gap: 5px;
+  padding: 11px 12px;
+  border: 1px solid var(--nb-inverse-line);
+  border-radius: 9px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.order-redesign .or-summary-status > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 700;
+}
+.order-redesign .or-summary-status > strong { font-size: 13px; font-weight: 800; }
+.order-redesign .or-summary-status > small { color: var(--nb-on-inverse-muted); font-size: 11px; }
+.order-redesign .or-summary-status.is-pending {
+  border-color: var(--nb-warning);
+  background: color-mix(in srgb, var(--nb-warning) 16%, transparent);
+}
+.order-redesign .or-summary-status.is-pending > span { color: var(--nb-on-inverse); }
+.order-redesign .or-summary-status.is-pending > strong { color: var(--nb-hot-text); }
+.order-redesign .or-summary-status.is-ready {
+  border-color: color-mix(in srgb, var(--nb-success) 55%, transparent);
+  background: color-mix(in srgb, var(--nb-success) 16%, transparent);
+}
+.order-redesign .or-summary-status.is-ready > span { color: var(--nb-success); }
+
 /* ───────────────────────────── Buttons ───────────────────────────── */
 .order-redesign .or-primary {
   display: inline-flex;
@@ -793,6 +823,12 @@
   border: 0;
 }
 
+/* ───────────────── Mobile sticky confirm bar ───────────────── */
+/* Below 980px the summary sits under the list, so the confirm action would be
+   off-screen while the visitor fills quantities. This bar keeps it one tap away
+   and mirrors the summary's pending/ready state. */
+.order-page.order-redesign .or-mobile-bar { display: none; }
+
 /* ───────────────────────────── Responsive ───────────────────────────── */
 @media (max-width: 980px) {
   .order-redesign .or-review,
@@ -800,6 +836,48 @@
   .order-redesign .or-summary,
   .order-redesign .or-confirm { position: static; }
   .order-redesign .or-summary-cta { min-height: 50px; }
+  .order-page.order-redesign .or-review { padding-bottom: 84px; }
+  .order-page.order-redesign .or-mobile-bar {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px max(14px, env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-right));
+    border-top: 1px solid var(--nb-border-2);
+    background: var(--nb-inverse);
+    color: var(--nb-on-inverse);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, .18);
+  }
+  .order-page.order-redesign .or-mobile-bar > div { min-width: 0; display: grid; gap: 2px; }
+  .order-page.order-redesign .or-mobile-bar span { font-size: 12.5px; font-weight: 800; }
+  .order-page.order-redesign .or-mobile-bar small {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--nb-on-inverse-muted);
+  }
+  .order-page.order-redesign .or-mobile-bar small.is-pending { color: var(--nb-on-inverse); }
+  .order-page.order-redesign .or-mobile-bar small.is-ready { color: var(--nb-hot-text); }
+  .order-page.order-redesign .or-mobile-bar button {
+    flex: 0 0 auto;
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 9px;
+    color: var(--nb-on-hot);
+    background: var(--nb-hot);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .order-page.order-redesign .or-mobile-bar button:hover { background: var(--nb-hot-hover); }
 }
 
 @media (max-width: 760px) {

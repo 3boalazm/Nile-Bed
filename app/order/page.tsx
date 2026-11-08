@@ -69,6 +69,10 @@ const copy = {
     summary: 'ملخص الطلب',
     summaryUnits: 'الكميات حسب الوحدة',
     summaryNote: 'مفيش أسعار أو مبالغ في الصفحة دي. السعر والتوافر بيتأكدوا مع الفريق بعد مراجعة الطلب.',
+    pendingTitle: 'لسه محتاج كمية',
+    pendingCount: (n: number) => (n === 1 ? 'صنف واحد بدون كمية' : `${n} أصناف بدون كمية`),
+    pendingBody: 'حدّد كمية كل صنف عشان تقدر تكمل وتأكد الطلب.',
+    readyBody: 'كل الأصناف ليها كمية ✓',
     confirmQuantities: 'تأكيد الكميات',
     clear: 'مسح كل الأصناف',
     clearConfirm: 'تمسح كل الأصناف من الطلب؟',
@@ -143,6 +147,10 @@ const copy = {
     summary: 'Order summary',
     summaryUnits: 'Quantities by unit',
     summaryNote: 'No prices or totals appear on this page. Pricing and availability are confirmed by the team after reviewing the order.',
+    pendingTitle: 'Still needs a quantity',
+    pendingCount: (n: number) => (n === 1 ? '1 item without a quantity' : `${n} items without a quantity`),
+    pendingBody: 'Set a quantity for each item to continue and confirm the order.',
+    readyBody: 'Every item has a quantity ✓',
     confirmQuantities: 'Confirm quantities',
     clear: 'Remove all items',
     clearConfirm: 'Remove all items from the order?',
@@ -324,6 +332,12 @@ export default function OrderPage() {
     });
     return [...totals.entries()];
   }, [selected, draft.order]);
+
+  /** Picked lines that still need a quantity before the order can be confirmed. */
+  const pendingCount = useMemo(
+    () => selected.filter((it) => val(draft.order[it.id]?.qty) <= 0).length,
+    [selected, draft.order],
+  );
 
   const message = useMemo(() => {
     const lines = selected.map((it, index) => {
@@ -695,6 +709,18 @@ export default function OrderPage() {
                   <strong>{t.itemsWord(selected.length)}</strong>
                 </div>
 
+                <div className={`or-summary-status${pendingCount ? ' is-pending' : ' is-ready'}`} role="status" aria-live="polite">
+                  {pendingCount ? (
+                    <>
+                      <span><ClipboardList size={15} />{t.pendingTitle}</span>
+                      <strong>{t.pendingCount(pendingCount)}</strong>
+                      <small>{t.pendingBody}</small>
+                    </>
+                  ) : (
+                    <span><Check size={15} />{t.readyBody}</span>
+                  )}
+                </div>
+
                 <div className="or-summary-units">
                   <span className="or-summary-label">{t.summaryUnits}</span>
                   <ul>
@@ -715,6 +741,19 @@ export default function OrderPage() {
                 </button>
                 <a className="or-summary-add" href="/catalog"><Plus size={14} />{t.addMore}</a>
               </aside>
+
+              <div className="or-mobile-bar">
+                <div>
+                  <span>{t.itemsWord(selected.length)}</span>
+                  <small className={pendingCount ? 'is-pending' : 'is-ready'} role="status" aria-live="polite">
+                    {pendingCount ? t.pendingCount(pendingCount) : t.readyBody}
+                  </small>
+                </div>
+                <button type="button" onClick={continueToContact}>
+                  {t.confirmQuantities}
+                  {ar ? <ArrowLeft size={15} /> : <ArrowRight size={15} />}
+                </button>
+              </div>
             </>
           )}
         </section>

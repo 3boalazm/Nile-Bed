@@ -72,12 +72,14 @@
    both palettes; the success badge sits on the coral fill. */
 .order-redesign .or-primary,
 .order-redesign .or-primary:hover:not(:disabled),
+.order-redesign .or-mobile-bar button,
 .order-redesign .or-qty button:hover:not(:disabled),
 .order-redesign .or-progress-step.is-active > span {
   color: var(--nb-on-hot) !important;
 }
 .order-redesign .or-summary-add:hover,
-.order-redesign .or-hero-meta > a { color: var(--nb-hot-text) !important; }
+.order-redesign .or-hero-meta > a,
+.order-redesign .or-mobile-bar small.is-ready { color: var(--nb-hot-text) !important; }
 .order-redesign .or-success-panel > span { background: var(--nb-hot); color: var(--nb-on-hot) !important; }
 
 /* Catalog hero disclaimer used dark-band text tokens on a palette-adaptive
