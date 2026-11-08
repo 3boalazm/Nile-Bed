@@ -118,7 +118,7 @@ export default function CatalogPage() {
   const [activeUnit, setActiveUnit] = useState<UnitId | 'all'>('all');
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
-  const [notesOpen, setNotesOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   // Preliminary selection only. A picked item has an EMPTY quantity until the
   // visitor sets it on /order — nothing here navigates or assigns a number.
   const [selection, setSelection] = useState<string[]>([]);
@@ -238,6 +238,11 @@ export default function CatalogPage() {
       </section>
 
       {/* Filters */}
+      {/* Filters — compact and NOT sticky.
+          This panel used to be three rows pinned to the viewport, so it covered
+          the product grid while scrolling and its chip strips kept a horizontal
+          scrollbar visible. Now: one search row, one wrapping chip row, and the
+          unit filter + notes behind a single disclosure. It scrolls away. */}
       <section className="catalog-filters">
         <div className="filters-inner">
           <div className="filters-top">
@@ -247,7 +252,19 @@ export default function CatalogPage() {
               {query && <button type="button" onClick={() => setQuery('')} aria-label="clear"><X size={14} /></button>}
             </div>
             <div className="count-badge"><Filter size={13} />{t.count(filtered.length)}</div>
+            <button
+              type="button"
+              className={`filters-toggle${filtersOpen ? ' is-open' : ''}`}
+              aria-expanded={filtersOpen}
+              aria-controls="catalog-more-filters"
+              onClick={() => setFiltersOpen((v) => !v)}
+            >
+              <Ruler size={14} />
+              {ar ? 'وحدات القياس' : 'Units'}
+              <ChevronDown size={13} />
+            </button>
           </div>
+
           <div className="chips" role="tablist" aria-label={ar ? 'تصفية حسب الفئة' : 'Filter by category'}>
             <button role="tab" aria-selected={activeGroup === 'all'} className={activeGroup === 'all' ? 'chip active' : 'chip'} onClick={() => setActiveGroup('all')}>
               {t.all} <span>{items.length}</span>
@@ -262,40 +279,27 @@ export default function CatalogPage() {
               );
             })}
           </div>
-          <div className="unit-chips" role="tablist" aria-label={t.filterByUnit}>
-            <span className="unit-chips-label"><Ruler size={13} />{t.filterByUnit}</span>
-            <button role="tab" aria-selected={activeUnit === 'all'} className={activeUnit === 'all' ? 'unit-chip active' : 'unit-chip'} onClick={() => setActiveUnit('all')}>
-              {t.allUnits} <span>{items.length}</span>
-            </button>
-            {units.map((u) => (
-              <button key={u.id} role="tab" aria-selected={activeUnit === u.id} className={activeUnit === u.id ? 'unit-chip active' : 'unit-chip'} onClick={() => setActiveUnit(u.id)}>
-                {ar ? u.ar.label : u.en.label} <span>{unitCounts[u.id]}</span>
-              </button>
-            ))}
-          </div>
-          {/* Three long notes used to stack under the filters and eat half the
-              viewport. They are now one collapsible panel behind a single toggle,
-              so the sticky bar stays two short rows. */}
-          <div className="filters-more">
-            <button
-              type="button"
-              className="filters-more-toggle"
-              aria-expanded={notesOpen}
-              aria-controls="catalog-notes"
-              onClick={() => setNotesOpen((v) => !v)}
-            >
-              <Info size={13} />
-              {ar ? 'ملاحظات قبل الاختيار' : 'Before you choose'}
-              <ChevronDown size={13} className={notesOpen ? 'is-open' : undefined} />
-            </button>
-            {notesOpen && (
-              <div className="filters-more-body" id="catalog-notes">
+
+          {filtersOpen && (
+            <div className="filters-more-body" id="catalog-more-filters">
+              <div className="unit-chips" role="tablist" aria-label={t.filterByUnit}>
+                <span className="unit-chips-label"><Ruler size={13} />{t.filterByUnit}</span>
+                <button role="tab" aria-selected={activeUnit === 'all'} className={activeUnit === 'all' ? 'unit-chip active' : 'unit-chip'} onClick={() => setActiveUnit('all')}>
+                  {t.allUnits} <span>{items.length}</span>
+                </button>
+                {units.map((u) => (
+                  <button key={u.id} role="tab" aria-selected={activeUnit === u.id} className={activeUnit === u.id ? 'unit-chip active' : 'unit-chip'} onClick={() => setActiveUnit(u.id)}>
+                    {ar ? u.ar.label : u.en.label} <span>{unitCounts[u.id]}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="filters-notes">
                 <p>{t.initialNote}</p>
                 <p>{t.unitsNote}</p>
                 <p>{t.contactNote}</p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </section>
 
