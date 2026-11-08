@@ -21,6 +21,10 @@ changed in code and what was deliberately kept.
 * `styles/tokens.css` — appended an **additive** `--nx-*` role layer (paper, ink,
   hairlines, bands, accent, depth, geometry, rhythm, type, motion) for both
   palettes. No legacy role was renamed or removed.
+* `styles/tokens.css` — the light `--nb-l-subtle` was darkened `#666e69 → #5d645f`
+  so the smallest captions clear 4.5:1 on paper *and* on the sunken surface
+  (4.65:1 → 5.38:1 on paper, 5.07:1 on sunken). The dark palette already passed
+  (6.57:1). All 46 checked pairs still pass.
 * `app/page.tsx` — rebuilt section by section: dark hero with centred headline and
   overlapping media plate → sheet riding on the band with a 3-up bento → caption
   and marks strip → catalog as editorial hairline rows → five-node supply map →

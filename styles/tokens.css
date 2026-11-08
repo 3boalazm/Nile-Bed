@@ -25,7 +25,7 @@
   --nb-l-ink: #171b1b;
   --nb-l-text: #343b36;
   --nb-l-muted: #5f6762;
-  --nb-l-subtle: #666e69;
+  --nb-l-subtle: #5d645f;            /* 5.38:1 on paper, 4.91:1 on sunken — smallest type stays AA */
   --nb-l-border: #d9d9d1;
   --nb-l-border-2: #c9cdc5;
   --nb-l-inverse: #171c19;
