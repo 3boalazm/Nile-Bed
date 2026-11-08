@@ -37,16 +37,31 @@
   letter-spacing: -.035em;
   line-height: .98;
 }
+/* KO Sans reports ascent/descent 1000/350 per 1000 upem, so Arabic display type
+   needs a much taller box than the Latin heading — at 1.18 the ascenders of
+   «السوست» and the dots under «سلك» were being sheared off by the clip. */
 .nx[dir='rtl'] :is(h1, h2, h3, h4) {
   font-family: var(--nx-display-ar);
   font-weight: 700;
   letter-spacing: 0;
-  line-height: 1.18;
+  line-height: 1.5;
+  padding-block: .06em;
 }
-.nx p { margin: 0; }
-.nx a { color: inherit; text-decoration: none; }
-.nx img { display: block; max-width: 100%; }
-.nx button { font: inherit; color: inherit; }
+/* One word may be highlighted; Arabic has no case and no serif contrast, so the
+   accent carries the emphasis instead of a font swap. */
+.nx[dir='rtl'] .nx-hero-mark { color: var(--nx-on-band-accent); }
+/* Element resets are wrapped in :where() so they carry ZERO specificity and can
+   never beat a component's own colour rule. This was the bug that made the text
+   inside every filled pill invisible (ink on ink, white on paper). */
+:where(.nx) p { margin: 0; }
+:where(.nx) a { color: inherit; text-decoration: none; }
+:where(.nx) img { display: block; max-width: 100%; }
+:where(.nx) button { font: inherit; color: inherit; }
+:where(.nx) ul { margin: 0; padding: 0; list-style: none; }
+
+/* The button family declares its own colours below; these resets are only here so
+   an <a> or <button> used as a control never inherits a link colour by accident. */
+.nx a:where(.nx-btn, .nx-link, .nx-row, .nx-node, .nx-card) { text-decoration: none; }
 
 .nx-wrap { width: var(--nx-page); margin-inline: auto; }
 .nx-section { padding-block: var(--nx-section-y); }
@@ -70,6 +85,8 @@
 
 /* Display sizes — one fluid scale, no ad-hoc clamps elsewhere */
 .nx-h1 { font-size: clamp(40px, 7.2vw, 92px); }
+.nx[dir='rtl'] .nx-h1 { line-height: 1.34; }
+.nx[dir='rtl'] .nx-h2 { line-height: 1.45; }
 .nx-h2 { font-size: clamp(30px, 4.4vw, 56px); }
 .nx-h3 { font-size: clamp(21px, 2.4vw, 30px); }
 .nx-lead { color: var(--nx-ink-soft); font-size: clamp(14px, 1.15vw, 17px); line-height: 1.75; }
@@ -92,12 +109,12 @@
   transition: background var(--nx-fast), color var(--nx-fast), border-color var(--nx-fast), transform var(--nx-fast);
 }
 .nx-btn:active { transform: translateY(1px); }
-.nx-btn-solid { background: var(--nx-cta); color: var(--nx-on-cta); }
-.nx-btn-solid:hover { background: var(--nx-cta-hover); }
-.nx-btn-ink { background: var(--nx-band); color: var(--nx-on-band); border-color: var(--nx-band); }
-.nx-btn-ink:hover { background: var(--nx-cta); border-color: var(--nx-cta); color: var(--nx-on-cta); }
-.nx-btn-line { border-color: var(--nx-hairline-strong); color: var(--nx-ink); background: transparent; }
-.nx-btn-line:hover { border-color: var(--nx-ink); background: var(--nx-paper-raised); }
+.nx-btn.nx-btn-solid { background: var(--nx-cta); color: var(--nx-on-cta); border-color: var(--nx-cta); }
+.nx-btn.nx-btn-solid:hover { background: var(--nx-cta-hover); border-color: var(--nx-cta-hover); color: var(--nx-on-cta); }
+.nx-btn.nx-btn-ink { background: var(--nx-band); color: var(--nx-on-band); border-color: var(--nx-band); }
+.nx-btn.nx-btn-ink:hover { background: var(--nx-cta); border-color: var(--nx-cta); color: var(--nx-on-cta); }
+.nx-btn.nx-btn-line { border-color: var(--nx-hairline-strong); color: var(--nx-ink); background: transparent; }
+.nx-btn.nx-btn-line:hover { border-color: var(--nx-ink); background: var(--nx-paper-raised); color: var(--nx-ink); }
 .nx-btn-sm { min-height: 38px; padding: 0 15px; font-size: 12px; }
 .nx-btn-block { width: 100%; }
 .nx-btn:focus-visible,
@@ -119,6 +136,10 @@
 .nx-link:hover { color: var(--nx-accent-ink); border-color: var(--nx-accent); gap: 12px; }
 
 /* ───────────────────────────── 03 · glass chrome ───────────────────────────── */
+/* The chrome ALWAYS floats over the dark band (both themes) and, after the hero
+   scrolls away, over the paper page. A theme-dependent white glass made it
+   unreadable on the ink logo + white links, so it is a dark glass in both
+   palettes — exactly as in the references. */
 .nx-chrome {
   position: absolute;
   inset-inline: 0;
@@ -130,14 +151,30 @@
   width: min(var(--nx-max), calc(100% - 32px));
   margin-inline: auto;
   padding: 9px 10px 9px 16px;
-  border: 1px solid var(--nx-glass-line);
+  border: 1px solid rgba(255, 255, 255, .16);
   border-radius: var(--nx-r-pill);
-  background: var(--nx-glass);
-  backdrop-filter: blur(18px) saturate(1.4);
-  box-shadow: var(--nx-shadow-sm);
+  background: rgba(20, 24, 22, .58);
+  backdrop-filter: blur(20px) saturate(1.3);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .28);
+  color: var(--nb-l-on-inverse);
 }
-.nx-logo { display: flex; align-items: center; flex: 0 0 auto; }
-.nx-logo img { height: 34px; width: auto; }
+.nx-chrome .nx-chrome-nav a { color: rgba(255, 255, 255, .74); }
+.nx-chrome .nx-chrome-nav a:hover,
+.nx-chrome .nx-chrome-nav a[aria-current='page'] { color: #fff; }
+.nx-chrome .nx-chrome-nav a::after { background: #fff; }
+.nx-chrome .nx-icon-btn { color: rgba(255, 255, 255, .78); border-color: rgba(255, 255, 255, .14); }
+.nx-chrome .nx-icon-btn:hover { color: #fff; background: rgba(255, 255, 255, .12); }
+.nx-chrome .nx-btn-ink { background: #f4f4ef; border-color: #f4f4ef; color: #12160f; }
+.nx-chrome .nx-btn-ink:hover { background: var(--nb-l-hot); border-color: var(--nb-l-hot); color: #fff; }
+.nx-chrome .nx-logo .logo-light { display: none; }
+.nx-chrome .nx-logo .logo-alt { display: block; }
+/* The logo file is 454×270 (a tall lock-up with curves above and below the
+   wordmark). Forcing `height: 34px` on the <img> made it wider than the pill and
+   `max-width: 100%` then squashed the baseline. Width-driven sizing keeps the
+   real aspect ratio and lets the pill grow. */
+.nx-logo { display: flex; align-items: center; flex: 0 0 auto; min-width: 0; }
+.nx-logo img { width: auto; height: 30px; max-width: none; object-fit: contain; }
+.nx-chrome .nx-logo img { height: 32px; }
 .nx-logo .logo-alt { display: none; }
 html[data-theme='dark'] .nx-logo .logo-light { display: none; }
 html[data-theme='dark'] .nx-logo .logo-alt { display: block; }
@@ -186,10 +223,28 @@ html[data-theme='dark'] .nx-logo .logo-alt { display: block; }
 /* ───────────────────────────── 04 · hero ───────────────────────────── */
 .nx-hero {
   position: relative;
-  padding-block: clamp(96px, 12vw, 148px) clamp(44px, 5vw, 62px);
+  padding-block: clamp(96px, 12vw, 142px) clamp(40px, 5vw, 58px);
   background: var(--nx-band);
   color: var(--nx-on-band);
+  isolation: isolate;
 }
+/* A single accent bloom behind the copy — the references all have one, and it
+   stops the band reading as a flat empty rectangle. */
+.nx-hero::before {
+  content: '';
+  position: absolute;
+  inset-block-start: -10%;
+  inset-inline-start: 50%;
+  width: min(900px, 90%);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--nb-l-hot) 26%, transparent) 0%, transparent 62%);
+  filter: blur(30px);
+  pointer-events: none;
+  z-index: -1;
+}
+html[dir='rtl'] .nx-hero::before { transform: translateX(50%); }
 .nx-hero-copy { display: grid; justify-items: center; gap: 16px; text-align: center; }
 .nx-hero .nx-eyebrow { color: var(--nx-on-band-mute); }
 .nx-hero .nx-eyebrow i { background: var(--nx-on-band-accent); }
@@ -205,8 +260,8 @@ html[data-theme='dark'] .nx-logo .logo-alt { display: block; }
 .nx-hero-plate {
   position: relative;
   width: var(--nx-page);
-  margin: clamp(28px, 4vw, 46px) auto 0;
-  aspect-ratio: 21 / 8;
+  margin: clamp(22px, 3vw, 34px) auto 0;
+  aspect-ratio: 21 / 7.4;
   border-radius: var(--nx-r-xl);
   overflow: hidden;
   background: var(--nx-band-2);
@@ -234,8 +289,10 @@ html[data-theme='dark'] .nx-logo .logo-alt { display: block; }
   font-weight: 700;
   backdrop-filter: blur(12px);
 }
+/* Both tags live on the TOP edge: the sheet deliberately overlaps the plate's
+   bottom edge, so a bottom-anchored chip would be covered by it. */
 .nx-plate-tag.is-tr { inset-block-start: 16px; inset-inline-end: 16px; }
-.nx-plate-tag.is-bl { inset-block-end: 16px; inset-inline-start: 16px; }
+.nx-plate-tag.is-bl { inset-block-start: 16px; inset-inline-start: 16px; }
 .nx-plate-tag i { width: 6px; height: 6px; border-radius: 50%; background: var(--nx-on-band-accent); }
 
 /* ───────────────────────────── 05 · sheet riding on the band ───────────────────────────── */
@@ -286,6 +343,7 @@ html[data-theme='dark'] .nx-logo .logo-alt { display: block; }
 }
 .nx-tile:hover { transform: translateY(-3px); box-shadow: var(--nx-shadow-sm); border-color: var(--nx-hairline-strong); }
 .nx-tile h3 { font-size: clamp(18px, 1.6vw, 22px); line-height: 1.25; }
+.nx-tile, .nx-card, .nx-partner { text-align: start; }
 .nx-tile p { color: var(--nx-ink-mute); font-size: 12.5px; line-height: 1.75; }
 .nx-tile-num {
   position: absolute;
@@ -393,12 +451,14 @@ html[data-theme='dark'] .nx-card-ghost { color: color-mix(in srgb, var(--nx-ink)
     var(--nx-paper-raised);
   overflow: hidden;
 }
-.nx-map svg { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--nx-hairline-strong); }
+.nx-map-lines { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--nx-hairline-strong); }
+.nx-map .nx-node svg { position: static; inset: auto; width: 16px; height: 16px; flex: 0 0 auto; }
 .nx-node {
   position: absolute;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  text-align: start;
   max-width: 260px;
   padding: 12px 16px;
   border: 1px solid var(--nx-glass-line);
@@ -407,6 +467,11 @@ html[data-theme='dark'] .nx-card-ghost { color: color-mix(in srgb, var(--nx-ink)
   box-shadow: var(--nx-shadow-sm);
   backdrop-filter: blur(16px);
 }
+.nx-node > span:last-child { min-width: 0; display: grid; gap: 2px; text-align: start; }
+.nx[dir='rtl'] .nx-node { direction: rtl; }
+.nx[dir='ltr'] .nx-node { direction: ltr; }
+.nx-node strong,
+.nx-node small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .nx-node-icon {
   display: grid;
   place-items: center;
@@ -690,6 +755,10 @@ html[data-theme='dark'] .nx-card-ghost { color: color-mix(in srgb, var(--nx-ink)
   .nx-footer-top { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+@media (max-width: 1080px) {
+  .nx-chrome .nx-chrome-nav a { font-size: 11.5px; }
+  .nx-chrome { gap: 10px; }
+}
 @media (max-width: 860px) {
   .nx-chrome { padding: 8px 8px 8px 12px; gap: 8px; }
   .nx-chrome-nav { display: none; }
@@ -746,7 +815,14 @@ html[data-theme='dark'] .nx-card-ghost { color: color-mix(in srgb, var(--nx-ink)
   font-size: 16px;
   font-weight: 700;
 }
-.nx-drawer-close { position: absolute; inset-block-start: 18px; inset-inline-end: var(--nx-gutter); }
+.nx-drawer-close {
+  position: absolute;
+  inset-block-start: 18px;
+  inset-inline-end: var(--nx-gutter);
+  border-color: var(--nx-hairline);
+  color: var(--nx-ink);
+}
+.nx-drawer-close:hover { background: var(--nx-paper-sunken); color: var(--nx-ink); }
 @keyframes nx-fade { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 
 /* Progress gauge used in the order flow's review step */
@@ -926,16 +1002,53 @@ html[dir='rtl'] .nx-node-core { transform: translate(50%, -50%); }
 .catalog-page .nb-step.is-current b { background: var(--nx-cta); color: var(--nx-on-cta); }
 .catalog-page .nb-step-arrow { color: var(--nx-ink-faint); }
 
-/* Filters: sticky paper bar with a pill search field */
+/* Filters: ONE compact sticky bar. It used to be ~300px of stacked notes and
+   chips, which covered the product grid while scrolling. */
 .catalog-page .catalog-filters {
   position: sticky;
   top: 0;
   z-index: 20;
-  padding-block: 14px;
+  padding-block: 10px 8px;
   border-bottom: 1px solid var(--nx-hairline);
-  background: color-mix(in srgb, var(--nx-paper) 88%, transparent);
-  backdrop-filter: blur(16px);
+  background: color-mix(in srgb, var(--nx-paper) 94%, transparent);
+  backdrop-filter: blur(18px) saturate(1.2);
 }
+.catalog-page .filters-top { gap: 10px; }
+.catalog-page .chips { margin-top: 9px; gap: 6px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.catalog-page .chips::-webkit-scrollbar { height: 4px; }
+.catalog-page .chips::-webkit-scrollbar-thumb { background: var(--nx-hairline-strong); border-radius: 99px; }
+.catalog-page .chip { flex: 0 0 auto; }
+.catalog-page .unit-chips { margin-top: 8px; padding-top: 8px; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
+.catalog-page .unit-chip { flex: 0 0 auto; }
+.filters-more { margin-top: 8px; }
+.filters-more-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  border: 1px solid var(--nx-hairline);
+  border-radius: var(--nx-r-pill);
+  background: transparent;
+  color: var(--nx-ink-mute);
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--nx-fast), border-color var(--nx-fast);
+}
+.filters-more-toggle:hover { color: var(--nx-ink); border-color: var(--nx-hairline-strong); }
+.filters-more-toggle svg:last-child { transition: transform var(--nx-fast); }
+.filters-more-toggle svg.is-open { transform: rotate(180deg); }
+.filters-more-body {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--nx-hairline);
+  border-radius: var(--nx-r-sm);
+  background: var(--nx-paper-raised);
+}
+.filters-more-body p { color: var(--nx-ink-mute); font-size: 11px; line-height: 1.75; }
+.filters-more-body p:first-child { color: var(--nx-ink-soft); }
 .catalog-page .filters-inner { width: var(--nx-page); max-width: var(--nx-max); margin-inline: auto; padding: 0; }
 .catalog-page .search-wrap {
   flex: 1;
@@ -969,6 +1082,7 @@ html[dir='rtl'] .nx-node-core { transform: translate(50%, -50%); }
 .catalog-page .chip:hover { border-color: var(--nx-ink); color: var(--nx-ink); }
 .catalog-page .chip.active { background: var(--nx-band); border-color: var(--nx-band); color: var(--nx-on-band); }
 .catalog-page .chip.active span:last-child { background: color-mix(in srgb, var(--nx-on-band) 16%, transparent); color: var(--nx-on-band); }
+.catalog-page .chip.active .chip-icon { color: var(--nx-on-band-accent); }
 .catalog-page .chip.active .chip-icon { color: var(--nx-on-band-accent); }
 .catalog-page .chip-icon { color: var(--nx-accent-ink); }
 .catalog-page .unit-chips { border-top-color: var(--nx-hairline); }
@@ -1221,7 +1335,7 @@ html[dir='rtl'] .nx-node-core { transform: translate(50%, -50%); }
 
 /* Mirror the connector arcs when the page flips to RTL: the pills use logical
    insets, so the drawn paths must use the same coordinate space. */
-html[dir='rtl'] .nx-map svg { transform: scaleX(-1); }
+html[dir='rtl'] .nx-map-lines { transform: scaleX(-1); }
 
 /* Small screens: five floating pills cannot share one diagram — turn the map
    into the same five nodes in a clean vertical rail. */
@@ -1234,7 +1348,7 @@ html[dir='rtl'] .nx-map svg { transform: scaleX(-1); }
     padding: 18px;
     background: var(--nx-paper-raised);
   }
-  .nx-map svg { display: none; }
+  .nx-map-lines { display: none; }
   .nx-node,
   .nx-node.is-core,
   html[dir='rtl'] .nx-node.is-core { position: static; inset: auto; transform: none; max-width: none; width: 100%; }
@@ -1290,3 +1404,60 @@ html[dir='rtl'] .nx-map svg { transform: scaleX(-1); }
   .nx-strip-inner { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .nx-strip-marks { gap: 12px 22px; }
 }
+
+/* ───────────────────────────── 21 · catalog cards: real media, not empty boxes ───────────────────────────── */
+/* `.catalog-card-photo` was a fixed 190px letterbox with `object-fit: contain`,
+   which left two grey bars around every product shot and pushed the label over
+   the image itself. Cover + a fixed ratio reads as photography instead. */
+.catalog-page .catalog-card-photo {
+  position: relative;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  display: block;
+  overflow: hidden;
+  background: var(--nx-paper-sunken);
+  border-bottom: 1px solid var(--nx-hairline);
+}
+.catalog-page .catalog-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform .8s var(--nx-ease);
+}
+.catalog-page .catalog-card:hover .catalog-card-photo img { transform: scale(1.045); }
+.catalog-page .catalog-card-photo span {
+  position: absolute;
+  inset-block-end: 10px;
+  inset-inline-start: 10px;
+  padding: 4px 9px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: var(--nx-r-pill);
+  background: rgba(14, 17, 15, .62);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  backdrop-filter: blur(8px);
+}
+.catalog-page .catalog-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.catalog-page .card-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.catalog-page .card-title-row h3 { margin: 0; line-height: 1.45; }
+.catalog-page .card-unit-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.catalog-page .specs { margin: 10px 0 0; padding: 0; list-style: none; }
+.catalog-page .specs li { padding-block: 6px; display: flex; gap: 6px; align-items: flex-start; }
+.catalog-page .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; }
+
+@media (max-width: 1080px) {
+  .catalog-page .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 680px) {
+  .catalog-page .catalog-grid { grid-template-columns: minmax(0, 1fr); }
+  .catalog-page .catalog-card-photo { aspect-ratio: 16 / 10; }
+}
+
+/* contrast.css still tints .catalog-disclaimer svg for the OLD dark hero; the
+   disclaimer now lives on paper, so the icon must use the paper accent. */
+.nx-catalog-intro .nx-disclaimer svg { color: var(--nx-accent-ink); }

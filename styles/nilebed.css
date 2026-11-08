@@ -128,6 +128,8 @@ html[data-theme='dark'] .nile { color-scheme: dark; }
 .nile[dir=rtl] { font-family: var(--ar); }
 .nile * { box-sizing: border-box; }
 .nile a { color: inherit; text-decoration: none; }
+/* Never let the legacy link reset recolour a control on the rebuilt pages. */
+.nile.nx a.nx-btn { text-decoration: none; }
 .nile button, .nile input, .nile textarea, .nile select { font: inherit; }
 
 /* ================================ Topbar ================================ */
