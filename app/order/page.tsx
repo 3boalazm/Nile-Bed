@@ -15,7 +15,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, ArrowUpRight, Check, ClipboardList, Mail, Minus,
+  ArrowLeft, ArrowRight, ArrowUpRight, Check, ChevronDown, ClipboardList, FileText, Mail, Minus,
   Phone, Plus, Send, ShoppingBag, Trash2,
 } from 'lucide-react';
 import { groups, items, type CatalogItem } from '../catalog/data';
@@ -24,6 +24,7 @@ import {
   STORAGE_KEY, emptyContact, makeReference, pickWithoutQuantity, readDraft, writeDraft, type Draft,
 } from '../catalog/draft';
 import { Chrome, SiteFooter, useLang } from '../components/next/Chrome';
+import { buildOrderMessage } from './message';
 import './order.css';
 
 type Lang = 'ar' | 'en';
@@ -191,30 +192,28 @@ const copy = {
   },
 };
 
-const msg = {
+const previewCopy = {
   ar: {
-    head: 'مرحبًا نايل بد، أرغب في طلب الخامات التالية:',
-    ref: 'رقم الطلب',
-    name: 'الاسم',
-    company: 'الشركة',
-    phone: 'الهاتف',
-    notes: 'ملاحظات',
-    note: 'ملاحظة',
-    end: 'برجاء تأكيد المواصفات النهائية والتوافر والسعر. شكرًا.',
-    subject: 'طلب خامات — نايل بد',
+    title: 'معاينة الرسالة',
+    hint: 'دي بالظبط الرسالة اللي هتوصلنا — راجعها قبل الإرسال.',
+    toggled: 'إخفاء',
+    toggle: 'إظهار',
+    copy: 'انسخ الرسالة',
+    copied: 'اتنسخت ✓',
+    lines: (n: number) => `${n} صنف`,
+    unitsLabel: (n: number) => `${n} وحدة قياس`,
   },
   en: {
-    head: 'Hello Nile Bed, I would like to request the following materials:',
-    ref: 'Order reference',
-    name: 'Name',
-    company: 'Company',
-    phone: 'Phone',
-    notes: 'Notes',
-    note: 'Note',
-    end: 'Please confirm final specifications, availability and pricing. Thank you.',
-    subject: 'Material enquiry — Nile Bed',
+    title: 'Message preview',
+    hint: 'This is exactly what reaches us — review it before sending.',
+    toggled: 'Hide',
+    toggle: 'Show',
+    copy: 'Copy the message',
+    copied: 'Copied ✓',
+    lines: (n: number) => `${n} items`,
+    unitsLabel: (n: number) => `${n} units`,
   },
-};
+} as const;
 
 /** Suggested first quantities, per unit of measure. */
 const quickAmounts: Record<UnitId, number[]> = {
@@ -263,10 +262,11 @@ export default function OrderPage() {
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState<'idle' | 'fallback' | 'error'>('idle');
   const [copied, setCopied] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const ar = lang === 'ar';
   const t = copy[lang];
-  const m = msg[lang];
+  const pv = previewCopy[lang];
 
   // Load the shared draft written by /catalog. Nothing is picked here.
   useEffect(() => {
@@ -321,26 +321,28 @@ export default function OrderPage() {
     [selected, draft.order],
   );
 
-  const message = useMemo(() => {
-    const lines = selected.map((it, index) => {
-      const base = `${index + 1}. ${ar ? it.ar.name : it.en.name} — ${fmt(val(draft.order[it.id]?.qty))} ${unitLabelOf(it.id, ar)}`;
-      const note = draft.order[it.id]?.note ?? '';
-      return note ? `${base} (${m.note}: ${note})` : base;
-    });
-    const contact = draft.contact;
-    const details = [
-      contact.name && `${m.name}: ${contact.name}`,
-      contact.company && `${m.company}: ${contact.company}`,
-      contact.phone && `${m.phone}: ${contact.phone}`,
-      contact.notes && `${m.notes}: ${contact.notes}`,
-    ].filter(Boolean);
-    return [m.head, `${m.ref}: ${draft.reference}`, lines.join('\n'), details.join('\n'), m.end]
-      .filter(Boolean)
-      .join('\n\n');
-  }, [selected, draft.order, draft.contact, draft.reference, ar, m]);
+  /**
+   * The structured brief. ONE builder feeds the live preview, the WhatsApp link,
+   * the mail link and the clipboard fallback, so what the visitor reads is
+   * byte-for-byte what the team receives.
+   */
+  const message = useMemo(
+    () =>
+      buildOrderMessage({
+        lang,
+        reference: draft.reference,
+        lines: selected.map((it) => ({
+          item: it,
+          qty: val(draft.order[it.id]?.qty),
+          note: draft.order[it.id]?.note,
+        })),
+        contact: draft.contact,
+      }),
+    [lang, selected, draft.order, draft.contact, draft.reference],
+  );
 
-  const wa = `https://wa.me/${WA}?text=${encodeURIComponent(message)}`;
-  const mail = `mailto:${EMAIL}?subject=${encodeURIComponent(m.subject)}&body=${encodeURIComponent(message)}`;
+  const wa = `https://wa.me/${WA}?text=${encodeURIComponent(message.text)}`;
+  const mail = `mailto:${EMAIL}?subject=${encodeURIComponent(message.subject)}&body=${encodeURIComponent(message.text)}`;
 
   function setLine(id: string, patch: { qty?: string; note?: string }) {
     setDraft((prev) => {
@@ -400,7 +402,7 @@ export default function OrderPage() {
 
   async function copyDetails() {
     try {
-      await navigator.clipboard.writeText(message);
+      await navigator.clipboard.writeText(message.text);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -435,7 +437,7 @@ export default function OrderPage() {
             qty: val(draft.order[it.id]?.qty),
             note: draft.order[it.id]?.note ?? '',
           })),
-          message,
+          message: message.text,
         }),
       });
       const data = (await response.json()) as { ok?: boolean; mode?: string; reference?: string };
@@ -814,6 +816,48 @@ export default function OrderPage() {
                 <Send size={16} />{sending ? t.sending : t.confirmSend}
               </button>
               <p className="or-submit-note">{t.noPrice}</p>
+
+              {/* Live preview: the exact text that will be sent. Structured, so the
+                  visitor can check the grouping, quantities and specs before sending. */}
+              {selected.length > 0 && (
+                <section className="or-preview" aria-labelledby="or-preview-title">
+                  <header className="or-preview-head">
+                    <div>
+                      <span className="or-preview-kicker">
+                        <FileText size={13} />
+                        {pv.title}
+                      </span>
+                      <p>{pv.hint}</p>
+                    </div>
+                    <div className="or-preview-actions">
+                      <button
+                        type="button"
+                        className="or-preview-btn"
+                        onClick={() => setPreviewOpen((v) => !v)}
+                        aria-expanded={previewOpen}
+                        aria-controls="or-preview-body"
+                      >
+                        {previewOpen ? pv.toggled : pv.toggle}
+                        <ChevronDown size={13} className={previewOpen ? 'is-open' : undefined} />
+                      </button>
+                      <button type="button" className="or-preview-btn" onClick={() => void copyDetails()}>
+                        {copied ? <Check size={13} /> : <ClipboardList size={13} />}
+                        {copied ? pv.copied : pv.copy}
+                      </button>
+                    </div>
+                  </header>
+                  <div className="or-preview-meta">
+                    <span>{pv.lines(message.counts.items)}</span>
+                    <span>{pv.unitsLabel(message.counts.units)}</span>
+                    <span dir="ltr">{draft.reference}</span>
+                  </div>
+                  {previewOpen && (
+                    <pre className="or-preview-body" id="or-preview-body" dir={ar ? 'rtl' : 'ltr'}>
+                      {message.text}
+                    </pre>
+                  )}
+                </section>
+              )}
             </form>
           </div>
 
