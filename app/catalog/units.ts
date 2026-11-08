@@ -82,7 +82,7 @@ export const unitById: Record<UnitId, UnitDef> = Object.fromEntries(
    written beside some lines are internal figures and are never published. */
 
 /* --------------------------------------------------------------------------
-   Unit per catalog card (69 items). `sheet` = named on the stock sheet;
+   Unit per catalog card (68 items). `sheet` = named on the stock sheet;
    `family` = same family as a sheet line, to be confirmed with the team.
    -------------------------------------------------------------------------- */
 export type ProductUnit = {
@@ -99,7 +99,6 @@ export const productUnits: Record<string, ProductUnit> = {
   // --- السوست والفريم والسلك -----------------------------------------------
   'wire-2-4-r1': S('kg'),
   'wire-2-4-r2': F('kg'),
-  'wire-2-4-r3': F('kg'),
   'wire-2-3': F('kg'),
   'wire-2-2': S('kg'),
   'wire-2-05-r1': S('kg'),
