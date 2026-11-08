@@ -1436,3 +1436,78 @@ html[dir='rtl'] .nx-map-lines { transform: scaleX(-1); }
 /* contrast.css still tints .catalog-disclaimer svg for the OLD dark hero; the
    disclaimer now lives on paper, so the icon must use the paper accent. */
 .nx-catalog-intro .nx-disclaimer svg { color: var(--nx-accent-ink); }
+
+/* ───────────────────────────── 22 · order message preview ───────────────────────────── */
+/* A paper monospace block so the visitor can read the exact brief before sending
+   it — including the group headers and the specs that were previously missing. */
+.or-preview {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+  padding: clamp(14px, 2vw, 20px);
+  border: 1px solid var(--nx-hairline);
+  border-radius: var(--nx-r-md);
+  background: var(--nx-paper-sunken);
+}
+.or-preview-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.or-preview-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--nx-ink);
+  font-family: var(--nx-ui);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.order-page[dir='rtl'] .or-preview-kicker { font-family: var(--nx-body-ar); font-size: 12px; letter-spacing: 0; text-transform: none; }
+.or-preview-kicker svg { color: var(--nx-accent-ink); }
+.or-preview-head p { margin-top: 5px; color: var(--nx-ink-mute); font-size: 11.5px; line-height: 1.65; max-width: 52ch; }
+.or-preview-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.or-preview-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding-inline: 11px;
+  border: 1px solid var(--nx-hairline-strong);
+  border-radius: var(--nx-r-pill);
+  background: var(--nx-paper);
+  color: var(--nx-ink-soft);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color var(--nx-fast), color var(--nx-fast);
+}
+.or-preview-btn:hover { border-color: var(--nx-ink); color: var(--nx-ink); }
+.or-preview-btn svg.is-open { transform: rotate(180deg); }
+.or-preview-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.or-preview-meta span {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border: 1px solid var(--nx-hairline);
+  border-radius: var(--nx-r-pill);
+  background: var(--nx-paper);
+  color: var(--nx-ink-mute);
+  font-size: 10px;
+  font-weight: 700;
+}
+.or-preview-body {
+  max-height: 420px;
+  margin: 0;
+  padding: clamp(14px, 2vw, 18px);
+  overflow: auto;
+  border: 1px solid var(--nx-hairline);
+  border-radius: var(--nx-r-sm);
+  background: var(--nx-paper-raised);
+  color: var(--nx-ink-soft);
+  font-family: 'Manrope', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  word-break: break-word;
+  tab-size: 2;
+}
+.order-page[dir='rtl'] .or-preview-body { font-family: 'Cairo', 'Manrope', sans-serif; font-size: 12px; line-height: 2.05; }
