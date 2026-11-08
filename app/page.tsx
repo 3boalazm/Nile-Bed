@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ArrowUpRight, ArrowRight, Menu, X, Globe2, Layers3, BadgeCheck, Mail, Phone, CircleHelp, Check, Moon, Sun, Network, Sparkles, Package, Truck, ClipboardList } from 'lucide-react';
-import { items } from './catalog/data';
+import { groups, items } from './catalog/data';
 
 type Lang = 'ar' | 'en';
 
@@ -42,13 +42,13 @@ const copy = {
     featuredKicker: 'THE CATALOG — BRIEF',
     featuredTitle: 'Build the supply list that fits your line.',
     featuredDesc:
-      'Four essential families we manufacture and supply. See the full 69-item catalog for every size, thickness and fastener — stock and terms confirmed on enquiry.',
+      'Four essential families we manufacture and supply. See the full catalog for every size, thickness and fastener — stock and terms confirmed on enquiry.',
     // Only 4 featured, not 8 — keeps home clean
     featuredNote: 'Fabric & sponge available via partner introduction.',
     enquire: 'Enquire',
     illustrative: 'Illustrative image — confirmed on enquiry',
     viewCatalog: 'View full catalog',
-    viewCatalogSub: '69 items · 8 groups',
+    viewCatalogSub: `${items.length} items · ${groups.length} groups`,
     talkHint: 'Availability & specs confirmed on enquiry — email or WhatsApp below.',
 
     productionKicker: 'HOW WE SUPPLY',
@@ -74,8 +74,8 @@ const copy = {
     trustKicker: 'OUR STANDARD',
     trustTitle: 'Quality is built into the supply plan.',
     trustText:
-      'Our aim is quality that competes with the best — clear specifications, consistent materials and a dependable route. Details confirmed per order.',
-    trustPoints: ['Clear specifications', 'Competing quality', 'Confirmed before supply'],
+      'Our own springs are made to a measurable standard: sag is no more than 1.2 cm, and every order ships to the wire gauge, height and coil diameter you asked for. Clear specifications, consistent materials and a dependable route — details confirmed per order.',
+    trustPoints: ['Sag no more than 1.2 cm', 'Wire, height & diameter as specified', 'Confirmed before supply'],
 
     contactLabel: 'CONTACT & RFQ',
     contactTitle: 'Start with the details.',
@@ -125,12 +125,12 @@ const copy = {
     featuredKicker: 'الكتالوج — باختصار',
     featuredTitle: 'كوّن قائمة التوريد المناسبة لخطك.',
     featuredDesc:
-      'أربع عائلات أساسية نصنّعها ونورّدها. استكشف الكتالوج الكامل بـ 69 صنف في 8 مجموعات لكل المقاسات والسماكات ولوازم التجميع — التوافر والشروط تُؤكَّد عند الاستفسار.',
+      'أربع عائلات أساسية نصنّعها ونورّدها. استكشف الكتالوج الكامل في 8 مجموعات لكل المقاسات والسماكات ولوازم التجميع — التوافر والشروط تُؤكَّد عند الاستفسار.',
     featuredNote: 'القماش والإسفنج عبر شركائنا.',
     enquire: 'استفسر',
     illustrative: 'صورة توضيحية — تُؤكّد عند الاستفسار',
     viewCatalog: 'عرض الكتالوج الكامل',
-    viewCatalogSub: '69 صنف · 8 مجموعات',
+    viewCatalogSub: `${items.length} صنف · ${groups.length} مجموعات`,
     talkHint: 'التوافر والمواصفات تُؤكَّد عند الاستفسار — عبر البريد أو واتساب أدناه.',
 
     productionKicker: 'كيف نورّد',
@@ -154,8 +154,8 @@ const copy = {
 
     trustKicker: 'معيارنا',
     trustTitle: 'الجودة جزء من خطة التوريد.',
-    trustText: 'هدفنا جودة تنافس الأفضل في السوق — بمواصفات واضحة وثبات في الخامات ومسار توريد يعتمد عليه. التفاصيل تُؤكَّد لكل طلب.',
-    trustPoints: ['مواصفات واضحة', 'جودة تنافس الأفضل', 'تأكيد قبل التوريد'],
+    trustText: 'السوست بتاعتنا بمعيار مقاس: نسبة الهبوط لا تتجاوز 1.2 سم، ومقاس كل وحدة بيتسلّم بقطر السلك والارتفاع وقطر السوستة المطلوبين بالظبط. مواصفات واضحة وثبات في الخامات ومسار توريد يعتمد عليه — والتفاصيل تُؤكَّد لكل طلب.',
+    trustPoints: ['هبوط لا يتجاوز 1.2 سم', 'قطر السلك والارتفاع وقطر السوستة حسب المقاس', 'تأكيد قبل التوريد'],
 
     contactLabel: 'التواصل وطلب عرض سعر',
     contactTitle: 'ابدأ بالتفاصيل.',

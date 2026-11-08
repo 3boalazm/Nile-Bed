@@ -240,7 +240,7 @@ export default function CatalogPage() {
             <div className="catalog-hero-badges">
               <span><Check size={14} />{ar ? 'تصنيع سوست في مصر' : 'Springs made in Egypt'}</span>
               <span><Check size={14} />{ar ? 'توريد خامات مراتب' : 'Mattress materials supply'}</span>
-              <span><Check size={14} />{ar ? 'فريم ورول سلك 1.3' : 'Frame & 1.3 mm wire roll'}</span>
+              <span><Check size={14} />{ar ? 'نسبة هبوط لا تتجاوز 1.2 سم' : 'Sag no more than 1.2 cm'}</span>
             </div>
             <div className="catalog-hero-cta">
               <a className="button button-copper" href="/order"><ClipboardList size={16} />{t.buildOrder}</a>
