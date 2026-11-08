@@ -68,21 +68,17 @@
   color: var(--nb-hot-text) !important;
 }
 
-/* Guided /order flow (PR #12/#13): every filled coral control keeps its
-   paired foreground in both palettes; the success badge is a dark band. */
-.order-redesign .or-add:not(.is-remove),
-.order-redesign .or-add:not(.is-remove):hover,
+/* /order review page: every filled coral control keeps its paired foreground in
+   both palettes; the success badge sits on the coral fill. */
 .order-redesign .or-primary,
-.order-redesign .or-primary:hover,
-.order-redesign .or-desktop-cart button,
-.order-redesign .or-mobile-cart > button,
-.order-redesign .or-floating-cart > button,
-.order-redesign .or-floating-cart > button:hover,
+.order-redesign .or-primary:hover:not(:disabled),
+.order-redesign .or-qty button:hover:not(:disabled),
 .order-redesign .or-progress-step.is-active > span {
   color: var(--nb-on-hot) !important;
 }
-.order-redesign .or-floating-cart > button:focus-visible { outline-color: var(--nb-focus); }
-.order-redesign .or-success-panel > span { background: var(--nb-inverse); color: var(--nb-on-inverse) !important; }
+.order-redesign .or-summary-add:hover,
+.order-redesign .or-hero-meta > a { color: var(--nb-hot-text) !important; }
+.order-redesign .or-success-panel > span { background: var(--nb-hot); color: var(--nb-on-hot) !important; }
 
 /* Catalog hero disclaimer used dark-band text tokens on a palette-adaptive
    (light in light mode) hero — give it the paired adaptive tokens. */
