@@ -15,18 +15,18 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, ArrowUpRight, Check, ClipboardList, Globe2, Mail, Minus,
-  Moon, Phone, Plus, Send, ShoppingBag, Sun, Trash2,
+  ArrowLeft, ArrowRight, ArrowUpRight, Check, ClipboardList, Mail, Minus,
+  Phone, Plus, Send, ShoppingBag, Trash2,
 } from 'lucide-react';
 import { groups, items, type CatalogItem } from '../catalog/data';
 import { unitById, unitOf, type UnitId } from '../catalog/units';
 import {
   STORAGE_KEY, emptyContact, makeReference, pickWithoutQuantity, readDraft, writeDraft, type Draft,
 } from '../catalog/draft';
+import { Chrome, SiteFooter, useLang } from '../components/next/Chrome';
 import './order.css';
 
 type Lang = 'ar' | 'en';
-type Theme = 'light' | 'dark';
 type Step = 'review' | 'contact' | 'success';
 
 const WA = '201090000676';
@@ -252,20 +252,9 @@ function unitLabelOf(itemId: string, ar: boolean): string {
   return ar ? info.sheetLabel || def.ar.short : def.en.short;
 }
 
-function Logo() {
-  return (
-    <span className="brand-logo is-auto">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="logo-light" src="/logo-on-light.svg" alt="Nile Bed" width={454} height={270} />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="logo-alt" src="/logo-on-dark.svg" alt="" aria-hidden="true" width={454} height={270} />
-    </span>
-  );
-}
 
 export default function OrderPage() {
-  const [lang, setLang] = useState<Lang>('ar');
-  const [theme, setTheme] = useState<Theme>('light');
+  const [lang, setLang] = useLang();
   const [step, setStep] = useState<Step>('review');
   const [draft, setDraft] = useState<Draft>({ order: {}, contact: { ...emptyContact }, reference: '' });
   const [loaded, setLoaded] = useState(false);
@@ -279,15 +268,8 @@ export default function OrderPage() {
   const t = copy[lang];
   const m = msg[lang];
 
-  useEffect(() => {
-    document.documentElement.lang = lang;
-    document.documentElement.dir = ar ? 'rtl' : 'ltr';
-  }, [lang, ar]);
-
   // Load the shared draft written by /catalog. Nothing is picked here.
   useEffect(() => {
-    setTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
-
     let loadedDraft = readDraft();
     if (!loadedDraft.reference.trim()) loadedDraft = { ...loadedDraft, reference: makeReference() };
 
@@ -592,36 +574,8 @@ export default function OrderPage() {
   };
 
   return (
-    <main className="nile order-page order-redesign" dir={ar ? 'rtl' : 'ltr'} lang={lang}>
-      <header className="topbar order-topbar">
-        <a className="brand" href="/" aria-label="Nile Bed"><Logo /></a>
-        <nav className="nav order-nav" aria-label={ar ? 'التنقل الرئيسي' : 'Main navigation'}>
-          <a href="/">{t.home}</a>
-          <a href="/catalog">{t.catalog}</a>
-          <a href="/order" aria-current="page">{t.order}</a>
-          <a href="/#contact">{t.contact}</a>
-        </nav>
-        <div className="nav-actions">
-          <button
-            className="theme-switch"
-            type="button"
-            onClick={() => {
-              const next = theme === 'dark' ? 'light' : 'dark';
-              setTheme(next);
-              document.documentElement.dataset.theme = next;
-              try { localStorage.setItem('nilebed-theme-v3', next); } catch { /* storage may be unavailable */ }
-            }}
-            aria-label={theme === 'dark' ? t.light : t.dark}
-            aria-pressed={theme === 'dark'}
-          >
-            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
-            <span>{theme === 'dark' ? t.light : t.dark}</span>
-          </button>
-          <button className="lang-switch" type="button" onClick={() => setLang(ar ? 'en' : 'ar')}>
-            <Globe2 size={15} />{t.language}
-          </button>
-        </div>
-      </header>
+    <main className="nile nx order-page order-redesign" dir={ar ? 'rtl' : 'ltr'} lang={lang} id="top">
+      <Chrome lang={lang} onLang={setLang} page="order" />
 
       {step !== 'success' && (
         <>
@@ -920,12 +874,7 @@ export default function OrderPage() {
         </section>
       )}
 
-      <footer className="footer or-footer">
-        <a className="brand footer-brand" href="/"><Logo /></a>
-        <span>{t.footer}</span>
-        <a href="/catalog">{t.viewCatalog}</a>
-        <small>© {new Date().getFullYear()} NILE BED</small>
-      </footer>
+      <SiteFooter lang={lang} />
     </main>
   );
 }

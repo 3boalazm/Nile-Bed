@@ -25,7 +25,7 @@
   --nb-l-ink: #171b1b;
   --nb-l-text: #343b36;
   --nb-l-muted: #5f6762;
-  --nb-l-subtle: #666e69;
+  --nb-l-subtle: #5d645f;            /* 5.38:1 on paper, 4.91:1 on sunken — smallest type stays AA */
   --nb-l-border: #d9d9d1;
   --nb-l-border-2: #c9cdc5;
   --nb-l-inverse: #171c19;
@@ -386,4 +386,107 @@ html[data-theme='dark'] {
     --nb-warning-bg: var(--nb-d-warning-bg);
     --nb-danger-bg: var(--nb-d-danger-bg);
   }
+}
+
+/* ==========================================================================
+   NEXT DESIGN SYSTEM — "measured warmth"
+   --------------------------------------------------------------------------
+   The language distilled from the reference set: a near-white paper field with
+   oversized ink headlines, hairline dividers, floating rounded panels, soft
+   studio photography and one restrained accent (copper / coral).
+
+   These roles are ADDITIVE: they are declared next to the 88 roles above so a
+   component can move to the new language without touching the legacy pages,
+   and the single `html[data-theme='dark']` switch still owns both palettes.
+   ========================================================================== */
+:root {
+  /* Paper + ink */
+  --nx-paper: var(--nb-l-bg);
+  --nx-paper-raised: var(--nb-l-surface);
+  --nx-paper-sunken: var(--nb-l-surface-2);
+  --nx-ink: var(--nb-l-ink);
+  --nx-ink-soft: var(--nb-l-text);
+  --nx-ink-mute: var(--nb-l-muted);
+  --nx-ink-faint: var(--nb-l-subtle);
+  --nx-hairline: var(--nb-l-border);
+  --nx-hairline-strong: var(--nb-l-border-2);
+
+  /* Bands */
+  --nx-band: var(--nb-l-inverse);
+  --nx-band-2: var(--nb-l-inverse-2);
+  --nx-on-band: var(--nb-l-on-inverse);
+  --nx-on-band-mute: var(--nb-l-on-inverse-muted);
+
+  /* Accent */
+  --nx-accent: var(--nb-l-accent);
+  --nx-accent-ink: var(--nb-l-accent-strong);
+  --nx-accent-wash: var(--nb-l-accent-soft);
+  --nx-cta: var(--nb-l-hot);
+  --nx-cta-hover: var(--nb-l-hot-hover);
+  --nx-on-cta: var(--nb-l-on-hot);
+  --nx-on-band-accent: var(--nb-l-hot-text);
+
+  /* Depth + glass */
+  --nx-shadow-xs: 0 1px 2px rgba(23, 27, 27, .05);
+  --nx-shadow-sm: 0 10px 30px rgba(23, 27, 27, .07);
+  --nx-shadow-md: 0 24px 70px rgba(23, 27, 27, .10);
+  --nx-shadow-lg: 0 40px 120px rgba(23, 27, 27, .14);
+  --nx-glass: color-mix(in srgb, #ffffff 62%, transparent);
+  --nx-glass-line: color-mix(in srgb, #ffffff 55%, transparent);
+  --nx-scrim: rgba(20, 24, 22, .55);
+
+  /* Geometry — one scale, bento-friendly */
+  --nx-r-xs: 10px;
+  --nx-r-sm: 14px;
+  --nx-r-md: 22px;
+  --nx-r-lg: 34px;
+  --nx-r-xl: 44px;
+  --nx-r-pill: 999px;
+
+  /* Rhythm */
+  --nx-gutter: clamp(18px, 5vw, 76px);
+  --nx-max: 1240px;
+  --nx-section-y: clamp(64px, 9vw, 132px);
+  --nx-gap: clamp(12px, 1.6vw, 20px);
+
+  /* Type */
+  --nx-display: 'Fraunces', 'KO Sans', 'Cairo', serif;
+  --nx-display-ar: 'KO Sans', 'Cairo', sans-serif;
+  --nx-ui: 'Manrope', 'DM Sans', sans-serif;
+  --nx-body-ar: 'Cairo', sans-serif;
+
+  /* Motion */
+  --nx-ease: cubic-bezier(.22, .61, .36, 1);
+  --nx-fast: .18s var(--nx-ease);
+  --nx-slow: .5s var(--nx-ease);
+}
+
+html[data-theme='dark'] {
+  --nx-paper: var(--nb-d-bg);
+  --nx-paper-raised: var(--nb-d-surface);
+  --nx-paper-sunken: var(--nb-d-surface-2);
+  --nx-ink: var(--nb-d-ink);
+  --nx-ink-soft: var(--nb-d-text);
+  --nx-ink-mute: var(--nb-d-muted);
+  --nx-ink-faint: var(--nb-d-subtle);
+  --nx-hairline: var(--nb-d-border);
+  --nx-hairline-strong: var(--nb-d-border-2);
+  --nx-band: var(--nb-d-inverse);
+  --nx-band-2: var(--nb-d-inverse-2);
+  --nx-on-band: var(--nb-d-on-inverse);
+  --nx-on-band-mute: var(--nb-d-on-inverse-muted);
+  --nx-accent: var(--nb-d-accent);
+  --nx-accent-ink: var(--nb-d-accent-strong);
+  --nx-accent-wash: var(--nb-d-accent-soft);
+  --nx-cta: var(--nb-d-hot);
+  --nx-cta-hover: var(--nb-d-hot-hover);
+  --nx-on-cta: var(--nb-d-on-hot);
+  --nx-on-band-accent: var(--nb-d-hot-text);
+  --nx-shadow-xs: 0 1px 2px rgba(0, 0, 0, .4);
+  --nx-shadow-sm: 0 10px 30px rgba(0, 0, 0, .4);
+  --nx-shadow-md: 0 24px 70px rgba(0, 0, 0, .5);
+  --nx-shadow-lg: 0 40px 120px rgba(0, 0, 0, .6);
+  --nx-glass: color-mix(in srgb, #ffffff 8%, transparent);
+  --nx-glass-line: color-mix(in srgb, #ffffff 14%, transparent);
+  --nx-scrim: rgba(0, 0, 0, .65);
 }
