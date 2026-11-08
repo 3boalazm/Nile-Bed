@@ -408,7 +408,7 @@ export default function Home() {
           </div>
 
           <div className="nx-map" style={{ marginTop: 'clamp(20px, 2.6vw, 30px)' }}>
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" fill="none">
+            <svg className="nx-map-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" fill="none">
               <path d="M22 32 Q34 36 46 48" stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" />
               <path d="M78 32 Q66 36 54 48" stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" />
               <path d="M20 72 Q33 64 46 53" stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" vectorEffect="non-scaling-stroke" />

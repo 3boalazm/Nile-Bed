@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ArrowRight, ArrowUpRight, Search, Filter, Phone, Mail, Globe2, Menu, X, Moon, Sun, Check, Package, Layers3, Boxes, Scissors, Link2, Sparkles, Wrench, ShieldCheck, Info, ClipboardList, Ruler, ShoppingBag } from 'lucide-react';
+import { ChevronDown, ArrowLeft, ArrowRight, ArrowUpRight, Search, Filter, Phone, Mail, Globe2, Menu, X, Moon, Sun, Check, Package, Layers3, Boxes, Scissors, Link2, Sparkles, Wrench, ShieldCheck, Info, ClipboardList, Ruler, ShoppingBag } from 'lucide-react';
 import { groups, items } from './data';
 import { countByUnit, unitById, unitOf, units, type UnitId } from './units';
 import { STORAGE_KEY, pickedIds, readDraft, togglePicked, writeDraft } from './draft';
@@ -118,6 +118,7 @@ export default function CatalogPage() {
   const [activeUnit, setActiveUnit] = useState<UnitId | 'all'>('all');
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
   // Preliminary selection only. A picked item has an EMPTY quantity until the
   // visitor sets it on /order — nothing here navigates or assigns a number.
   const [selection, setSelection] = useState<string[]>([]);
@@ -272,9 +273,29 @@ export default function CatalogPage() {
               </button>
             ))}
           </div>
-          <div className="units-note"><Info size={13} />{t.unitsNote}</div>
-          <div className="nb-initial-note"><Info size={14} /><span><strong>{ar ? 'اختيار أولي' : 'Initial selection'}:</strong> {t.initialNote}</span></div>
-          <div className="contact-note"><Info size={13} />{t.contactNote}</div>
+          {/* Three long notes used to stack under the filters and eat half the
+              viewport. They are now one collapsible panel behind a single toggle,
+              so the sticky bar stays two short rows. */}
+          <div className="filters-more">
+            <button
+              type="button"
+              className="filters-more-toggle"
+              aria-expanded={notesOpen}
+              aria-controls="catalog-notes"
+              onClick={() => setNotesOpen((v) => !v)}
+            >
+              <Info size={13} />
+              {ar ? 'ملاحظات قبل الاختيار' : 'Before you choose'}
+              <ChevronDown size={13} className={notesOpen ? 'is-open' : undefined} />
+            </button>
+            {notesOpen && (
+              <div className="filters-more-body" id="catalog-notes">
+                <p>{t.initialNote}</p>
+                <p>{t.unitsNote}</p>
+                <p>{t.contactNote}</p>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
