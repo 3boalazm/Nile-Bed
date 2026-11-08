@@ -1236,7 +1236,8 @@ html[dir='rtl'] .nx-map svg { transform: scaleX(-1); }
   }
   .nx-map svg { display: none; }
   .nx-node,
-  .nx-node.is-core { position: static; inset: auto; transform: none; max-width: none; width: 100%; }
+  .nx-node.is-core,
+  html[dir='rtl'] .nx-node.is-core { position: static; inset: auto; transform: none; max-width: none; width: 100%; }
   .nx-node.is-core { order: -1; }
   .nx-node small { font-size: 10.5px; }
   .nx-node strong { font-size: 13px; }
