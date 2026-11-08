@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, Search, Filter, Phone, Mail, Globe
 import { groups, items } from './data';
 import { countByUnit, unitById, unitOf, units, type UnitId } from './units';
 import { STORAGE_KEY, pickedIds, readDraft, togglePicked, writeDraft } from './draft';
+import { Chrome, SiteFooter, useLang } from '../components/next/Chrome';
 import './catalog.css';
 
 type Lang = 'ar' | 'en';
@@ -112,8 +113,7 @@ function BrandLogo({ variant }: { variant: 'light' | 'dark' | 'auto' }) {
 }
 
 export default function CatalogPage() {
-  const [lang, setLang] = useState<Lang>('ar');
-  const [theme, setTheme] = useState<Theme>('light');
+  const [lang, setLang] = useLang();
   const [activeGroup, setActiveGroup] = useState<string>('all');
   const [activeUnit, setActiveUnit] = useState<UnitId | 'all'>('all');
   const [query, setQuery] = useState('');
@@ -126,16 +126,6 @@ export default function CatalogPage() {
 
   const t = ui[lang];
   const ar = lang === 'ar';
-
-  useEffect(() => {
-    document.documentElement.lang = lang;
-    document.documentElement.dir = ar ? 'rtl' : 'ltr';
-  }, [lang, ar]);
-
-  useEffect(() => {
-    const saved = document.documentElement.dataset.theme as Theme | undefined;
-    setTheme(saved === 'dark' ? 'dark' : 'light');
-  }, []);
 
   // Read the shared draft on mount and keep in sync if another tab changes it.
   useEffect(() => {
@@ -157,13 +147,6 @@ export default function CatalogPage() {
     setLastAction(wasPicked
       ? (ar ? `اتشال من الطلب: ${name}` : `Removed from order: ${name}`)
       : (ar ? `اتضاف للطلب: ${name} — الكمية في الخطوة الجاية` : `Added to order: ${name} — quantity in the next step`));
-  };
-
-  const toggleTheme = () => {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    document.documentElement.dataset.theme = next;
-    try { localStorage.setItem('nilebed-theme-v3', next); } catch {}
   };
 
   // Sizes are written as 18×25 across the catalog, but people often type 18*25
@@ -203,82 +186,52 @@ export default function CatalogPage() {
 
   return (
     <>
-    <main className="nile catalog-page has-floating-order" dir={ar ? 'rtl' : 'ltr'} lang={lang}>
-      {/* Topbar — same as home but with catalog link */}
-      <header className="topbar catalog-topbar">
-        <a className="brand" href="/" aria-label={ar ? 'نايل بد — الرئيسية' : 'Nile Bed — home'}>
-<BrandLogo variant="auto" />
-        </a>
-        <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="Main navigation">
-          <a href="/">{t.nav[0]}</a>
-          <a href="/catalog" aria-current="page">{t.nav[1]}</a>
-          <a href="/order">{t.nav[2]}</a>
-          <a href="/#contact" onClick={() => setMenuOpen(false)}>{t.nav[3]}</a>
-        </nav>
-        <div className="nav-actions">
-          <button className="theme-switch" type="button" onClick={toggleTheme} aria-label={theme === 'dark' ? t.themeLight : t.themeDark} aria-pressed={theme === 'dark'}>
-            <Moon className="icon-moon" size={15} /><Sun className="icon-sun" size={15} /><span>{theme === 'dark' ? t.themeLight : t.themeDark}</span>
-          </button>
-          <button className="lang-switch" type="button" onClick={() => setLang(ar ? 'en' : 'ar')} aria-label={ar ? 'Switch to English' : 'التبديل إلى العربية'}>
-            <Globe2 size={15} />{t.toggle}
-          </button>
-          <a className="nav-cta" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer">
-            {ar ? 'واتساب' : 'WhatsApp'} <ArrowUpRight size={15} />
-          </a>
-          <button className="menu-btn" type="button" aria-expanded={menuOpen} aria-label={menuOpen ? 'Close' : 'Open'} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
-        </div>
-      </header>
+    <main className="nile nx catalog-page has-floating-order" dir={ar ? 'rtl' : 'ltr'} lang={lang} id="top">
+      <Chrome lang={lang} onLang={setLang} page="catalog" />
 
-      {/* Hero */}
-      <section className="catalog-hero">
-        <div className="catalog-hero-bg" />
-        <div className="catalog-hero-inner">
-          <div className="catalog-hero-copy">
-            <div className="eyebrow" style={{ color: 'var(--nb-accent-strong)' }}><span className="eyebrow-line" />{ar ? 'الكتالوج الكامل · مصر' : 'FULL CATALOG · EGYPT'}</div>
-            <h1>{t.title}</h1>
-            <p>{t.subtitle}</p>
-            <div className="catalog-hero-badges">
-              <span><Check size={14} />{ar ? 'تصنيع سوست في مصر' : 'Springs made in Egypt'}</span>
-              <span><Check size={14} />{ar ? 'توريد خامات مراتب' : 'Mattress materials supply'}</span>
-              <span><Check size={14} />{ar ? 'نسبة هبوط لا تتجاوز 1.2 سم' : 'Sag no more than 1.2 cm'}</span>
-            </div>
-            <div className="catalog-hero-cta">
-              <a className="button button-copper" href="/order"><ClipboardList size={16} />{t.buildOrder}</a>
-              <a className="button button-glass" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer"><Phone size={16} />{t.enquire}</a>
-              <a className="button button-glass" href={`mailto:${email}`}><Mail size={16} />{t.emailEnquire}</a>
-            </div>
-            <div className="catalog-disclaimer"><Info size={14} />{t.disclaimer}</div>
-            <div className="nb-steps" aria-label={ar ? 'خطوات الطلب' : 'Order steps'}>
-              <span className="nb-step is-current"><b>1</b>{t.step1}</span>
-              <span className="nb-step-arrow">{ar ? <ArrowLeft size={12} /> : <ArrowRight size={12} />}</span>
-              <span className="nb-step"><b>2</b>{t.step2}</span>
-            </div>
+      {/* Hero — dark field, hairline stats, floating image plate (reference set) */}
+      <section className="nx-page-head">
+        <div className="nx-wrap">
+          <span className="nx-eyebrow"><b>02</b>{ar ? 'الكتالوج الكامل · مصر' : 'FULL CATALOG · EGYPT'}</span>
+          <h1 className="nx-h1" style={{ fontSize: 'clamp(34px, 5.2vw, 68px)', marginTop: 14 }}>{t.title}</h1>
+          <p style={{ maxWidth: '68ch' }}>{t.subtitle}</p>
+
+          <div className="nx-page-head-stats">
+            <span><i />{items.length} {ar ? 'صنف' : 'items'}</span>
+            <span><i />{groups.length} {ar ? 'مجموعات' : 'groups'}</span>
+            <span><i />{ar ? 'هبوط ≤ 1.2 سم' : 'Sag ≤ 1.2 cm'}</span>
+            <span><i />{ar ? 'تصنيع مصري' : 'Made in Egypt'}</span>
           </div>
-          <div className="catalog-hero-stats">
-            <div className="stat-card">
-              <strong>{items.length}</strong>
-              <span>{ar ? 'صنف في الكتالوج' : 'items in catalog'}</span>
-              <small>{ar ? `مقسمة على ${groups.length} مجموعات` : `across ${groups.length} groups`}</small>
-            </div>
-            <div className="stat-card">
-              <strong>{countBy('springs')}</strong>
-              <span>{ar ? 'سوست وسلك وفريم' : 'springs, wire & frames'}</span>
-              <small>2.4 · 2.3 · 2.2 · 2.05 · 1.3</small>
-            </div>
-            <div className="stat-card">
-              <strong>{countBy('shasia')}</strong>
-              <span>{ar ? 'مقاس شاسية مجمّع' : 'assembled shasia sizes'}</span>
-              <small>{ar ? 'من 18×25 إلى 29×30' : '18×25 to 29×30'}</small>
-            </div>
-            <div className="stat-card">
-              <strong>12–18</strong>
-              <span>{ar ? 'سم ارتفاع بوكيت' : 'cm pocket height'}</span>
-              <small>{ar ? 'رول ومفروش جاهز' : 'rolls & ready-spread'}</small>
-            </div>
-            <div className="catalog-contact-mini">
-              <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer"><Phone size={15} />{ar ? 'واتساب: 010 90000676' : 'WhatsApp: 010 90000676'}</a>
-              <a href={`mailto:${email}`}><Mail size={15} />{email}</a>
-            </div>
+
+          <div className="nx-hero-actions" style={{ justifyContent: 'flex-start', marginTop: 22 }}>
+            <a className="nx-btn nx-btn-solid" href="/order">
+              <ClipboardList size={15} />{t.buildOrder}
+              {ar ? <ArrowLeft size={15} /> : <ArrowRight size={15} />}
+            </a>
+            <a className="nx-btn nx-hero-ghost" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer">
+              <Phone size={15} />{t.enquire}
+            </a>
+            <a className="nx-btn nx-hero-ghost" href={`mailto:${email}`}>
+              <Mail size={15} />{t.emailEnquire}
+            </a>
+          </div>
+
+          <div className="nx-hero-plate nx-catalog-plate">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/nx-hero-springs.jpg" alt={ar ? 'صفوف سوست بونيل بإضاءة دافئة' : 'Rows of bonnell springs in warm light'} width={1536} height={1024} />
+            <span className="nx-plate-tag is-tr">{ar ? 'تصنيع نايل بد' : 'Made by Nile Bed'}</span>
+            <span className="nx-plate-tag is-bl"><i />{ar ? 'مواصفات تُؤكَّد لكل طلب' : 'Specs confirmed per order'}</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="nx-catalog-intro">
+        <div className="nx-wrap">
+          <div className="nx-note nx-disclaimer"><Info size={13} />{t.disclaimer}</div>
+          <div className="nb-steps" aria-label={ar ? 'خطوات الطلب' : 'Order steps'}>
+            <span className="nb-step is-current"><b>1</b>{t.step1}</span>
+            <span className="nb-step-arrow">{ar ? <ArrowLeft size={12} /> : <ArrowRight size={12} />}</span>
+            <span className="nb-step"><b>2</b>{t.step2}</span>
           </div>
         </div>
       </section>
@@ -413,28 +366,31 @@ export default function CatalogPage() {
         )}
       </section>
 
-      {/* Bottom CTA */}
-      <section className="catalog-cta">
-        <div className="catalog-cta-inner">
-          <div>
-            <div className="section-label light"><span>—</span>{ar ? 'جاهز للطلب؟' : 'READY TO ORDER?'}</div>
-            <h2>{ar ? 'أخبرنا بمقاسك وكميتك، ونؤكد المواصفات والسعر.' : 'Tell us your size and quantity. We’ll confirm specs and price.'}</h2>
-            <p>{ar ? 'السوست نصنعها، والخامات نورّدها. لا نبيع مراتب جاهزة. ولو محتاج قماش أو إسفنج، نوجّهك إلى الشريك المناسب من شركائنا لتشتري بسعر مميز. كل المواصفات والأسعار تُؤكَّد مباشرة مع الفريق.' : 'We make springs, we supply materials. No finished mattresses. Need fabric or foam? We point you to one of our partners so you can buy at a special price. All specs and prices are confirmed directly with the team.'}</p>
-          </div>
-          <div className="cta-actions">
-            <a className="button button-copper" href="/order"><ClipboardList size={16} />{t.buildOrder} <ArrowUpRight size={16} /></a>
-            <a className="button button-glass" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer">{t.enquire} <ArrowUpRight size={16} /></a>
-            <a className="button button-glass" href={`mailto:${email}`}>{t.emailEnquire} <Mail size={16} /></a>
+      {/* Closing CTA — the same full-bleed cinematic frame as the home page */}
+      <section className="nx-close" aria-labelledby="nx-cat-close">
+        <img src="/images/nx-bento-quality.jpg" alt="" aria-hidden="true" width={1024} height={1536} />
+        <div className="nx-close-inner">
+          <h2 className="nx-h2" id="nx-cat-close">
+            {ar ? 'أخبرنا بمقاسك وكميتك، ونؤكد المواصفات والسعر.' : 'Tell us your size and quantity. We’ll confirm specs and price.'}
+          </h2>
+          <p>
+            {ar
+              ? 'السوست نصنعها، والخامات نورّدها. لا نبيع مراتب جاهزة. ولو محتاج قماش أو إسفنج، نوجّهك إلى الشريك المناسب لتشتري بسعر مميز.'
+              : 'We make springs, we supply materials. No finished mattresses. Need fabric or foam? We point you to a partner so you can buy at a special price.'}
+          </p>
+          <div className="nx-hero-actions">
+            <a className="nx-btn nx-btn-solid" href="/order">
+              <ClipboardList size={15} />{t.buildOrder} <ArrowUpRight size={15} />
+            </a>
+            <a className="nx-btn nx-hero-ghost" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer">
+              {t.enquire}
+            </a>
+            <a className="nx-btn nx-hero-ghost" href={`mailto:${email}`}>{t.emailEnquire}</a>
           </div>
         </div>
       </section>
 
-      <footer className="footer">
-        <a className="brand footer-brand" href="/" aria-label="Nile Bed"><BrandLogo variant="dark" /></a>
-        <span>{t.footer}</span>
-        <a href="#top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>{t.backTop}</a>
-        <small>© {new Date().getFullYear()} NILE BED</small>
-      </footer>
+      <SiteFooter lang={lang} />
     </main>
 
     {/* Always-on-screen, fixed review control — deliberately NOT at the page end. */}

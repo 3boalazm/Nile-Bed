@@ -5,6 +5,7 @@ import '@/styles/globals.css';
 import '@/styles/nilebed.css';
 import '@/styles/nilebed-refresh.css';
 import '@/styles/home-clean.css';
+import '@/styles/next.css';
 import '@/styles/ko-sans-headings.css';
 import '@/styles/audit-refinement.css';
 import '@/styles/order-float.css';

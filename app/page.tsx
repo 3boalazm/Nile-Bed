@@ -1,143 +1,91 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { ArrowUpRight, ArrowRight, Menu, X, Globe2, Layers3, BadgeCheck, Mail, Phone, CircleHelp, Check, Moon, Sun, Network, Sparkles, Package, Truck, ClipboardList } from 'lucide-react';
+/**
+ * NILE BED — home.
+ *
+ * Rebuilt from the reference set. Every band below is a literal extraction:
+ *
+ *  · hero          → dark field + centred stacked headline + glass pill nav +
+ *                    media plate whose bottom edge is overlapped by the sheet
+ *  · sheet + bento → one wide photo tile, one ink tile, one accent tile
+ *  · catalog rows  → hairline table rows with index numerals (editorial list)
+ *  · node map      → 4 nutrient pills on dashed arcs around a glowing core
+ *  · ink band      → the 1.2 cm number as the page's single loud statistic
+ *  · advantages    → 01/02/03 cards with chip, corner arrow and a numeral that
+ *                    is cropped by the card edge
+ *  · partners      → two-up split, one paper one ink
+ *  · contact       → floating light app-card on the dark field, pill submit
+ *  · closing band  → full-bleed cinematic frame, serif line, pill field
+ */
+
+import { useMemo, useState } from 'react';
+import { ArrowRight, ArrowUpRight, Check, Mail, MessageCircle, Package, Sparkles, Truck } from 'lucide-react';
 import { groups, items } from './catalog/data';
+import { Chrome, EMAIL, SiteFooter, WA, useLang } from './components/next/Chrome';
 
-type Lang = 'ar' | 'en';
-
-/* ——— Copy: kept truthful, same business scope, but presented as brief + focused ——— */
 const copy = {
-  en: {
-    nav: ['Catalog', 'Supply cycle', 'Partners', 'Contact'],
-    eyebrow: 'Mattress supply cycle · Egypt · Since springs',
-    eyebrowAccent: '01 — NILE BED',
-    titleA: 'Everything',
-    titleB: 'behind your next',
-    titleC: 'great mattress.',
-    intro:
-      'Made-in-Egypt springs, carefully sourced materials, and a trusted partner network for fabric & sponge. One coordinated supply route — built around your production.',
-    explore: 'Explore the catalog',
-    buildOrder: 'Review order',
-    orderHint: 'Pick items in the catalog as an initial selection, then set each item’s quantity in “Review order”.',
-    quote: 'Talk to our team',
-    note: 'One coordinated route. Flexible specs. Confirmed before supply.',
-    heroStatLabel: 'catalog items',
-    heroGroupsLabel: 'supply groups',
-    heroVisualNote: 'One clear place to start — we confirm the right spec and the right supply route with you.',
-
-    anchorLabel: 'Jump to',
-    anchors: ['Scope', 'Catalog', 'Partners', 'Contact'],
-
-    scopeKicker: 'WHAT WE DO',
-    scopeTitle: 'From spring wire to the finishing layers.',
-    scopeText:
-      'We make springs, supply mattress materials and connect you with partner suppliers for fabric and sponge. One conversation — the right channel for each product.',
-    scopeCards: [
-      ['01', 'Made in Egypt', 'Bonnell springs, frames and 1.3 mm wire rolls — manufactured to your order.'],
-      ['02', 'Sourced for production', 'Pocket rolls, foam, latex, felt, glue, threads and assembly supplies — specs confirmed per enquiry.'],
-      ['03', 'Partner connected', 'Fabric and sponge via trusted partners. We introduce, the partner handles sale & supply.'],
-    ],
-
-    featuredKicker: 'THE CATALOG — BRIEF',
-    featuredTitle: 'Build the supply list that fits your line.',
-    featuredDesc:
-      'Four essential families we manufacture and supply. See the full catalog for every size, thickness and fastener — stock and terms confirmed on enquiry.',
-    // Only 4 featured, not 8 — keeps home clean
-    featuredNote: 'Fabric & sponge available via partner introduction.',
-    enquire: 'Enquire',
-    illustrative: 'Illustrative image — confirmed on enquiry',
-    viewCatalog: 'View full catalog',
-    viewCatalogSub: `${items.length} items · ${groups.length} groups`,
-    talkHint: 'Availability & specs confirmed on enquiry — email or WhatsApp below.',
-
-    productionKicker: 'HOW WE SUPPLY',
-    productionTitle: 'Large plans. Flexible choices. Clear specs.',
-    productionBody:
-      'Share your quantity, application and technical needs. We review options, confirm specs and plan supply to protect consistency. Large-volume enquiries welcome — capacity & lead time confirmed per brief.',
-    productionPoints: ['Flexible specifications', 'Quality checks at planning', 'Large volumes welcome'],
-
-    partnersKicker: 'PARTNER NETWORK',
-    partnersTitle: 'Make more than a one-off order.',
-    partnersText:
-      'For mattress makers — and for quality-focused suppliers. Whether you need fabric & sponge, or you supply a product mattress makers should know about, we make the right introduction.',
-    supplierTitle: 'Need fabric or sponge?',
-    supplierBody: 'Tell us what you’re looking for — we connect you with a partner so you can buy at a special price.',
-    supplierCta: 'Find a partner',
-    importTitle: 'Have a product to supply?',
-    importBody: 'If you offer consistent quality, competitive terms and reliable supply — tell us about your product, origin and capacity.',
-    importCta: 'Introduce your product',
-    partnershipTitle: 'Start with one order.',
-    partnershipBody: 'When the fit is right, clear communication and dependable supply grow into an ongoing relationship.',
-    partnershipCta: 'Start a conversation',
-
-    trustKicker: 'OUR STANDARD',
-    trustTitle: 'Quality is built into the supply plan.',
-    trustText:
-      'Our own springs are made to a measurable standard: sag is no more than 1.2 cm, and every order ships to the wire gauge, height and coil diameter you asked for. Clear specifications, consistent materials and a dependable route — details confirmed per order.',
-    trustPoints: ['Sag no more than 1.2 cm', 'Wire, height & diameter as specified', 'Confirmed before supply'],
-
-    contactLabel: 'CONTACT & RFQ',
-    contactTitle: 'Start with the details.',
-    contactText:
-      'Contact Nile Bed directly via email or WhatsApp. This form is a preview — it does not submit or store information.',
-    fields: ['Full name', 'Company', 'Business email', 'Product of interest', 'Approx. quantity', 'Technical requirements / notes'],
-    qty: 'e.g. 10,000 units',
-    productHint: 'Select a product family',
-    submit: 'Prepare enquiry',
-    formNote: 'Preview only — use email / WhatsApp beside the form to contact us.',
-    footer: 'Mattress materials & spring manufacturing · Egypt',
-    back: 'Back to top',
-    menu: 'Open navigation',
-    close: 'Close navigation',
-    toggle: 'العربية',
-  },
   ar: {
-    nav: ['الكتالوج', 'دورة التوريد', 'الشركاء', 'تواصل'],
-    eyebrow: 'دورة توريد متكاملة لصناعة المراتب · مصر',
-    eyebrowAccent: '٠١ — نايل بد',
+    eyebrow: 'دورة توريد متكاملة · مصر',
+    eyebrowAccent: '٠١',
     titleA: 'كل اللي',
-    titleB: 'يكمل شغل',
+    titleB: 'يكمل',
     titleC: 'المرتبة.',
-    intro:
-      'سوست نصنعها في مصر، وخامات نختارها بعناية، وشركاء نوصّلك بيهم للقماش والإسفنج. طريق توريد واحد — مبني على احتياج مصنعك.',
-    explore: 'استكشف الكتالوج',
-    buildOrder: 'راجع الطلب',
-    orderHint: 'اختار الأصناف من الكتالوج كاختيار أولي، وبعدين في «راجع الطلب» حدّد كمية كل صنف حسب وحدة قياسه.',
-    quote: 'تواصل مع فريقنا',
-    note: 'مسار واحد. اختيارات مرنة. تُؤكّد قبل التوريد.',
-    heroStatLabel: 'صنف في الكتالوج',
-    heroGroupsLabel: 'فئات توريد',
-    heroVisualNote: 'ابدأ من مكان واضح — ونراجع معك الصنف والمواصفة ومسار التوريد المناسب.',
+    sub: 'سوست نصنعها في مصر، وخامات مراتب نختارها بعناية، وشركاء نوصّلك بيهم للقماش والإسفنج. طريق توريد واحد مبني على احتياج مصنعك.',
+    cta: 'استكشف الكتالوج',
+    ctaAlt: 'راجع طلبك',
+    plateTag: 'تصنيع سوست · مصر',
+    plateTag2: 'هبوط ≤ 1.2 سم',
 
-    anchorLabel: 'انتقل إلى',
-    anchors: ['نطاق العمل', 'الكتالوج', 'الشركاء', 'تواصل'],
-
-    scopeKicker: 'نطاق عملنا',
-    scopeTitle: 'من سلك السوستة لآخر طبقة تكمل المرتبة.',
-    scopeText: 'نصنع السوست، ونورّد خامات المراتب، ونوصّل العميل بشركائنا للقماش والإسفنج. تواصل واحد — وكل منتج من قناة توريده المناسبة.',
-    scopeCards: [
-      ['٠١', 'تصنيع مصري', 'سوست بونيل وفريم ورولات سلك 1.3 مم — نصنعها في مصر حسب طلبك.'],
-      ['٠٢', 'خامات تكمل شغلك', 'بوكيت، فوم، لاتكس، لباد، غراء، خيوط ولوازم إنتاج — المواصفات تُؤكَّد مع كل استفسار.'],
-      ['٠٣', 'شبكة شركاء', 'القماش والإسفنج من شركائنا؛ نوصّلك بالشريك والبيع والتوريد مباشرة منه.'],
+    whatKicker: 'نطاق عملنا',
+    whatTitle: 'من سلك السوستة لآخر طبقة تكمل المرتبة.',
+    whatText: 'نصنع السوست، ونورّد خامات المراتب، ونوصّل العميل بشركائنا للقماش والإسفنج. تواصل واحد — وكل منتج من قناة توريده المناسبة.',
+    bento: [
+      ['٠١', 'خامات تكمل شغلك', 'بوكيت، فوم، لاتكس، لباد، غراء وخيوط — المواصفات تُؤكَّد مع كل استفسار.'],
+      ['٠٢', 'شبكة شركاء', 'القماش والإسفنج من شركائنا؛ نوصّلك بالشريك والبيع والتوريد مباشرة منه.'],
+      ['٠٣', 'تصنيع مصري', 'سوست بونيل وفريم ورولات سلك 1.3 مم — نصنعها في مصر حسب طلبك.'],
     ],
 
-    featuredKicker: 'الكتالوج — باختصار',
-    featuredTitle: 'كوّن قائمة التوريد المناسبة لخطك.',
-    featuredDesc:
-      'أربع عائلات أساسية نصنّعها ونورّدها. استكشف الكتالوج الكامل في 8 مجموعات لكل المقاسات والسماكات ولوازم التجميع — التوافر والشروط تُؤكَّد عند الاستفسار.',
-    featuredNote: 'القماش والإسفنج عبر شركائنا.',
-    enquire: 'استفسر',
-    illustrative: 'صورة توضيحية — تُؤكّد عند الاستفسار',
-    viewCatalog: 'عرض الكتالوج الكامل',
-    viewCatalogSub: `${items.length} صنف · ${groups.length} مجموعات`,
-    talkHint: 'التوافر والمواصفات تُؤكَّد عند الاستفسار — عبر البريد أو واتساب أدناه.',
+    stripCaption: 'نصنّع ونورّد لصُنّاع المراتب في مصر',
+    strip: ['سوست بونيل', 'فريم', 'شاسيهات', 'بوكيت', 'ميموري', 'لاتكس', 'لباد', 'خيوط'],
+    catalogKicker: 'الكتالوج — باختصار',
+    catalogTitle: 'كوّن قائمة التوريد المناسبة لخطك.',
+    catalogText: 'أربع عائلات أساسية نصنّعها ونورّدها، والكتالوج الكامل فيه كل المقاسات والسماكات ولوازم التجميع — التوافر والشروط تُؤكَّد عند الاستفسار.',
+    catalogCta: 'عرض الكتالوج الكامل',
+    rowCta: 'الأصناف',
 
-    productionKicker: 'كيف نورّد',
-    productionTitle: 'خطط كبيرة. اختيارات مرنة. ومواصفات واضحة.',
-    productionBody:
-      'شاركنا الكمية والاستخدام والمواصفات الفنية. نراجع معك الخيارات المتاحة، ونؤكد المواصفات ونخطط للتوريد بما يحافظ على ثبات الجودة. نرحب بطلبات الإنتاج الكبيرة — القدرة ومدة التوريد تُؤكَّدان لكل طلب.',
-    productionPoints: ['مرونة في المواصفات', 'مراجعة الجودة عند التخطيط', 'نرحب بالطلبات الكبيرة'],
+    mapKicker: 'خط التوريد',
+    mapTitle: 'كل حلقة في مسار واحد واضح.',
+    mapText: 'من السلك الخام لحد التغليف، كل مرحلة لها مصدر محدّد وفريق مسؤول — عشان تعرف بالظبط بتستلم إيه ومنين.',
+    mapCaptionA: 'نايل بد · تصنيع وتوريد',
+    mapCaptionB: 'مصر · ٢٠٢٦',
+    nodes: [
+      { t: 'سلك ومواد خام', s: 'سلك 1.3 مم · بونيل' },
+      { t: 'تصنيع السوست', s: 'بونيل · فريم · شاسيه' },
+      { t: 'شركاء القماش', s: 'توصيل مباشر للشريك' },
+      { t: 'إسفنج وفوم', s: 'ميموري · لاتكس' },
+    ],
+    core: { t: 'نايل بد', s: 'نقطة التنسيق' },
+
+    bandKicker: 'معيارنا',
+    bandTitle: 'الجودة جزء من خطة التوريد.',
+    bandText: 'السوست بتاعتنا بمعيار مقاس: نسبة الهبوط لا تتجاوز 1.2 سم، ومقاس كل وحدة بيتسلّم بقطر السلك والارتفاع وقطر السوستة المطلوبين بالظبط.',
+    bandPoints: ['هبوط لا يتجاوز 1.2 سم', 'قطر السلك والارتفاع وقطر السوستة حسب المقاس', 'تأكيد قبل التوريد'],
+    statValue: '1.2',
+    statUnit: 'سم',
+    statLabel: 'أقصى نسبة هبوط',
+    statNote: 'رقم مقاس على كل سوستة نصنعها، مش وعد تسويقي — يُختبر ويُؤكَّد قبل التوريد.',
+    sizesTitle: 'مقاسات متاحة',
+    trustRow: 'مسار واحد لمصانع المراتب · تصنيع في مصر',
+    trustAvatars: ['س', 'ف', 'ب', 'ل'],
+
+    advKicker: 'كيف نورّد',
+    advTitle: 'خطط كبيرة. اختيارات مرنة. ومواصفات واضحة.',
+    advText: 'شاركنا الكمية والاستخدام والمواصفات الفنية، ونراجع معك الخيارات ونخطط للتوريد بما يحافظ على ثبات الجودة.',
+    adv: [
+      ['مرونة في المواصفات', 'قطر السلك والارتفاع وقطر السوستة يتحدّدوا على طلبك، مش على مقاس جاهز.'],
+      ['مراجعة عند التخطيط', 'نراجع الكمية والاستخدام ونثبّت المواصفات قبل ما يبدأ التصنيع.'],
+      ['نرحب بالطلبات الكبيرة', 'القدرة ومدة التوريد تُؤكَّدان لكل طلب قبل الثبات على ميعاد.'],
+    ],
 
     partnersKicker: 'شبكة الشركاء',
     partnersTitle: 'أكثر من مجرّد طلب واحد.',
@@ -148,409 +96,520 @@ const copy = {
     importTitle: 'عندك منتج تريد توريده؟',
     importBody: 'لو بتقدّم جودة ثابتة وأسعار منافسة وتوريد يعتمد عليه — عرّفنا بمنتجك ومصدره وقدرتك.',
     importCta: 'عرّفنا بمنتجك',
-    partnershipTitle: 'نبدأ بطلب واحد.',
-    partnershipBody: 'لما المواصفات واضحة والتوريد موثوق، الطلب الأول يتحوّل لعلاقة توريد مستمرة.',
-    partnershipCta: 'ابدأ حوار شراكة',
 
-    trustKicker: 'معيارنا',
-    trustTitle: 'الجودة جزء من خطة التوريد.',
-    trustText: 'السوست بتاعتنا بمعيار مقاس: نسبة الهبوط لا تتجاوز 1.2 سم، ومقاس كل وحدة بيتسلّم بقطر السلك والارتفاع وقطر السوستة المطلوبين بالظبط. مواصفات واضحة وثبات في الخامات ومسار توريد يعتمد عليه — والتفاصيل تُؤكَّد لكل طلب.',
-    trustPoints: ['هبوط لا يتجاوز 1.2 سم', 'قطر السلك والارتفاع وقطر السوستة حسب المقاس', 'تأكيد قبل التوريد'],
-
-    contactLabel: 'التواصل وطلب عرض سعر',
+    contactKicker: 'التواصل وطلب عرض سعر',
     contactTitle: 'ابدأ بالتفاصيل.',
-    contactText: 'تواصل مع نايل بد عبر البريد أو واتساب المنشورين. نموذج الاستفسار للمعاينة فقط ولا يرسل أو يخزن البيانات.',
-    fields: ['الاسم الكامل', 'الشركة', 'البريد للتواصل', 'المنتج المطلوب', 'الكمية التقريبية', 'المواصفات / ملاحظات'],
-    qty: 'مثال: 10,000 وحدة',
+    contactText: 'تواصل مع نايل بد عبر البريد أو واتساب. النموذج ده للمعاينة فقط — لا يرسل ولا يخزّن البيانات.',
+    fields: ['الاسم الكامل', 'الشركة', 'البريد للتواصل', 'المنتج المطلوب'],
+    notes: 'المواصفات / ملاحظات',
+    notesHint: 'مثال: سوستة 2.4 مم، ارتفاع 16.5 سم، 10,000 وحدة',
     productHint: 'اختر فئة المنتج',
     submit: 'جهّز الاستفسار',
-    formNote: 'هذه المعاينة لا ترسل أو تخزن الرسائل. تواصل بالبريد أو واتساب عبر الروابط بجوار النموذج.',
-    footer: 'خامات المراتب وتصنيع السوست · مصر',
-    back: 'العودة للأعلى',
-    menu: 'فتح القائمة',
-    close: 'إغلاق القائمة',
-    toggle: 'English',
+    formNote: 'معاينة فقط — استخدم البريد أو واتساب بجوار النموذج.',
+    waLabel: 'واتساب',
+    mailLabel: 'البريد الإلكتروني',
+    callLabel: 'اتصال',
+
+    closeTitle: 'كل مرتبة كويسة تبدأ من سوستة مضبوطة.',
+    closeSub: 'اختار من الكتالوج، وحدّد الكمية، وإحنا نأكّد المواصفة ومسار التوريد معاك.',
+    closeCta: 'ابدأ الاختيار',
+    closePlaceholder: 'اكتب اسم الشركة أو الكمية المطلوبة…',
+  },
+  en: {
+    eyebrow: 'One coordinated supply cycle · Egypt',
+    eyebrowAccent: '01',
+    titleA: 'Everything',
+    titleB: 'behind your',
+    titleC: 'next mattress.',
+    sub: 'Springs we manufacture in Egypt, materials we source carefully, and a partner network for fabric & sponge. One supply route, built around your line.',
+    cta: 'Explore the catalog',
+    ctaAlt: 'Review an order',
+    plateTag: 'Spring manufacturing · Egypt',
+    plateTag2: 'Sag ≤ 1.2 cm',
+
+    whatKicker: 'What we do',
+    whatTitle: 'From spring wire to the finishing layers.',
+    whatText: 'We make springs, supply mattress materials, and connect you with partner suppliers for fabric and sponge. One conversation — the right channel for each product.',
+    bento: [
+      ['01', 'Materials that finish the job', 'Pocket, foam, latex, felt, glue and threads — specs confirmed on every enquiry.'],
+      ['02', 'Partner network', 'Fabric and sponge via our partners; we introduce, the partner supplies.'],
+      ['03', 'Made in Egypt', 'Bonnell springs, frames and 1.3 mm wire rolls — manufactured to your order.'],
+    ],
+
+    stripCaption: 'Made and supplied for mattress makers in Egypt',
+    strip: ['Bonnell', 'Frames', 'Units', 'Pocket', 'Memory', 'Latex', 'Felt', 'Threads'],
+    catalogKicker: 'The catalog — brief',
+    catalogTitle: 'Build the supply list that fits your line.',
+    catalogText: 'Four essential families we make and supply. The full catalog covers every size, thickness and fastener — availability and terms confirmed on enquiry.',
+    catalogCta: 'View full catalog',
+    rowCta: 'items',
+
+    mapKicker: 'Supply chain',
+    mapTitle: 'Every link on one clear route.',
+    mapText: 'From raw wire to the finishing layer, each stage has a defined source and a responsible team — so you know exactly what arrives and from where.',
+    mapCaptionA: 'Nile Bed · make & supply',
+    mapCaptionB: 'Egypt · 2026',
+    nodes: [
+      { t: 'Wire & raw stock', s: '1.3 mm wire · Bonnell' },
+      { t: 'Spring production', s: 'Bonnell · frames · units' },
+      { t: 'Fabric partners', s: 'Direct partner supply' },
+      { t: 'Foam & latex', s: 'Memory · latex' },
+    ],
+    core: { t: 'Nile Bed', s: 'Coordination point' },
+
+    bandKicker: 'Our standard',
+    bandTitle: 'Quality is built into the supply plan.',
+    bandText: 'Our springs are made to a measurable standard: sag is no more than 1.2 cm, and every unit ships at exactly the wire gauge, height and coil diameter you asked for.',
+    bandPoints: ['Sag no more than 1.2 cm', 'Wire, height & diameter as specified', 'Confirmed before supply'],
+    statValue: '1.2',
+    statUnit: 'cm',
+    statLabel: 'maximum sag',
+    statNote: 'A measured number on every spring we make — tested and confirmed before supply, not a marketing line.',
+    sizesTitle: 'Available sizes',
+    trustRow: 'One route for mattress makers · made in Egypt',
+    trustAvatars: ['SP', 'FR', 'PK', 'LT'],
+
+    advKicker: 'How we supply',
+    advTitle: 'Large plans. Flexible choices. Clear specs.',
+    advText: 'Share your quantity, application and technical needs. We review the options and plan supply to protect consistency.',
+    adv: [
+      ['Flexible specifications', 'Wire gauge, height and coil diameter follow your order, not a fixed catalogue size.'],
+      ['Reviewed at planning', 'Quantity and application reviewed, specs locked before production starts.'],
+      ['Large volumes welcome', 'Capacity and lead time confirmed per brief, before any date is fixed.'],
+    ],
+
+    partnersKicker: 'Partner network',
+    partnersTitle: 'More than a one-off order.',
+    partnersText: 'For mattress makers — and for quality-focused suppliers. Whether you need fabric & sponge, or you supply a product mattress makers should know about, we make the right introduction.',
+    supplierTitle: 'Need fabric or sponge?',
+    supplierBody: 'Tell us what you are looking for — we connect you with a partner so you can buy at a special price.',
+    supplierCta: 'Find a partner',
+    importTitle: 'Have a product to supply?',
+    importBody: 'If you offer consistent quality, competitive terms and reliable supply — tell us about your product, origin and capacity.',
+    importCta: 'Introduce your product',
+
+    contactKicker: 'Contact & RFQ',
+    contactTitle: 'Start with the details.',
+    contactText: 'Contact Nile Bed directly via email or WhatsApp. This form is a preview — it does not submit or store information.',
+    fields: ['Full name', 'Company', 'Business email', 'Product of interest'],
+    notes: 'Technical requirements / notes',
+    notesHint: 'e.g. 2.4 mm spring, 16.5 cm height, 10,000 units',
+    productHint: 'Select a product family',
+    submit: 'Prepare enquiry',
+    formNote: 'Preview only — use email or WhatsApp beside the form.',
+    waLabel: 'WhatsApp',
+    mailLabel: 'Email',
+    callLabel: 'Call',
+
+    closeTitle: 'Every good mattress starts with a spring that holds.',
+    closeSub: 'Choose from the catalog, set your quantity, and we confirm the spec and the supply route with you.',
+    closeCta: 'Start selecting',
+    closePlaceholder: 'Company name or quantity…',
   },
 } as const;
 
-type Theme = 'light' | 'dark';
-
-const themeLabels = {
-  ar: { switchToDark: 'الوضع الليلي', switchToLight: 'الوضع النهاري', label: 'تبديل المظهر' },
-  en: { switchToDark: 'Dark mode', switchToLight: 'Light mode', label: 'Toggle colour theme' },
-} as const;
-
-function BrandLogo({ variant, className }: { variant: 'light' | 'dark' | 'auto'; className?: string }) {
-  return (
-    <span className={`brand-logo is-${variant}${className ? ` ${className}` : ''}`}>
-      <img className="logo-light" src="/logo-on-light.svg" alt="Nile Bed" width={454} height={270} decoding="async" />
-      <img className="logo-alt" src="/logo-on-dark.svg" alt="" aria-hidden="true" width={454} height={270} decoding="async" />
-    </span>
-  );
-}
+const featured = [
+  {
+    img: '/images/nx-bento-wire.jpg',
+    group: 'springs',
+    kickerAr: 'تصنيع نايل بد',
+    kickerEn: 'MADE BY NILE BED',
+    titleAr: 'السوست والفريم والسلك',
+    titleEn: 'Springs, Frames & Wire',
+    descAr: 'سوست بونيل 2.05–2.4 مم بارتفاع 14.5–16.5 سم، وفريم 4.5 و5، ورول سلك 1.3 — تصنيع حسب الطلب.',
+    descEn: 'Bonnell springs 2.05–2.4 mm at 14.5–16.5 cm, frames 4.5 & 5, 1.3 mm wire rolls — made to order.',
+    href: '/catalog#springs',
+  },
+  {
+    img: '/catalog/pocket/pocket-roll.jpg',
+    group: 'pocket',
+    kickerAr: 'رول ومفروش',
+    kickerEn: 'POCKET',
+    titleAr: 'البوكيت — رول ومفروش',
+    titleEn: 'Pocket — Rolls & Ready',
+    descAr: 'رولات 12–18 سم، ومفروش جاهز 80×25 إلى 80×32 — الكثافة والمقاس يُؤكَّدان مع الفريق.',
+    descEn: 'Rolls 12–18 cm, ready-spread 80×25 to 80×32 — density & size confirmed per enquiry.',
+    href: '/catalog#pocket',
+  },
+  {
+    img: '/catalog/foam/memory-rolls.jpg',
+    group: 'foam',
+    kickerAr: 'تركي وشرق آسيا',
+    kickerEn: 'TURKEY & EAST ASIA',
+    titleAr: 'ميموري ولاتكس وخام مراتب',
+    titleEn: 'Memory, Latex & Cores',
+    descAr: 'ميموري تركي 2 و4 سم، ولاتكس 2.5–5 سم، وخام لاتكس 15 و18 سم — توريد خام فقط.',
+    descEn: 'Turkish memory 2 & 4 cm, neutral latex 2.5–5 cm, latex cores 15 & 18 cm — material only.',
+    href: '/catalog#foam',
+  },
+  {
+    img: '/catalog/materials/felt-rolls.jpg',
+    group: 'materials',
+    kickerAr: 'لباد وفازلين وخيوط',
+    kickerEn: 'FELT & THREADS',
+    titleAr: 'لباد ومستلزمات إنتاج',
+    titleEn: 'Felt & Production Supplies',
+    descAr: 'لباد بجميع درجاته، فازلين وميلتون، خيوط كابوتينية وتيب 3D ولوازم تجميع وغراء.',
+    descEn: 'Felt in all shades, non-woven & Melton, quilting threads, 3D tape, fasteners & glue.',
+    href: '/catalog#materials',
+  },
+] as const;
 
 export default function Home() {
-  const [lang, setLang] = useState<Lang>('ar');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<Theme>('light');
-
-  useEffect(() => {
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-  }, [lang]);
-
-  useEffect(() => {
-    const saved = document.documentElement.dataset.theme;
-    setTheme(saved === 'dark' ? 'dark' : 'light');
-  }, []);
-
-  const toggleTheme = () => {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    document.documentElement.dataset.theme = next;
-    try {
-      window.localStorage.setItem('nilebed-theme-v3', next);
-    } catch {}
-  };
-
-  const t = copy[lang];
+  const [lang, setLang] = useLang();
+  const [formReady, setFormReady] = useState(false);
   const ar = lang === 'ar';
-  const countByGroup = (id: string) => items.filter((it) => it.group === id).length;
-  const themeLabel = theme === 'dark' ? themeLabels[lang].switchToLight : themeLabels[lang].switchToDark;
+  const t = copy[lang];
 
-  // Four featured families only — keeps home clean (was 8 + chips)
-  const featured = [
-    {
-      img: '/catalog/springs/bonnell-unit.jpg',
-      count: `${countByGroup('springs')} ${ar ? 'صنف' : 'items'}`,
-      kicker: ar ? 'تصنيع نايل بد' : 'MADE BY NILE BED',
-      title: ar ? 'السوست والفريم والسلك' : 'Springs, Frames & Wire',
-      desc: ar
-        ? 'سوست بونيل 2.05–2.4 مم بارتفاع 14.5–16.5 سم، وفريم 4.5 و5، ورول سلك 1.3 — تصنيع حسب الطلب.'
-        : 'Bonnell springs 2.05–2.4 mm at 14.5–16.5 cm, frames 4.5 & 5, 1.3 mm wire rolls — made to order.',
-      href: '/catalog#springs',
-    },
-    {
-      img: '/catalog/pocket/pocket-roll.jpg',
-      count: `${countByGroup('pocket')} ${ar ? 'صنف' : 'items'}`,
-      kicker: 'POCKET',
-      title: ar ? 'البوكيت — رول ومفروش' : 'Pocket — Rolls & Ready',
-      desc: ar
-        ? 'رولات 12–18 سم، ومفروش جاهز 80×25 إلى 80×32 — الكثافة والمقاس يُؤكَّدان مع الفريق.'
-        : 'Rolls 12–18 cm, ready-spread 80×25 to 80×32 — density & size confirmed per enquiry.',
-      href: '/catalog#pocket',
-    },
-    {
-      img: '/images/foam-materials.webp',
-      count: `${countByGroup('foam')} ${ar ? 'صنف' : 'items'}`,
-      kicker: ar ? 'تركي وشرق آسيا' : 'TURKEY & EAST ASIA',
-      title: ar ? 'ميموري ولاتكس وخام مراتب' : 'Memory, Latex & Cores',
-      desc: ar
-        ? 'ميموري تركي 2 و4 سم، ولاتكس 2.5–5 سم، وخام لاتكس 15 و18 سم — توريد خام فقط.'
-        : 'Turkish memory 2 & 4 cm, neutral latex 2.5–5 cm, latex cores 15 & 18 cm — material only.',
-      href: '/catalog#foam',
-    },
-    {
-      img: '/catalog/materials/thread-supplies.jpg',
-      count: `${countByGroup('materials') + countByGroup('supplies')} ${ar ? 'صنف' : 'items'}`,
-      kicker: ar ? 'لباد وفازلين وخيوط' : 'FELT & THREADS',
-      title: ar ? 'لباد ومستلزمات إنتاج' : 'Felt & Production Supplies',
-      desc: ar
-        ? 'لباد بجميع درجاته، فازلين وميلتون، خيوط كابوتينية وتيب 3D ولوازم تجميع وغراء.'
-        : 'Felt in all shades, non-woven & Melton, quilting threads, 3D tape, fasteners & glue.',
-      href: '/catalog#materials',
-    },
-  ];
+  const countByGroup = useMemo(
+    () => (id: string) => items.filter((it) => it.group === id).length,
+    [],
+  );
 
   return (
-    <main className="nile home-clean" dir={ar ? 'rtl' : 'ltr'} lang={lang}>
-      {/* ── Topbar — sticky, breathable, not cramped ── */}
-      <header className="hc-topbar">
-        <a className="brand" href="#home" aria-label={ar ? 'نايل بد — الصفحة الرئيسية' : 'Nile Bed — home'}>
-          <BrandLogo variant="auto" />
-        </a>
+    <main className="nx" dir={ar ? 'rtl' : 'ltr'} lang={lang} id="top">
+      <Chrome lang={lang} onLang={setLang} page="home" />
 
-        <nav className={menuOpen ? 'hc-nav open' : 'hc-nav'} aria-label="Main navigation">
-          <a href="#scope" onClick={() => setMenuOpen(false)}>{t.nav[1]}</a>
-          <a href="#catalog" onClick={() => setMenuOpen(false)}>{t.nav[0]}</a>
-          <a href="/order">{t.buildOrder}</a>
-          <a href="#partners" onClick={() => setMenuOpen(false)}>{t.nav[2]}</a>
-          <a href="#contact" onClick={() => setMenuOpen(false)}>{t.nav[3]}</a>
-        </nav>
-
-        <div className="hc-actions">
-          <button className="theme-switch" type="button" onClick={toggleTheme} aria-label={themeLabel} aria-pressed={theme === 'dark'} title={themeLabel}>
-            <Moon className="icon-moon" size={16} />
-            <Sun className="icon-sun" size={16} />
-            <span>{themeLabel}</span>
-          </button>
-          <button className="lang-switch" type="button" onClick={() => setLang(ar ? 'en' : 'ar')} aria-label={ar ? 'Switch to English' : 'التبديل إلى العربية'}>
-            <Globe2 size={16} />{t.toggle}
-          </button>
-          <a className="hc-cta" href="#contact">
-            {ar ? 'تواصل' : 'Get in touch'} <ArrowUpRight size={15} />
-          </a>
-          <button className="hc-menu" type="button" aria-expanded={menuOpen} aria-label={menuOpen ? t.close : t.menu} onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
-      </header>
-
-      {/* ── Mobile drawer overlay ── */}
-      {menuOpen && <button className="hc-overlay" aria-label="close menu" onClick={() => setMenuOpen(false)} />}
-
-      {/* ── HERO — creative, focused, decorative headings ── */}
-      <section className="hc-hero" id="home">
-        <div className="hc-hero-inner">
-          <div className="hc-hero-copy">
-            <div className="hc-eyebrow">
-              <span className="hc-eyebrow-num">{t.eyebrowAccent}</span>
-              <i />
-              <span>{t.eyebrow}</span>
-            </div>
-
-            <h1 className="hc-title">
-              <span className="hc-title-line">{t.titleA}</span>
-              <span className="hc-title-line">{t.titleB}</span>
-              <em className="hc-title-accent">{t.titleC}</em>
+      {/* ── hero: dark field, centred headline, media plate ─────────────── */}
+      <section className="nx-hero">
+        <div className="nx-wrap">
+          <div className="nx-hero-copy">
+            <span className="nx-eyebrow">
+              <b>{t.eyebrowAccent}</b>
+              {t.eyebrow}
+              <i aria-hidden="true" />
+            </span>
+            <h1 className="nx-h1">
+              {t.titleA} <span className="nx-hero-mark">{t.titleB}</span>
+              <br />
+              {t.titleC}
             </h1>
-
-            <p className="hc-intro">{t.intro}</p>
-
-            <div className="hc-hero-actions">
-              <a className="hc-btn hc-btn-primary" href="#catalog">
-                {t.explore} <ArrowUpRight size={16} />
+            <p className="nx-hero-sub">{t.sub}</p>
+            <div className="nx-hero-actions">
+              <a className="nx-btn nx-btn-solid" href="/catalog">
+                {t.cta} <ArrowUpRight size={15} />
               </a>
-              <a className="hc-btn hc-btn-ghost" href="/order">
-                {t.buildOrder} <ArrowUpRight size={16} />
-              </a>
-              <a className="hc-btn hc-btn-ghost" href="#contact">
-                {t.quote} <ArrowUpRight size={16} />
+              <a className="nx-btn nx-hero-ghost" href="/order">
+                {t.ctaAlt} <ArrowRight size={15} />
               </a>
             </div>
-
-            <div className="hc-hero-note">
-              <span className="hc-nb">NB</span>
-              <span>{t.note}</span>
+            <div className="nx-trust">
+              <span className="nx-trust-avatars" aria-hidden="true">
+                {t.trustAvatars.map((a) => <span key={a}>{a}</span>)}
+              </span>
+              <small>{t.trustRow}</small>
             </div>
           </div>
+        </div>
 
-          <figure className="hc-hero-visual">
-            <img
-              src="/images/hero-springs-product.webp"
-              alt={ar ? 'وحدة سوست بونيل — صورة توضيحية' : 'Bonnell spring unit — illustrative image'}
-              fetchPriority="high"
-              decoding="async"
-            />
-            <figcaption className="hc-visual-caption">
-              <span>{ar ? 'تصنيع السوست في مصر' : 'SPRINGS MADE IN EGYPT'}</span>
-              <small>{ar ? 'صورة توضيحية' : 'ILLUSTRATIVE IMAGE'}</small>
-            </figcaption>
-          </figure>
+        <div className="nx-hero-plate">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/nx-hero-springs.jpg" alt={ar ? 'صفوف سوست بونيل متجاورة بإضاءة نحاسية' : 'Rows of bonnell springs under warm copper light'} width={1536} height={1024} />
+          <span className="nx-plate-tag is-tr">{t.plateTag}</span>
+          <span className="nx-plate-tag is-bl"><i aria-hidden="true" />{t.plateTag2}</span>
         </div>
       </section>
 
-      {/* ── Anchor pill — creative scroll navigation ── */}
-      <nav className="hc-anchor" aria-label={t.anchorLabel}>
-        <span className="hc-anchor-label">{t.anchorLabel}</span>
-        <div className="hc-anchor-pills">
-          <a href="#scope"><i />{t.anchors[0]}</a>
-          <a href="#catalog"><i />{t.anchors[1]}</a>
-          <a href="#partners"><i />{t.anchors[2]}</a>
-          <a href="#contact"><i />{t.anchors[3]}</a>
-        </div>
-      </nav>
-
-      {/* ── SCOPE — 3 cards only, generous whitespace ── */}
-      <section className="hc-section hc-scope" id="scope">
-        <div className="hc-section-head">
+      {/* ── sheet riding on the band: intro + bento ─────────────────────── */}
+      <section className="nx-sheet" id="scope" aria-labelledby="nx-what">
+        <div className="nx-sheet-head">
           <div>
-            <div className="hc-kicker"><span>01</span>{t.scopeKicker}</div>
-            <h2 className="hc-h2">{t.scopeTitle}</h2>
+            <span className="nx-eyebrow"><b>٠١</b>{t.whatKicker}</span>
+            <h2 className="nx-h2" id="nx-what">{t.whatTitle}</h2>
           </div>
-          <p>{t.scopeText}</p>
+          <p className="nx-lead">{t.whatText}</p>
         </div>
-        <div className="hc-scope-grid">
-          {t.scopeCards.map(([num, title, body], i) => (
-            <article key={title} className={i === 2 ? 'hc-card hc-card-dark' : 'hc-card'}>
-              <span className="hc-card-num">{num}</span>
-              <h3>{title}</h3>
-              <p>{body}</p>
-              <div className="hc-card-icon">{i === 2 ? <Network size={18} /> : i === 1 ? <Layers3 size={18} /> : <Check size={18} />}</div>
-            </article>
-          ))}
+
+        <div className="nx-bento">
+          <article className="nx-tile is-photo">
+            <span className="nx-tile-num">{t.bento[0][0]}</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/nx-bento-materials.jpg" alt={ar ? 'رول لباد وطبقات إسفنج على ورقة كريمية' : 'Felt roll and foam layers on cream paper'} width={1536} height={1024} />
+            <h3>{t.bento[0][1]}</h3>
+            <p>{t.bento[0][2]}</p>
+          </article>
+
+          <article className="nx-tile is-ink">
+            <span className="nx-tile-num">{t.bento[1][0]}</span>
+            <span className="nx-tile-arrow" aria-hidden="true"><ArrowUpRight size={15} /></span>
+            <h3>{t.bento[1][1]}</h3>
+            <p>{t.bento[1][2]}</p>
+          </article>
+
+          <article className="nx-tile is-accent">
+            <span className="nx-tile-num">{t.bento[2][0]}</span>
+            <span className="nx-tile-arrow" aria-hidden="true"><ArrowUpRight size={15} /></span>
+            <h3>{t.bento[2][1]}</h3>
+            <p>{t.bento[2][2]}</p>
+          </article>
         </div>
       </section>
 
-      {/* ── FEATURED CATALOG — only 4 cards, clean, no chips ── */}
-      <section className="hc-section hc-catalog" id="catalog">
-        <div className="hc-section-head">
-          <div>
-            <div className="hc-kicker"><span>02</span>{t.featuredKicker}</div>
-            <h2 className="hc-h2">{t.featuredTitle}</h2>
-          </div>
-          <p>{t.featuredDesc}</p>
-        </div>
-
-        <div className="hc-featured-grid">
-          {featured.map((card) => (
-            <article key={card.title} className="hc-featured-card">
-              <div className="hc-featured-media">
-                <img src={card.img} alt={card.title} loading="lazy" decoding="async" />
-                <span className="hc-tag">{card.kicker}</span>
-                <span className="hc-count">{card.count}</span>
-              </div>
-              <div className="hc-featured-body">
-                <h3>{card.title}</h3>
-                <p>{card.desc}</p>
-              </div>
-              <div className="hc-featured-foot">
-                <span className="hc-avail"><i />{t.illustrative}</span>
-                <a href={card.href} aria-label={card.title}><ArrowUpRight size={14} /></a>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <div className="hc-catalog-actions">
-          <a className="hc-btn hc-btn-primary hc-btn-lg" href="/catalog">
-            {t.viewCatalog} <span className="hc-btn-sub">{t.viewCatalogSub}</span> <ArrowUpRight size={17} />
-          </a>
-          <a className="hc-btn hc-btn-ghost" href="/order">{t.buildOrder} <ClipboardList size={16} /></a>
-          <a className="hc-btn hc-btn-ghost" href="#contact">{t.quote} <ArrowUpRight size={17} /></a>
-        </div>
-        <div className="hc-hint"><CircleHelp size={15} />{t.talkHint}</div>
-      </section>
-
-      {/* ── PRODUCTION — single elegant band, not cramped ── */}
-      <section className="hc-production" id="production">
-        <div className="hc-production-inner">
-          <div className="hc-production-copy">
-            <div className="hc-kicker hc-kicker-light"><span>03</span>{t.productionKicker}</div>
-            <h2 className="hc-h2 hc-h2-light">{t.productionTitle}</h2>
-            <p>{t.productionBody}</p>
-            <a className="hc-btn hc-btn-primary" href="#contact">{t.quote} <ArrowUpRight size={17} /></a>
-          </div>
-          <ul className="hc-production-points">
-            {t.productionPoints.map((p, i) => (
-              <li key={p}><span>0{i + 1}</span><strong>{p}</strong><Check size={16} /></li>
+      {/* ── caption + marks strip (the reference logo row, honestly sourced) ── */}
+      <section className="nx-strip" aria-label={t.stripCaption}>
+        <div className="nx-wrap nx-strip-inner">
+          <span className="nx-strip-caption">{t.stripCaption}</span>
+          <div className="nx-strip-marks">
+            {t.strip.map((mark) => (
+              <span key={mark}>{mark}</span>
             ))}
-          </ul>
+          </div>
         </div>
       </section>
 
-      {/* ── PARTNERS — one creative split, replaces 3 stacked sections ── */}
-      <section className="hc-section hc-partners" id="partners">
-        <div className="hc-section-head">
-          <div>
-            <div className="hc-kicker"><span>04</span>{t.partnersKicker}</div>
-            <h2 className="hc-h2">{t.partnersTitle}</h2>
-          </div>
-          <p>{t.partnersText}</p>
-        </div>
-
-        <div className="hc-partners-grid">
-          <article className="hc-partner-card">
-            <div className="hc-partner-icon"><Truck size={18} /></div>
-            <span className="hc-partner-kicker">01 — {ar ? 'لصُنّاع المراتب' : 'FOR MAKERS'}</span>
-            <h3>{t.supplierTitle}</h3>
-            <p>{t.supplierBody}</p>
-            <a className="hc-btn hc-btn-dark" href={`https://wa.me/201090000676?text=${encodeURIComponent(ar ? 'مرحبًا نايل بد، أبحث عن شريك للقماش والإسفنج:' : 'Hello Nile Bed, I am looking for a fabric & sponge partner:')}`} target="_blank" rel="noopener noreferrer">
-              {t.supplierCta} <ArrowUpRight size={15} />
-            </a>
-            <span className="hc-partner-mark">S</span>
-          </article>
-
-          <article className="hc-partner-card hc-partner-card-dark">
-            <div className="hc-partner-icon"><Sparkles size={18} /></div>
-            <span className="hc-partner-kicker">02 — {ar ? 'للموردين' : 'FOR SUPPLIERS'}</span>
-            <h3>{t.importTitle}</h3>
-            <p>{t.importBody}</p>
-            <a className="hc-btn hc-btn-primary" href={`https://wa.me/201090000676?text=${encodeURIComponent(ar ? 'مرحبًا نايل بد، أرغب في عرض منتج للتوريد:' : 'Hello Nile Bed, I would like to introduce a product:')}`} target="_blank" rel="noopener noreferrer">
-              {t.importCta} <ArrowUpRight size={15} />
-            </a>
-            <span className="hc-partner-mark">I</span>
-          </article>
-        </div>
-
-        <div className="hc-partnership-strip">
-          <div>
-            <h3>{t.partnershipTitle}</h3>
-            <p>{t.partnershipBody}</p>
-          </div>
-          <a className="hc-btn hc-btn-ghost" href="https://wa.me/201090000676" target="_blank" rel="noopener noreferrer"><Network size={16} />{t.partnershipCta} <ArrowUpRight size={16} /></a>
-        </div>
-      </section>
-
-      {/* ── TRUST — minimal, airy ── */}
-      <section className="hc-trust" id="quality">
-        <div className="hc-trust-inner">
-          <div className="hc-trust-stamp"><span>NB</span><i />{ar ? 'جودة / توريد' : 'QUALITY / SUPPLY'}</div>
-          <div className="hc-trust-copy">
-            <div className="hc-kicker hc-kicker-light"><span>05</span>{t.trustKicker}</div>
-            <h2 className="hc-h2 hc-h2-light">{t.trustTitle}</h2>
-            <p>{t.trustText}</p>
-            <div className="hc-trust-points">
-              {t.trustPoints.map((p) => <span key={p}>{p}</span>)}
+      {/* ── catalog as editorial rows ───────────────────────────────────── */}
+      <section className="nx-section" id="catalog">
+        <div className="nx-wrap">
+          <div className="nx-sheet-head">
+            <div>
+              <span className="nx-eyebrow"><b>٠٢</b>{t.catalogKicker}</span>
+              <h2 className="nx-h2">{t.catalogTitle}</h2>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── CONTACT — generous form, not crowded ── */}
-      <section className="hc-section hc-contact" id="contact">
-        <div className="hc-contact-head">
-          <div className="hc-kicker"><span>06</span>{t.contactLabel}</div>
-          <h2 className="hc-h2">{t.contactTitle}</h2>
-          <p>{t.contactText}</p>
-
-          <div className="hc-contact-links">
-            <a href="mailto:info@nilebed.com"><Mail size={16} />info@nilebed.com</a>
-            <a href="https://wa.me/201090000676" target="_blank" rel="noopener noreferrer"><Phone size={16} />{ar ? 'واتساب: 010 90000676' : 'WhatsApp: 010 90000676'}</a>
+            <p className="nx-lead">{t.catalogText}</p>
           </div>
 
-          <div className="hc-social">
-            {['https://www.facebook.com/profile.php?id=100047775297291', 'https://www.facebook.com/profile.php?id=100009326443352', 'https://www.facebook.com/tefa.elsid'].map((url, i) => (
-              <a key={url} href={url} target="_blank" rel="noopener noreferrer">
-                {ar ? ['صفحة Nile Bed', 'حساب Nile Bed', 'تحديثات عاطف طه'][i] : ['Business page', 'Profile', 'Atef Taha updates'][i]} <ArrowUpRight size={13} />
+          <div className="nx-rows">
+            {featured.map((f, i) => (
+              <a className="nx-row" key={f.group} href={f.href}>
+                <span className="nx-row-index">{ar ? ['٠١', '٠٢', '٠٣', '٠٤'][i] : `0${i + 1}`}</span>
+                <span className="nx-row-title">
+                  <strong>{ar ? f.titleAr : f.titleEn}</strong>
+                  <small>{ar ? f.kickerAr : f.kickerEn}</small>
+                </span>
+                <span className="nx-row-meta">{ar ? f.descAr : f.descEn}</span>
+                <span className="nx-row-end">
+                  <span className="nx-row-count">
+                    {countByGroup(f.group)} {t.rowCta}
+                  </span>
+                  <span className="nx-row-go" aria-hidden="true"><ArrowUpRight size={15} /></span>
+                </span>
               </a>
             ))}
           </div>
 
-          <div className="hc-hint hc-order-hint">
-            <ClipboardList size={15} />
-            <span>{t.orderHint} <a href="/order">{t.buildOrder} <ArrowUpRight size={13} /></a></span>
+          <div className="nx-rows-foot">
+            <a className="nx-btn nx-btn-ink" href="/catalog">
+              {t.catalogCta} <ArrowUpRight size={15} />
+            </a>
+            <span className="nx-note">{items.length} {ar ? 'صنف' : 'items'} · {groups.length} {ar ? 'مجموعات' : 'groups'}</span>
           </div>
         </div>
-
-        <form className="hc-form" onSubmit={(e) => e.preventDefault()}>
-          <div className="hc-form-grid">
-            <label>{t.fields[0]} <input required placeholder={ar ? 'اسمك' : 'Your name'} /></label>
-            <label>{t.fields[1]} <input placeholder={ar ? 'اسم الشركة' : 'Company name'} /></label>
-            <label>{t.fields[2]} <input type="email" required placeholder="name@company.com" /></label>
-            <label>{t.fields[3]}
-              <select defaultValue="">
-                <option value="" disabled>{t.productHint}</option>
-                <option>{ar ? 'سوست وفريم وسلك' : 'Springs & Wire'}</option>
-                <option>{ar ? 'بوكيت ومفروش' : 'Pocket & Ready'}</option>
-                <option>{ar ? 'فوم ولاتكس' : 'Foam & Latex'}</option>
-                <option>{ar ? 'لباد وخيوط ومستلزمات' : 'Felt & Supplies'}</option>
-              </select>
-            </label>
-            <label>{t.fields[4]} <input placeholder={t.qty} /></label>
-            <label className="hc-full">{t.fields[5]} <textarea rows={4} placeholder={ar ? 'اكتب متطلباتك هنا...' : 'Tell us about your requirements...'} /></label>
-          </div>
-          <button className="hc-btn hc-btn-dark" type="submit" disabled>{t.submit} <ArrowUpRight size={17} /></button>
-          <small className="hc-form-note"><CircleHelp size={14} />{t.formNote}</small>
-        </form>
       </section>
 
-      <footer className="hc-footer">
-        <a className="brand" href="#home" aria-label="Nile Bed"><BrandLogo variant="dark" /></a>
-        <span>{t.footer}</span>
-        <a href="#home">{t.back} <ArrowRight size={14} /></a>
-        <small>© {new Date().getFullYear()} NILE BED</small>
-      </footer>
+      {/* ── node map ────────────────────────────────────────────────────── */}
+      <section className="nx-section" id="chain" style={{ paddingTop: 0 }}>
+        <div className="nx-wrap">
+          <div className="nx-sheet-head">
+            <div>
+              <span className="nx-eyebrow"><b>٠٣</b>{t.mapKicker}</span>
+              <h2 className="nx-h2">{t.mapTitle}</h2>
+            </div>
+            <p className="nx-lead">{t.mapText}</p>
+          </div>
+
+          <div className="nx-map" style={{ marginTop: 'clamp(20px, 2.6vw, 30px)' }}>
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" fill="none">
+              <path d="M22 32 Q34 36 46 48" stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+              <path d="M78 32 Q66 36 54 48" stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+              <path d="M20 72 Q33 64 46 53" stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" vectorEffect="non-scaling-stroke" />
+              <path d="M80 72 Q67 64 54 53" stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" vectorEffect="non-scaling-stroke" />
+              <path d="M22 32 Q50 8 78 32" stroke="currentColor" strokeWidth="1" strokeDasharray="2 5" vectorEffect="non-scaling-stroke" opacity=".7" />
+              <path d="M20 72 Q50 94 80 72" stroke="currentColor" strokeWidth="1" strokeDasharray="2 5" vectorEffect="non-scaling-stroke" opacity=".7" />
+            </svg>
+
+            <span className="nx-node is-muted nx-node-a">
+              <span className="nx-node-icon" aria-hidden="true"><Package size={16} /></span>
+              <span><strong>{t.nodes[0].t}</strong><small>{t.nodes[0].s}</small></span>
+            </span>
+            <span className="nx-node is-muted nx-node-b">
+              <span className="nx-node-icon" aria-hidden="true"><Sparkles size={16} /></span>
+              <span><strong>{t.nodes[1].t}</strong><small>{t.nodes[1].s}</small></span>
+            </span>
+            <span className="nx-node is-core nx-node-core">
+              <span className="nx-node-icon" aria-hidden="true"><Check size={16} /></span>
+              <span><strong>{t.core.t}</strong><small>{t.core.s}</small></span>
+            </span>
+            <span className="nx-node is-muted nx-node-c">
+              <span className="nx-node-icon" aria-hidden="true"><ArrowUpRight size={16} /></span>
+              <span><strong>{t.nodes[2].t}</strong><small>{t.nodes[2].s}</small></span>
+            </span>
+            <span className="nx-node is-muted nx-node-d">
+              <span className="nx-node-icon" aria-hidden="true"><Truck size={16} /></span>
+              <span><strong>{t.nodes[3].t}</strong><small>{t.nodes[3].s}</small></span>
+            </span>
+
+            <span className="nx-map-caption is-bl">{t.mapCaptionA}<i aria-hidden="true" /></span>
+            <span className="nx-map-caption is-br">{t.mapCaptionB}<i aria-hidden="true" /></span>
+          </div>
+        </div>
+      </section>
+
+      {/* ── ink band: the single loud statistic ─────────────────────────── */}
+      <section className="nx-band" id="standard">
+        <div className="nx-wrap nx-band-inner">
+          <div>
+            <span className="nx-eyebrow"><b>٠٤</b>{t.bandKicker}</span>
+            <h2 className="nx-h2">{t.bandTitle}</h2>
+            <p>{t.bandText}</p>
+            <ul className="nx-band-points">
+              {t.bandPoints.map((p, i) => (
+                <li key={p}><b>{ar ? ['٠١', '٠٢', '٠٣'][i] : `0${i + 1}`}</b>{p}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="nx-stat-figure">
+            <strong>{t.statValue}</strong>
+            <small>{t.statLabel} · {t.statUnit}</small>
+            <i className="nx-stat-line" aria-hidden="true" />
+            <em>{t.statNote}</em>
+            <div className="nx-sag">
+              <span className="nx-sag-bar" aria-hidden="true"><span /></span>
+              <span>
+                <b>{t.sizesTitle}</b> · 14.5 / 16 / 16.5 cm
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── advantages: numbered cards, cropped numerals ────────────────── */}
+      <section className="nx-section" id="supply">
+        <div className="nx-wrap">
+          <div className="nx-sheet-head">
+            <div>
+              <span className="nx-eyebrow"><b>٠٥</b>{t.advKicker}</span>
+              <h2 className="nx-h2">{t.advTitle}</h2>
+            </div>
+            <p className="nx-lead">{t.advText}</p>
+          </div>
+
+          <div className="nx-cards" style={{ marginTop: 'clamp(18px, 2.4vw, 28px)' }}>
+            {t.adv.map(([title, body], i) => (
+              <article className="nx-card" key={title}>
+                <span className="nx-chip">{t.advKicker}</span>
+                <span className="nx-tile-arrow" aria-hidden="true"><ArrowUpRight size={15} /></span>
+                <h3>{title}</h3>
+                <p>{body}</p>
+                <span className="nx-card-ghost" aria-hidden="true">{ar ? ['٠١', '٠٢', '٠٣'][i] : `0${i + 1}`}</span>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── partners: two-up split, one paper one ink ───────────────────── */}
+      <section className="nx-section" id="partners" style={{ paddingTop: 0 }}>
+        <div className="nx-wrap">
+          <div className="nx-sheet-head">
+            <div>
+              <span className="nx-eyebrow"><b>٠٦</b>{t.partnersKicker}</span>
+              <h2 className="nx-h2">{t.partnersTitle}</h2>
+            </div>
+            <p className="nx-lead">{t.partnersText}</p>
+          </div>
+
+          <div className="nx-split">
+            <article className="nx-partner">
+              <span className="nx-partner-icon" aria-hidden="true"><Sparkles size={17} /></span>
+              <div>
+                <h3>{t.supplierTitle}</h3>
+                <p>{t.supplierBody}</p>
+              </div>
+              <a className="nx-link" href={`https://wa.me/${WA}`} target="_blank" rel="noopener noreferrer">
+                {t.supplierCta} <ArrowUpRight size={14} />
+              </a>
+            </article>
+
+            <article className="nx-partner is-ink">
+              <span className="nx-partner-icon" aria-hidden="true"><Package size={17} /></span>
+              <div>
+                <h3>{t.importTitle}</h3>
+                <p>{t.importBody}</p>
+              </div>
+              <a className="nx-link" style={{ color: 'inherit', borderColor: 'currentColor' }} href={`mailto:${EMAIL}`}>
+                {t.importCta} <ArrowUpRight size={14} />
+              </a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* ── contact: floating light app-card on the dark field ──────────── */}
+      <section className="nx-band" id="contact">
+        <div className="nx-wrap nx-contact">
+          <div>
+            <span className="nx-eyebrow"><b>٠٧</b>{t.contactKicker}</span>
+            <h2 className="nx-h2">{t.contactTitle}</h2>
+            <p>{t.contactText}</p>
+
+            <div className="nx-contact-links">
+              <a href={`https://wa.me/${WA}`} target="_blank" rel="noopener noreferrer">
+                <MessageCircle size={16} /> {t.waLabel} · 010 90000676 <ArrowUpRight size={13} />
+              </a>
+              <a href={`mailto:${EMAIL}`}>
+                <Mail size={16} /> {t.mailLabel} · {EMAIL} <ArrowUpRight size={13} />
+              </a>
+            </div>
+          </div>
+
+          <form className="nx-form-card" onSubmit={(e) => e.preventDefault()} aria-label={t.contactKicker}>
+            <div className="nx-form-grid">
+              {t.fields.slice(0, 2).map((f) => (
+                <label className="nx-field" key={f}>
+                  <span>{f}</span>
+                  <input type="text" name={f} autoComplete="off" />
+                </label>
+              ))}
+              <label className="nx-field">
+                <span>{t.fields[2]}</span>
+                <input type="email" name="email" autoComplete="off" placeholder="name@company.com" />
+              </label>
+              <label className="nx-field">
+                <span>{t.fields[3]}</span>
+                <select name="product" defaultValue="">
+                  <option value="" disabled>{t.productHint}</option>
+                  {groups.map((g) => (
+                    <option key={g.id} value={g.id}>{g[lang].title}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="nx-field is-wide">
+                <span>{t.notes}</span>
+                <textarea name="notes" placeholder={t.notesHint} />
+              </label>
+            </div>
+
+            <button
+              className="nx-btn nx-btn-solid nx-btn-block"
+              type="button"
+              onClick={() => setFormReady((v) => !v)}
+              aria-expanded={formReady}
+            >
+              {t.submit} <ArrowUpRight size={15} />
+            </button>
+            <p className="nx-note">{formReady ? `✓ ${t.formNote}` : t.formNote}</p>
+          </form>
+        </div>
+      </section>
+
+      {/* ── closing: full-bleed cinematic frame + pill field ────────────── */}
+      <section className="nx-close" aria-labelledby="nx-close">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/nx-bento-quality.jpg" alt="" aria-hidden="true" width={1024} height={1536} />
+        <div className="nx-close-inner">
+          <h2 className="nx-h2" id="nx-close">{t.closeTitle}</h2>
+          <p>{t.closeSub}</p>
+          <div className="nx-pillfield">
+            <input type="text" placeholder={t.closePlaceholder} aria-label={t.closePlaceholder} />
+            <a className="nx-btn nx-btn-solid nx-btn-sm" href="/catalog">
+              {t.closeCta} <ArrowRight size={14} />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <SiteFooter lang={lang} />
     </main>
   );
 }
